@@ -868,18 +868,37 @@ const firebaseConfig = {
   measurementId: "G-BD8Q192YS6"
 };
 
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+let database = null;
+try {
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    database = firebase.database();
+    console.log('✓ Firebase initialized');
+  } else {
+    console.warn('⚠️ Firebase SDK not loaded, using localStorage only');
+  }
+} catch (e) {
+  console.warn('⚠️ Firebase initialization failed, using localStorage only:', e);
+}
 
-// Sync functions
+// Sync functions with fallback to localStorage
 function syncToFirebase(path, data) {
-  database.ref(path).set(data).catch(err => console.error('Firebase sync error:', err));
+  if (database) {
+    database.ref(path).set(data).catch(err => console.error('Firebase sync error:', err));
+  } else {
+    localStorage.setItem(path, JSON.stringify(data));
+  }
 }
 
 function loadFromFirebase(path, callback) {
-  database.ref(path).on('value', snapshot => {
-    callback(snapshot.val() || null);
-  });
+  if (database) {
+    database.ref(path).on('value', snapshot => {
+      callback(snapshot.val() || null);
+    });
+  } else {
+    const stored = localStorage.getItem(path);
+    callback(stored ? JSON.parse(stored) : null);
+  }
 }
 
 // ─── AUTH ──────────────────────────────────────────────────────
