@@ -911,7 +911,6 @@ function ownerLogin() {
     var u = document.getElementById('ownerUser').value.trim();
     var p = document.getElementById('ownerPass').value;
     console.log('Username:', u, 'Password length:', p.length);
-    OWNER_CREDS.pass = localStorage.getItem('ownerPassword') || 'Lasonja00$';
     var err = document.getElementById('ownerErr');
     
     console.log('Checking credentials - user:', OWNER_CREDS.user, 'vs', u, '| pass match:', p === OWNER_CREDS.pass);
