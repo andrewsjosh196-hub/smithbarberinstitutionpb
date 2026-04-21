@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alumni — SBI School</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#c9a84c;--purple:#6b21a8;
+  --black:#0a0806;--card:#110f0c;
+  --border:rgba(201,168,76,0.2);
+  --white:#faf8f5;--muted:#9a8f7e;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Raleway',sans-serif;background:var(--black);color:var(--white);overflow-x:hidden;}
+
+nav{display:flex;align-items:center;padding:14px 32px;background:rgba(10,8,6,0.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);}
+.nav-logo{height:40px;width:40px;object-fit:contain;}
+.nav-brand{margin-left:12px;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:0.9rem;font-weight:700;display:block;}
+.nav-brand-sub{font-size:0.52rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;display:block;}
+.nav-right{margin-left:auto;}
+.nav-right a{color:var(--gold);text-decoration:none;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+
+section{padding:90px 32px;}
+.section-inner{max-width:1200px;margin:0 auto;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.1;margin-bottom:12px;}
+.section-title em{font-style:italic;color:var(--gold);}
+.section-desc{font-size:0.9rem;color:var(--muted);line-height:1.6;max-width:600px;margin-bottom:60px;}
+
+.alumni-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:28px;margin-bottom:80px;}
+.alumni-card{background:var(--card);border:1px solid var(--border);text-align:center;transition:transform 0.3s,border-color 0.3s;}
+.alumni-card:hover{transform:translateY(-8px);border-color:var(--gold);}
+.alumni-image{width:100%;height:200px;background:linear-gradient(135deg,rgba(107,33,168,0.15),rgba(201,168,76,0.05));display:flex;align-items:center;justify-content:center;font-size:3rem;border-bottom:1px solid var(--border);}
+.alumni-image img{width:100%;height:100%;object-fit:cover;}
+.alumni-info{padding:24px;}
+.alumni-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:6px;}
+.alumni-status{font-size:0.75rem;color:var(--gold);letter-spacing:1px;text-transform:uppercase;font-weight:700;}
+
+.staff-section{background:#0d0b09;padding:60px 32px;margin-top:60px;}
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px;margin-top:40px;}
+.staff-card{background:var(--card);border:1px solid var(--border);text-align:center;}
+.staff-image{width:100%;height:180px;background:linear-gradient(135deg,rgba(107,33,168,0.15),rgba(201,168,76,0.05));display:flex;align-items:center;justify-content:center;font-size:2.5rem;border-bottom:1px solid var(--border);}
+.staff-image img{width:100%;height:100%;object-fit:cover;}
+.staff-info{padding:20px;}
+.staff-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;}
+.staff-role{font-size:0.7rem;color:var(--muted);letter-spacing:0.5px;}
+
+.empty-state{text-align:center;padding:60px 20px;color:#333;}
+.empty-state p{font-size:0.85rem;font-style:italic;}
+
+footer{background:#000;border-top:1px solid var(--border);padding:40px 32px;text-align:center;font-size:0.65rem;color:#333;}
+
+@media(max-width:700px){
+  section{padding:60px 20px;}
+  .alumni-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:16px;}
+  .staff-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:16px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <img src="school_logo.png" alt="SBI" class="nav-logo" onerror="this.style.display='none'">
+  <div class="nav-brand">
+    <span class="nav-brand-name">SBI School</span>
+    <span class="nav-brand-sub">Barber Education</span>
+  </div>
+  <div class="nav-right">
+    <a href="index.html">← Back to Home</a>
+  </div>
+</nav>
+
+<!-- ALUMNI SECTION -->
+<section>
+  <div class="section-inner">
+    <h1 class="section-title">Our <em>Graduates</em></h1>
+    <p class="section-desc">Meet the talented professionals who have completed their training at SBI School and are now thriving in the barbering industry.</p>
+    
+    <div class="alumni-grid" id="alumniGrid">
+      <div class="empty-state">
+        <p>No graduates yet. Check back soon!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STAFF SECTION -->
+<section class="staff-section">
+  <div class="section-inner">
+    <h2 class="section-title">Our <em>Team</em></h2>
+    <p class="section-desc">Professional instructors dedicated to your success.</p>
+    
+    <div class="staff-grid" id="staffGrid">
+      <div class="empty-state">
+        <p>Staff profiles coming soon.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2025 SBI School. All rights reserved. | <a href="index.html" style="color:#555;text-decoration:none;">Home</a>
+</footer>
+
+<script>
+// Load alumni
+function loadAlumni() {
+  var alumni = JSON.parse(localStorage.getItem('alumni') || '[]');
+  var grid = document.getElementById('alumniGrid');
+  
+  if (!alumni.length) {
+    grid.innerHTML = '<div class="empty-state"><p>No graduates yet. Check back soon!</p></div>';
+    return;
+  }
+  
+  grid.innerHTML = '';
+  alumni.forEach(function(person) {
+    var card = document.createElement('div');
+    card.className = 'alumni-card';
+    card.innerHTML = '<div class="alumni-image">' + 
+      (person.photo ? '<img src="' + person.photo + '" alt="' + person.name + '">' : '👨‍🎓') +
+      '</div>' +
+      '<div class="alumni-info">' +
+      '<div class="alumni-name">' + person.name + '</div>' +
+      '<div class="alumni-status">' + (person.currentStatus || 'Barber') + '</div>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+// Load staff
+function loadStaff() {
+  var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+  var grid = document.getElementById('staffGrid');
+  
+  if (!staff.length) {
+    grid.innerHTML = '<div class="empty-state"><p>Staff profiles coming soon.</p></div>';
+    return;
+  }
+  
+  grid.innerHTML = '';
+  staff.forEach(function(member) {
+    var card = document.createElement('div');
+    card.className = 'staff-card';
+    card.innerHTML = '<div class="staff-image">' + 
+      (member.photo ? '<img src="' + member.photo + '" alt="' + member.name + '">' : '👤') +
+      '</div>' +
+      '<div class="staff-info">' +
+      '<div class="staff-name">' + member.name + '</div>' +
+      '<div class="staff-role">' + (member.role || 'Instructor') + '</div>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+loadAlumni();
+loadStaff();
+</script>
+</body>
+</html>

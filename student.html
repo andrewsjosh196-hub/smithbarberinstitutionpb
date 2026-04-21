@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Dashboard — SBI School</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#6b21a8;--purple-mid:#7c3aed;--purple-light:#a855f7;
+  --gold:#c9a84c;--gold-light:#e5c97a;--gold-dark:#a07c28;
+  --black:#0a0806;--card:#110f0c;
+  --border:rgba(201,168,76,0.2);--border-sub:#1c1a16;
+  --white:#faf8f5;--muted:#9a8f7e;
+  --green:#6fcf97;--red:#e87b7b;
+}
+body{font-family:'Raleway',sans-serif;background:var(--black);color:var(--white);min-height:100vh;}
+
+nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);flex-wrap:wrap;gap:12px;}
+.nav-logo{height:40px;width:40px;object-fit:contain;}
+.nav-brand{margin-left:10px;display:flex;flex-direction:column;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:0.9rem;font-weight:700;display:block;line-height:1.2;}
+.nav-brand-sub{font-size:0.52rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;display:block;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.student-badge{font-size:0.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:600;white-space:nowrap;}
+.student-badge span{color:var(--gold);}
+.logout-btn{background:transparent;border:1px solid #222;color:#555;padding:7px 14px;cursor:pointer;font-family:'Raleway',sans-serif;font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;transition:all 0.2s;white-space:nowrap;}
+.logout-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+.main{max-width:1100px;margin:0 auto;padding:32px 20px 80px;}
+
+.content-grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:24px;}
+
+.clock-card{background:linear-gradient(135deg,rgba(107,33,168,0.18),rgba(201,168,76,0.06));border:1px solid var(--border);padding:28px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;position:relative;overflow:hidden;grid-column:1/-1;}
+.clock-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));}
+.clock-status-label{font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px;}
+.clock-status{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;margin-bottom:4px;}
+.clock-status.clocked-in{color:var(--green);}
+.clock-time{font-size:0.75rem;color:#555;letter-spacing:1px;}
+.clock-btn{padding:14px 28px;border:none;font-family:'Raleway',sans-serif;font-weight:800;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;min-width:140px;}
+.clock-btn.btn-in{background:var(--green);color:#000;}
+.clock-btn.btn-in:hover{background:#86e5a8;}
+.clock-btn.btn-out{background:var(--red);color:#fff;}
+.clock-btn.btn-out:hover{background:#f09090;}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.stat-box{background:var(--card);border:1px solid var(--border-sub);padding:16px;text-align:center;position:relative;}
+.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
+.stat-label{font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:#555;font-weight:700;margin-bottom:6px;}
+.stat-val{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;}
+.stat-val.gold{color:var(--gold);}
+
+.panel-card{background:var(--card);border:1px solid var(--border-sub);padding:20px;margin-bottom:20px;position:relative;}
+.panel-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
+.panel-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:16px;}
+.panel-title em{font-style:italic;color:var(--gold);}
+
+.schedule-item{background:#0f0d0a;border:1px solid var(--border-sub);padding:14px;margin-bottom:10px;}
+.sched-time{font-family:'Playfair Display',serif;font-weight:700;color:var(--gold);font-size:0.9rem;margin-bottom:4px;}
+.sched-title{font-weight:700;font-size:0.82rem;margin-bottom:3px;}
+.sched-notes{font-size:0.7rem;color:var(--muted);}
+
+.milestone-item{background:#0f0d0a;border:1px solid var(--border-sub);padding:14px;margin-bottom:10px;}
+.milestone-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.milestone-label{font-weight:700;font-size:0.82rem;}
+.milestone-hours{font-size:0.7rem;color:var(--gold);}
+.milestone-progress{width:100%;height:6px;background:#1c1a16;border-radius:3px;overflow:hidden;}
+.milestone-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--purple-mid));transition:width 0.8s ease;}
+.milestone-bar.complete{background:linear-gradient(90deg,var(--green),#3aed7c);}
+.milestone-status{font-size:0.65rem;color:var(--muted);margin-top:6px;}
+.milestone-test{background:rgba(107,33,168,0.15);border:1px solid rgba(107,33,168,0.2);padding:10px;margin-top:10px;border-radius:4px;}
+.milestone-test-btn{background:var(--purple);color:#fff;border:none;padding:7px 14px;font-size:0.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;width:100%;}
+.milestone-test-btn:hover{background:var(--purple-light);}
+.milestone-test-btn.completed{background:#555;cursor:default;}
+
+.announcement{background:linear-gradient(135deg,rgba(255,183,77,0.1),rgba(156,39,176,0.05));border-left:3px solid var(--gold);padding:14px;margin-bottom:12px;}
+.announce-title{font-weight:700;font-size:0.82rem;color:var(--gold);margin-bottom:4px;}
+.announce-text{font-size:0.78rem;color:var(--muted);}
+
+.assignments-list{display:flex;flex-direction:column;gap:10px;}
+.assignment-card{background:#0f0d0a;border:1px solid var(--border-sub);padding:14px;transition:border-color 0.2s;}
+.assignment-card:hover{border-color:var(--gold);}
+.assignment-type{font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;background:rgba(107,33,168,0.2);color:var(--purple-light);font-weight:700;display:inline-block;margin-bottom:6px;}
+.assignment-title{font-weight:700;font-size:0.82rem;margin-bottom:4px;}
+.assignment-due{font-size:0.7rem;color:#555;margin-top:6px;}
+.answer-area{margin-top:12px;}
+.answer-textarea{width:100%;padding:10px 12px;border:1px solid var(--border-sub);background:#0a0806;color:var(--white);font-family:'Raleway',sans-serif;font-size:0.8rem;min-height:70px;resize:vertical;transition:border-color 0.2s;}
+.answer-textarea:focus{outline:none;border-color:var(--gold);}
+.btn-submit{background:var(--gold);color:#000;border:none;padding:8px 16px;font-weight:700;font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background 0.2s;margin-top:8px;}
+.btn-submit:hover{background:var(--gold-light);}
+.answer-graded{background:rgba(111,207,151,0.1);border:1px solid rgba(111,207,151,0.2);padding:12px;margin-top:8px;border-radius:4px;}
+.grade-badge{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--gold);}
+.feedback-text{font-size:0.75rem;color:var(--muted);margin-top:8px;}
+
+.empty-state{text-align:center;padding:28px;color:#333;font-size:0.8rem;font-style:italic;}
+
+@media(max-width:800px){
+  .content-grid{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .clock-card{flex-direction:column;text-align:center;}
+  nav{padding:12px 16px;gap:8px;}
+  .nav-brand{margin-left:8px;}
+  .nav-right{margin-left:0;width:100%;order:3;justify-content:space-between;}
+  .student-badge{font-size:0.6rem;}
+  .logout-btn{padding:6px 10px;font-size:0.55rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <img src="school_logo.png" alt="SBI School" class="nav-logo" onerror="this.style.display='none'">
+  <div class="nav-brand">
+    <span class="nav-brand-name">SBI School</span>
+    <span class="nav-brand-sub">Student Portal</span>
+  </div>
+  <div class="nav-right">
+    <div class="student-badge">ID: <span id="studentIdDisplay">Loading...</span></div>
+    <div class="student-badge">Course: <span id="courseTypeDisplay">—</span></div>
+    <button class="logout-btn" onclick="window.location.href='courses.html'" style="background:var(--purple);border-color:var(--purple);color:#fff;">📚 Courses</button>
+    <button class="logout-btn" onclick="window.logout()">Log Out</button>
+  </div>
+</nav>
+
+<div class="main">
+
+  <!-- CLOCK IN/OUT -->
+  <div class="clock-card">
+    <div class="clock-info">
+      <div class="clock-status-label">Clock Status</div>
+      <div class="clock-status" id="clockStatus">Clocked Out</div>
+      <div class="clock-time" id="clockTimeDisplay">Ready to clock in</div>
+    </div>
+    <button class="clock-btn btn-in" id="clockBtn" onclick="window.toggleClock()">Clock In</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-label">Total Hours</div>
+      <div class="stat-val gold" id="statTotalHours">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">This Week</div>
+      <div class="stat-val gold" id="statWeekHours">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Assignments Done</div>
+      <div class="stat-val gold" id="statAssignments">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Progress</div>
+      <div class="stat-val gold" id="progressPct">0%</div>
+    </div>
+  </div>
+
+  <!-- HANDBOOK & RESOURCES -->
+  <div style="background:linear-gradient(135deg,rgba(107,33,168,0.15),rgba(201,168,76,0.08));border:1px solid var(--border);padding:20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-radius:4px;">
+    <div>
+      <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;color:var(--white);">📖 Student Handbook</div>
+      <div style="font-size:0.8rem;color:var(--muted);">Read school policies, programs, and important information</div>
+    </div>
+    <a href="handbook.html" style="background:var(--gold);color:#000;padding:10px 20px;text-decoration:none;font-weight:700;font-size:0.75rem;letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;border-radius:4px;transition:background 0.2s;" onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold)'">Open Handbook</a>
+  </div>
+
+  <!-- PROFILE SECTION -->
+  <div class="panel-card">
+    <h3 class="panel-title">Student <em>Profile</em></h3>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:20px;">
+      <div>
+        <div style="width:120px;height:120px;background:#1c1a16;border:1px solid var(--border-sub);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:10px;overflow:hidden;" id="profilePhotoDisplay">✂️</div>
+        <input type="file" id="profilePhotoInput" style="display:none;cursor:pointer;" onchange="window.handlePhotoUpload(this)" accept="image/*">
+        <button style="width:100%;padding:8px;background:#1c1a16;border:1px solid var(--border-sub);color:var(--gold);font-size:0.7rem;font-weight:700;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border-sub)'" onclick="document.getElementById('profilePhotoInput').click()">📸 Change Photo</button>
+      </div>
+      <div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:#888;font-weight:700;margin-bottom:4px;">Name</label>
+          <input id="profileName" type="text" placeholder="Enter your full name" style="width:100%;padding:10px 12px;background:#0a0806;border:1px solid var(--border-sub);color:var(--white);font-family:'Raleway',sans-serif;font-size:0.9rem;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border-sub)'">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:#888;font-weight:700;margin-bottom:4px;">Bio / About You</label>
+          <textarea id="profileBio" placeholder="Tell students about yourself..." style="width:100%;padding:10px 12px;background:#0a0806;border:1px solid var(--border-sub);color:var(--white);font-family:'Raleway',sans-serif;font-size:0.9rem;min-height:60px;resize:vertical;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border-sub)'"></textarea>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:#888;font-weight:700;margin-bottom:4px;">Haircut Photos</label>
+          <div id="haircutPreview" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;"></div>
+          <input type="file" id="haircutPhotosInput" style="display:none;cursor:pointer;" onchange="window.handleHaircutUpload(this)" accept="image/*" multiple>
+          <button type="button" style="width:100%;padding:10px 12px;background:#0a0806;border:1px solid var(--border-sub);color:var(--gold);font-family:'Raleway',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border-sub)'" onclick="document.getElementById('haircutPhotosInput').click()">➕ Add Haircut Photos</button>
+          <input id="profileHaircuts" type="hidden">
+        </div>
+        <button style="width:100%;padding:10px;background:var(--gold);color:#000;border:none;font-weight:700;font-size:0.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold)'" onclick="window.saveProfile()">Save Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRACTICAL HOURS SECTION (HYBRID ONLY) -->
+  <div id="practicalHoursSection" style="display:none;margin-bottom:24px;">
+    <div class="panel-card" style="background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(201,168,76,0.08));border-color:var(--gold);">
+      <h3 class="panel-title">Practical Hours <em>Progress</em></h3>
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:0.9rem;font-weight:700;">Progress to Completion</span>
+          <span style="color:var(--gold);font-weight:700;font-size:1.1rem;" id="practicalHoursDisplay">0 / 1380</span>
+        </div>
+        <div style="height:8px;background:rgba(201,168,76,0.2);border-radius:4px;overflow:hidden;">
+          <div id="practicalHoursBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#e5c97a);transition:width 0.5s ease;"></div>
+        </div>
+        <div style="font-size:0.75rem;color:#888;margin-top:8px;">Complete 1380 hours of in-person practical training to graduate</div>
+      </div>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.3);padding:12px;border-radius:4px;">
+          <div style="font-size:0.7rem;color:#888;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Today's Hours</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);" id="todayHours">0h</div>
+        </div>
+        <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.3);padding:12px;border-radius:4px;">
+          <div style="font-size:0.7rem;color:#888;text-transform:uppercase;font-weight:700;margin-bottom:4px;">This Week</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--gold);" id="weekHours">0h</div>
+        </div>
+      </div>
+      
+      <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.3);padding:12px;border-radius:4px;">
+        <div style="font-size:0.75rem;color:#888;text-transform:uppercase;font-weight:700;margin-bottom:8px;">🕐 Session Tracking</div>
+        <div id="sessionsList" style="max-height:150px;overflow-y:auto;font-size:0.75rem;color:var(--muted);">
+          <div style="text-align:center;padding:12px;color:#555;">No sessions yet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THEORY PROGRESS SECTION (HYBRID ONLY) -->
+  <div id="theoryProgressSection" style="display:none;margin-bottom:24px;">
+    <div class="panel-card">
+      <h3 class="panel-title">Theory Progress <em>120 Hours</em></h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:0.9rem;font-weight:700;">Modules Completed</span>
+        <span style="color:var(--gold);font-weight:700;font-size:1.1rem;" id="theoryProgressDisplay">0 / 12</span>
+      </div>
+      <div style="height:8px;background:rgba(201,168,76,0.2);border-radius:4px;overflow:hidden;">
+        <div id="theoryProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--purple-light));transition:width 0.5s ease;"></div>
+      </div>
+      <div style="font-size:0.75rem;color:#888;margin-top:8px;">Complete all 12 modules to finish your theory requirement</div>
+    </div>
+  </div>
+
+  <!-- HYBRID CURRICULUM SECTION -->
+  <div id="hybridCurriculumSection" style="display:none;">
+    <div class="panel-card">
+      <h3 class="panel-title">Hybrid <em>Curriculum</em> - 120 Theory Hours</h3>
+      <div id="hybridModulesDisplay" style="display:grid;gap:12px;margin-top:16px;">
+        <!-- Hybrid modules will be rendered here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- HYBRID LESSON VIEWER -->
+  <div id="hybridLessonModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:1000;padding:20px;overflow-y:auto;">
+    <button onclick="window.closeHybridLesson()" style="position:absolute;top:20px;right:20px;background:var(--gold);color:#000;border:none;padding:10px 16px;font-weight:700;cursor:pointer;border-radius:3px;z-index:1001;">Close</button>
+    <div style="max-width:900px;margin:0 auto;padding-top:20px;">
+      <h2 id="lessonTitle" style="color:var(--white);margin-bottom:20px;"></h2>
+      
+      <!-- VIDEO PLAYER -->
+      <div id="videoPlayerContainer" style="background:#000;border:2px solid var(--gold);border-radius:6px;margin-bottom:20px;position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">
+        <video id="lessonVideo" style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:6px;" controls></video>
+      </div>
+      
+      <div style="background:#0a0806;border:1px solid var(--border);border-radius:6px;padding:20px;">
+        <!-- VIDEO PROGRESS -->
+        <div id="videoProgressContainer" style="margin-bottom:16px;background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.2);padding:12px;border-radius:4px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:#888;font-size:0.85rem;">Video Progress</span>
+            <span id="progressPercent" style="color:var(--gold);font-weight:700;font-size:0.85rem;">0%</span>
+          </div>
+          <div style="height:4px;background:rgba(201,168,76,0.2);border-radius:2px;overflow:hidden;">
+            <div id="progressBar" style="height:100%;width:0%;background:var(--gold);transition:width 0.3s;"></div>
+          </div>
+        </div>
+        
+        <!-- QUESTIONS -->
+        <h3 style="color:var(--gold);margin-bottom:12px;font-size:0.9rem;">Answer Questions to Unlock Next Lesson</h3>
+        <div id="questionsContainer" style="display:grid;gap:12px;">
+          <!-- Questions will be rendered here -->
+        </div>
+        
+        <button id="submitAnswersBtn" onclick="window.submitHybridAnswers()" style="width:100%;margin-top:16px;padding:12px;background:var(--gold);color:#000;border:none;font-weight:700;cursor:pointer;border-radius:3px;display:none;">✓ Submit Answers</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TWO COLUMN LAYOUT -->
+  <div class="content-grid">
+
+    <!-- LEFT: SCHEDULE & MILESTONES -->
+    <div>
+      <!-- TODAY'S SCHEDULE -->
+      <div class="panel-card">
+        <h3 class="panel-title">Today's <em>Schedule</em></h3>
+        <div id="todaySchedule">
+          <div class="empty-state">No classes scheduled for today.</div>
+        </div>
+      </div>
+
+      <!-- MILESTONES & TESTS -->
+      <div class="panel-card">
+        <h3 class="panel-title">Your <em>Milestones</em></h3>
+        <div id="milestonesList">
+          <div class="empty-state">Loading milestones...</div>
+        </div>
+      </div>
+
+      <!-- ASSIGNMENTS & QUESTIONS -->
+      <div class="panel-card">
+        <h3 class="panel-title">Assignments & <em>Questions</em></h3>
+        <div id="assignmentList" class="assignments-list">
+          <div class="empty-state">No assignments yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: ANNOUNCEMENTS & INFO -->
+    <div>
+      <!-- ANNOUNCEMENTS -->
+      <div class="panel-card">
+        <h3 class="panel-title">School <em>Updates</em></h3>
+        <div id="announcementsList">
+          <div class="empty-state">No announcements.</div>
+        </div>
+      </div>
+
+      <!-- CLOCK LOG -->
+      <div class="panel-card">
+        <h3 class="panel-title">Recent <em>Hours</em></h3>
+        <div id="clockLogList" style="max-height:300px;overflow-y:auto;">
+          <div class="empty-state">No attendance records yet.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ─── AUTH CHECK ────────────────────────────────────────────────
+var currentStudentId = localStorage.getItem('currentStudentId');
+if (!currentStudentId) { window.location.href = 'index.html'; }
+
+var student = null;
+var clockInterval = null;
+var clockStartTime = null;
+var TOTAL_REQUIRED = 1500;
+var courseLabels = { '531': 'Barber/Stylist', '532': 'Teacher/Manager', '533': 'Crossover', '534': 'Hybrid', '535': 'Hybrid' };
+
+// ─── CORE FUNCTIONS ────────────────────────────────────────────
+function getStudent() {
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  return students.find(function(s){ return s.id === currentStudentId; }) || null;
+}
+
+function saveStudent(student) {
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var idx = students.findIndex(function(s){ return s.id === student.id; });
+  if (idx>=0) students[idx]=student; else students.push(student);
+  localStorage.setItem('students', JSON.stringify(students));
+}
+
+function getDistanceMiles(lat1, lon1, lat2, lon2) {
+  if (!lat2 || !lon2) return 0;
+  var R=3958.8, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+// ─── CLOCK IN/OUT ──────────────────────────────────────────────
+function updateClockDisplay() {
+  if (!clockStartTime) return;
+  var elapsed = Math.floor((Date.now() - clockStartTime) / 1000);
+  var h = Math.floor(elapsed/3600), m = Math.floor((elapsed%3600)/60), s = elapsed%60;
+  function pad(n){ return n<10?'0'+n:n; }
+  document.getElementById('clockTimeDisplay').textContent = pad(h)+':'+pad(m)+':'+pad(s)+' elapsed';
+}
+
+function toggleClock() {
+  console.log('Clock button clicked');
+  student = getStudent();
+  if (!student) {
+    alert('Error: Student data not loaded. Please refresh the page.');
+    console.error('Student object is null');
+    return;
+  }
+  
+  var locationRequired = localStorage.getItem('locationRequired') === 'true';
+  if (locationRequired) {
+    navigator.geolocation.getCurrentPosition(function(pos){
+      doToggleClock(pos.coords.latitude, pos.coords.longitude);
+    }, function(error){
+      console.error('Geolocation error:', error);
+      alert('Location access required. Please enable location services.');
+    }, { timeout: 8000 });
+  } else {
+    doToggleClock(null, null);
+  }
+}
+
+function doToggleClock(lat, lng) {
+  console.log('doToggleClock called with lat:', lat, 'lng:', lng);
+  student = getStudent();
+  if (!student) {
+    alert('Error: Student data not found. Please log in again.');
+    return;
+  }
+  
+  var isClockedIn = student.clockedIn || false;
+  console.log('Currently clocked in:', isClockedIn);
+
+  if (lat !== null) {
+    var schoolLat = parseFloat(localStorage.getItem('schoolLat') || '0');
+    var schoolLng = parseFloat(localStorage.getItem('schoolLng') || '0');
+    var dist = getDistanceMiles(lat, lng, schoolLat, schoolLng);
+    if (!isClockedIn && dist > 0.038) {
+      alert('You must be at the shop to clock in. Distance: ' + dist.toFixed(3) + ' miles');
+      return;
+    }
+  }
+
+  var now = new Date();
+  if (!isClockedIn) {
+    console.log('Clocking IN');
+    student.clockedIn = true;
+    student.clockInTime = now.toISOString();
+    document.getElementById('clockStatus').textContent = 'Clocked In ✓';
+    document.getElementById('clockStatus').className = 'clock-status clocked-in';
+    document.getElementById('clockBtn').textContent = 'Clock Out';
+    document.getElementById('clockBtn').className = 'clock-btn btn-out';
+    clockStartTime = now.getTime();
+    clockInterval = setInterval(updateClockDisplay, 1000);
+    updateClockDisplay();
+  } else {
+    console.log('Clocking OUT');
+    var inTime = new Date(student.clockInTime);
+    var durationMs = now - inTime;
+    var durationHrs = durationMs / 3600000;
+    if (!student.clockLog) student.clockLog = [];
+    student.clockLog.push({
+      date: now.toLocaleDateString(),
+      inTime: inTime.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+      outTime: now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+      hours: durationHrs
+    });
+    student.totalHours = (student.totalHours || 0) + durationHrs;
+    student.daysAttended = (student.daysAttended || 0) + 1;
+    
+    // Track practical hours for hybrid students (type 535)
+    if (student.courseType === '535') {
+      student.practicalHours = (student.practicalHours || 0) + durationHrs;
+      if (!student.clockSessions) student.clockSessions = [];
+      student.clockSessions.push({
+        date: now.toLocaleDateString(),
+        inTime: inTime.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+        outTime: now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+        hours: durationHrs
+      });
+    }
+    
+    student.clockedIn = false;
+    clearInterval(clockInterval);
+    document.getElementById('clockStatus').textContent = 'Clocked Out';
+    document.getElementById('clockStatus').className = 'clock-status';
+    document.getElementById('clockBtn').textContent = 'Clock In';
+    document.getElementById('clockBtn').className = 'clock-btn btn-in';
+    document.getElementById('clockTimeDisplay').textContent = '→ Ready to clock in';
+    clockStartTime = null;
+  }
+  saveStudent(student);
+  renderStats();
+  renderLog();
+}
+
+// ─── RENDERING FUNCTIONS ───────────────────────────────────────
+
+function renderStats() {
+  student = getStudent();
+  if (!student) return;
+  var total = student.totalHours || 0;
+  document.getElementById('statTotalHours').textContent = total.toFixed(1);
+  
+  var now = new Date(), weekStart = new Date(now);
+  weekStart.setDate(now.getDate()-now.getDay());
+  var weekHrs = 0;
+  (student.clockLog || []).forEach(function(entry){
+    var d = new Date(entry.date);
+    if (d >= weekStart) weekHrs += entry.hours;
+  });
+  document.getElementById('statWeekHours').textContent = weekHrs.toFixed(1);
+
+  var completed = (student.answers || []).filter(function(a){ return a.submitted; }).length;
+  document.getElementById('statAssignments').textContent = completed;
+
+  var pct = Math.min((total / TOTAL_REQUIRED) * 100, 100);
+  document.getElementById('progressPct').textContent = pct.toFixed(1) + '%';
+
+  renderMilestones();
+}
+
+function renderMilestones() {
+  student = getStudent();
+  if (!student) return;
+  var total = student.totalHours || 0;
+  var milestones = [
+    { hours: 300, test: 'Fundamentals Test', id: 'test1' },
+    { hours: 600, test: 'Intermediate Skills Test', id: 'test2' },
+    { hours: 900, test: 'Advanced Techniques Test', id: 'test3' },
+    { hours: 1500, test: 'Final Certification Exam', id: 'test4' }
+  ];
+
+  var list = document.getElementById('milestonesList');
+  if (!list) return;
+
+  if (!student.milestonePassed) {
+    student.milestonePassed = {};
+    saveStudent(student);
+  }
+
+  list.innerHTML = '';
+  if (total === 0) {
+    list.innerHTML = '<div class="empty-state">Start clocking in hours to unlock milestones and tests!</div>';
+    return;
+  }
+
+  milestones.forEach(function(m) {
+    var progress = Math.min((total / m.hours) * 100, 100);
+    var isComplete = total >= m.hours;
+    var hasCompleted = student.milestonePassed && student.milestonePassed[m.id];
+
+    var div = document.createElement('div');
+    div.className = 'milestone-item';
+    div.innerHTML = '<div class="milestone-header"><div class="milestone-label">' + m.test + '</div><div class="milestone-hours">' + m.hours + ' hrs</div></div>' +
+      '<div class="milestone-progress"><div class="milestone-bar ' + (isComplete ? 'complete' : '') + '" style="width:' + progress + '%"></div></div>' +
+      '<div class="milestone-status">' + total.toFixed(1) + ' / ' + m.hours + ' hours</div>';
+    
+    if (isComplete && !hasCompleted) {
+      div.innerHTML += '<div class="milestone-test"><button class="milestone-test-btn" onclick="window.startTest(\'' + m.id + '\')">📝 Take Test</button></div>';
+    } else if (hasCompleted) {
+      div.innerHTML += '<div class="milestone-test"><span style="color:var(--green);font-weight:700;">✓ Test Passed</span></div>';
+    }
+
+    list.appendChild(div);
+  });
+}
+
+function startTest(testId) {
+  var msg = 'Welcome to the ' + ({test1:'Fundamentals',test2:'Intermediate',test3:'Advanced',test4:'Final Certification'}[testId] || 'Certification') + ' Test!\n\nYour teacher will grade this when you submit. Click OK to begin.';
+  if (confirm(msg)) {
+    alert('Test started! Answer all questions from your teacher. Contact your instructor when done.');
+  }
+}
+
+function renderSchedule() {
+  var today = new Date().toISOString().split('T')[0];
+  var schedule = JSON.parse(localStorage.getItem('dailySchedule_' + today) || '[]');
+  student = getStudent();
+  if (!student) return;
+  
+  var list = document.getElementById('todaySchedule');
+  if (!list) return;
+  
+  var announcements = JSON.parse(localStorage.getItem('schoolNewsFeed') || '[]');
+  
+  if (!schedule.length && !announcements.length) {
+    list.innerHTML = '<div class="empty-state">No classes scheduled for today.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  schedule.forEach(function(item) {
+    if (item.courseType === 'all' || item.courseType === student.courseType) {
+      var div = document.createElement('div');
+      div.className = 'schedule-item';
+      div.innerHTML = '<div class="sched-time">' + item.time + '</div><div class="sched-title">' + item.title + '</div><div class="sched-notes">' + item.notes + '</div>';
+      list.appendChild(div);
+    }
+  });
+
+  announcements.slice(0, 2).forEach(function(ann) {
+    var div = document.createElement('div');
+    div.className = 'announcement';
+    div.innerHTML = '<div class="announce-title">' + ann.title + '</div><div class="announce-text">' + ann.message + '</div>';
+    list.appendChild(div);
+  });
+}
+
+function renderAnnouncements() {
+  var announcements = JSON.parse(localStorage.getItem('schoolNewsFeed') || '[]');
+  var list = document.getElementById('announcementsList');
+  if (!list) return;
+
+  if (!announcements.length) {
+    list.innerHTML = '<div class="empty-state">No announcements.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  announcements.slice().reverse().slice(0, 5).forEach(function(ann) {
+    var div = document.createElement('div');
+    div.className = 'announcement';
+    div.innerHTML = '<div class="announce-title">' + ann.title + '</div><div class="announce-text">' + ann.message + '</div>';
+    list.appendChild(div);
+  });
+}
+
+function renderAssignments() {
+  student = getStudent();
+  if (!student) return;
+  
+  var assignments = JSON.parse(localStorage.getItem('teacherAssignments') || '[]');
+  var list = document.getElementById('assignmentList');
+  if (!list) return;
+
+  var filtered = assignments.filter(function(a) {
+    return a.course === 'all' || a.course === student.courseType;
+  });
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state">No assignments for your course.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  filtered.forEach(function(asgn) {
+    var ans = (student.answers || []).find(function(a){ return a.id === asgn.id; });
+    var div = document.createElement('div');
+    div.className = 'assignment-card';
+    div.innerHTML = '<div class="assignment-type">' + asgn.type + '</div><div class="assignment-title">' + asgn.content.substring(0, 50) + (asgn.content.length > 50 ? '...' : '') + '</div>';
+
+    if (!ans || !ans.submitted) {
+      div.innerHTML += '<div class="answer-area" style="margin-top:12px;"><textarea class="answer-textarea" id="ans_' + asgn.id + '" placeholder="Your answer..."></textarea><button class="btn-submit" onclick="window.submitAnswer(\'' + asgn.id + '\')">Submit</button></div>';
+    } else if (ans.submitted && !ans.grade) {
+      div.innerHTML += '<div class="answer-graded" style="background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.2);"><div style="color:var(--gold);font-weight:700;font-size:0.8rem;">⏳ Pending Review</div><div class="feedback-text" style="margin-top:6px;">Waiting for instructor feedback...</div></div>';
+    } else if (ans.grade) {
+      div.innerHTML += '<div class="answer-graded"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-weight:700;">Graded</span><span class="grade-badge">' + ans.grade + '</span></div>' + (ans.feedback ? '<div class="feedback-text">' + ans.feedback + '</div>' : '') + '</div>';
+    }
+
+    list.appendChild(div);
+  });
+
+  var pending = filtered.filter(function(a){ return !(student.answers || []).find(function(x){ return x.id === a.id && x.submitted; }); }).length;
+  document.getElementById('statAssignments').textContent = filtered.length - pending;
+}
+
+function submitAnswer(asgnId) {
+  var text = document.getElementById('ans_' + asgnId).value.trim();
+  if (!text) { alert('Please write an answer'); return; }
+  
+  student = getStudent();
+  if (!student) { alert('Error: Student data not found.'); return; }
+  
+  if (!student.answers) student.answers = [];
+  var idx = student.answers.findIndex(function(a){ return a.id === asgnId; });
+  var entry = { id: asgnId, text: text, submitted: true, submittedAt: new Date().toISOString() };
+  if (idx >=0) student.answers[idx] = entry;
+  else student.answers.push(entry);
+  
+  saveStudent(student);
+  alert('Answer submitted! Your teacher will review it soon.');
+  renderAssignments();
+}
+
+function renderPracticalHoursProgress() {
+  student = getStudent();
+  if (!student || student.courseType !== '535') return;
+  
+  var practicalHours = student.practicalHours || 0;
+  var completed = practicalHours;
+  var total = 1380;
+  var percentage = Math.min((completed / total) * 100, 100);
+  
+  document.getElementById('practicalHoursDisplay').textContent = Math.floor(completed) + ' / ' + total;
+  document.getElementById('practicalHoursBar').style.width = percentage + '%';
+  
+  // Today's hours
+  var now = new Date();
+  var todayStr = now.toLocaleDateString();
+  var todayHours = 0;
+  (student.clockSessions || []).forEach(function(session) {
+    if (session.date === todayStr) {
+      todayHours += session.hours;
+    }
+  });
+  document.getElementById('todayHours').textContent = todayHours.toFixed(1) + 'h';
+  
+  // This week's hours
+  var weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay());
+  var weekHours = 0;
+  (student.clockSessions || []).forEach(function(session) {
+    var sessionDate = new Date(session.date);
+    if (sessionDate >= weekStart) {
+      weekHours += session.hours;
+    }
+  });
+  document.getElementById('weekHours').textContent = weekHours.toFixed(1) + 'h';
+  
+  // Session list (last 10 sessions)
+  var sessions = (student.clockSessions || []).slice(-10).reverse();
+  var sessionsList = document.getElementById('sessionsList');
+  if (sessions.length === 0) {
+    sessionsList.innerHTML = '<div style="text-align:center;padding:12px;color:#555;">No sessions yet</div>';
+  } else {
+    var html = '';
+    sessions.forEach(function(s) {
+      html += '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(201,168,76,0.1);">' +
+        '<span>' + s.date + ' ' + s.inTime + '-' + s.outTime + '</span>' +
+        '<span style="color:var(--gold);font-weight:700;">' + s.hours.toFixed(2) + 'h</span>' +
+        '</div>';
+    });
+    sessionsList.innerHTML = html;
+  }
+}
+
+function renderTheoryProgress() {
+  student = getStudent();
+  if (!student || student.courseType !== '535') return;
+  
+  var hybridCurr = JSON.parse(localStorage.getItem('hybridCurriculum') || '{}');
+  var modules = hybridCurr.modules || [];
+  var completed = 0;
+  
+  modules.forEach(function(mod) {
+    var allLessonsComplete = true;
+    (mod.lessons || []).forEach(function(lesson) {
+      var lessonId = lesson.id;
+      if (!student.hybridProgress || student.hybridProgress[lessonId] !== 'completed') {
+        allLessonsComplete = false;
+      }
+    });
+    if (allLessonsComplete && mod.lessons.length > 0) completed++;
+  });
+  
+  var total = modules.length || 12;
+  var percentage = total > 0 ? (completed / total) * 100 : 0;
+  
+  document.getElementById('theoryProgressDisplay').textContent = completed + ' / ' + total;
+  document.getElementById('theoryProgressBar').style.width = percentage + '%';
+}
+
+function renderLog() {
+  student = getStudent();
+  if (!student) return;
+  
+  var log = (student.clockLog || []).slice().reverse();
+  var list = document.getElementById('clockLogList');
+  if (!list) return;
+
+  if (!log.length) {
+    list.innerHTML = '<div class="empty-state">No attendance records.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  log.slice(0, 8).forEach(function(entry) {
+    var div = document.createElement('div');
+    div.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid var(--border-sub);font-size:0.75rem;';
+    div.innerHTML = '<div><div style="font-weight:700;color:var(--white);">' + entry.date + '</div><div style="color:#555;">' + entry.inTime + ' - ' + entry.outTime + '</div></div><div style="color:var(--gold);font-weight:700;font-family:\'Playfair Display\',serif;">' + entry.hours.toFixed(2) + 'h</div>';
+    list.appendChild(div);
+  });
+}
+
+function initClockStatus() {
+  student = getStudent();
+  if (!student) return;
+  
+  if (student.clockedIn && student.clockInTime) {
+    clockStartTime = new Date(student.clockInTime).getTime();
+    document.getElementById('clockStatus').textContent = 'Clocked In ✓';
+    document.getElementById('clockStatus').className = 'clock-status clocked-in';
+    document.getElementById('clockBtn').textContent = 'Clock Out';
+    document.getElementById('clockBtn').className = 'clock-btn btn-out';
+    clockInterval = setInterval(updateClockDisplay, 1000);
+    updateClockDisplay();
+  }
+}
+
+function logout() {
+  console.log('Logout button clicked');
+  student = getStudent();
+  
+  if (student && student.clockedIn) {
+    var confirmed = confirm('You are still clocked in. Clock out before logging out?');
+    if (confirmed) {
+      doToggleClock(null, null);
+      setTimeout(function() {
+        localStorage.removeItem('currentStudentId');
+        window.location.href = 'index.html';
+      }, 500);
+      return;
+    }
+  }
+  
+  localStorage.removeItem('currentStudentId');
+  window.location.href = 'index.html';
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+function initPortal() {
+  console.log('=== Student Portal Loading ===');
+  
+  student = getStudent();
+  if (!student) {
+    console.error('Student not found');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  console.log('Student:', student.studentId);
+  
+  try {
+    document.getElementById('studentIdDisplay').textContent = student.studentId || 'N/A';
+    document.getElementById('courseTypeDisplay').textContent = courseLabels[student.courseType] || 'Unknown';
+    
+    // Initialize practical hours for hybrid students
+    if (student.courseType === '535') {
+      if (!student.practicalHours) student.practicalHours = 0;
+      if (!student.clockSessions) student.clockSessions = [];
+      saveStudent(student);
+    }
+    
+    loadProfile();
+    initClockStatus();
+    renderStats();
+    renderSchedule();
+    renderAnnouncements();
+    renderAssignments();
+    renderLog();
+    renderHybridCurriculum();
+    
+    // Show/hide sections based on course type
+    var isHybrid = student.courseType === '535';
+    document.getElementById('practicalHoursSection').style.display = isHybrid ? 'block' : 'none';
+    document.getElementById('theoryProgressSection').style.display = isHybrid ? 'block' : 'none';
+    document.getElementById('hybridCurriculumSection').style.display = isHybrid ? 'block' : 'none';
+    
+    // Hide non-hybrid sections for hybrid students
+    if (isHybrid) {
+      document.querySelector('.content-grid').style.display = 'none';
+      document.querySelector('.stats-row').style.display = 'none';
+      renderPracticalHoursProgress();
+      renderTheoryProgress();
+    }
+    
+    console.log('✓ Portal Ready');
+  } catch(e) {
+    console.error('Init error:', e);
+  }
+}
+
+function handlePhotoUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  compressImage(input.files[0], function(compressedData) {
+    document.getElementById('profilePhotoDisplay').style.backgroundImage = 'url(' + compressedData + ')';
+    document.getElementById('profilePhotoDisplay').textContent = '';
+    student.profilePhoto = compressedData;
+    saveStudent(student);
+  });
+}
+
+function compressImage(file, callback) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var maxWidth = 400;
+      var maxHeight = 400;
+      var width = img.width;
+      var height = img.height;
+      
+      if (width > height) {
+        if (width > maxWidth) {
+          height *= maxWidth / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width *= maxHeight / height;
+          height = maxHeight;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      canvas.toBlob(function(blob) {
+        var compressedReader = new FileReader();
+        compressedReader.onload = function(compressedE) {
+          callback(compressedE.target.result);
+        };
+        compressedReader.readAsDataURL(blob);
+      }, 'image/jpeg', 0.75);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleHaircutUpload(input) {
+  var files = input.files;
+  if (!files.length) return;
+  
+  var haircutPhotos = JSON.parse(document.getElementById('profileHaircuts').value || '[]');
+  
+  if (haircutPhotos.length >= 9) {
+    alert('⚠️ Maximum 9 haircut photos allowed');
+    input.value = '';
+    return;
+  }
+  
+  var filesProcessed = 0;
+  
+  Array.from(files).forEach(function(file) {
+    if (haircutPhotos.length >= 9) {
+      alert('⚠️ Maximum 9 haircut photos reached');
+      return;
+    }
+    
+    compressImage(file, function(compressedData) {
+      haircutPhotos.push(compressedData);
+      filesProcessed++;
+      
+      if (filesProcessed === files.length) {
+        document.getElementById('profileHaircuts').value = JSON.stringify(haircutPhotos);
+        displayHaircutPreviews(haircutPhotos);
+        input.value = '';
+      }
+    });
+  });
+}
+
+function displayHaircutPreviews(photos) {
+  var preview = document.getElementById('haircutPreview');
+  preview.innerHTML = '';
+  photos.forEach(function(photo, idx) {
+    var container = document.createElement('div');
+    container.style.position = 'relative';
+    container.style.width = '100%';
+    container.style.paddingBottom = '100%';
+    container.innerHTML = '<img src="' + photo + '" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:4px;border:1px solid var(--border-sub);" />' +
+      '<button type="button" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.8);color:#f00;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:0.7rem;padding:0;" onclick="window.removeHaircutPhoto(' + idx + ')">✕</button>';
+    preview.appendChild(container);
+  });
+}
+
+function removeHaircutPhoto(idx) {
+  var haircutPhotos = JSON.parse(document.getElementById('profileHaircuts').value || '[]');
+  haircutPhotos.splice(idx, 1);
+  document.getElementById('profileHaircuts').value = JSON.stringify(haircutPhotos);
+  displayHaircutPreviews(haircutPhotos);
+}
+
+function saveProfile() {
+  var name = document.getElementById('profileName').value.trim();
+  var bio = document.getElementById('profileBio').value.trim();
+  var haircutPhotos = JSON.parse(document.getElementById('profileHaircuts').value || '[]');
+  
+  if (!name || !bio) {
+    alert('Please fill in Name and Bio');
+    return;
+  }
+  
+  student = getStudent();
+  student.name = name;
+  student.bio = bio;
+  student.haircutPhotos = JSON.stringify(haircutPhotos);
+  student.graduated = false;
+  
+  saveStudent(student);
+  alert('✓ Profile saved! You\'ll now appear on the school homepage.');
+}
+
+function loadProfile() {
+  student = getStudent();
+  if (!student) return;
+  
+  document.getElementById('profileName').value = student.name || '';
+  document.getElementById('profileBio').value = student.bio || '';
+  
+  var haircutPhotos = student.haircutPhotos ? (typeof student.haircutPhotos === 'string' ? JSON.parse(student.haircutPhotos) : student.haircutPhotos) : [];
+  if (haircutPhotos.length > 0) {
+    displayHaircutPreviews(haircutPhotos);
+    document.getElementById('profileHaircuts').value = JSON.stringify(haircutPhotos);
+  }
+  
+  if (student.profilePhoto) {
+    document.getElementById('profilePhotoDisplay').style.backgroundImage = 'url(' + student.profilePhoto + ')';
+    document.getElementById('profilePhotoDisplay').textContent = '';
+  }
+}
+
+// Wait for DOM to be ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPortal);
+} else {
+  initPortal();
+}
+
+// Refresh every 30 seconds
+setInterval(function(){ 
+  renderAssignments(); 
+  renderSchedule(); 
+  renderAnnouncements(); 
+}, 30000);
+
+// ─── HYBRID CURRICULUM ────────────────────────────────────────
+function renderHybridCurriculum() {
+  student = getStudent();
+  if (!student || student.courseType !== '534') {
+    document.getElementById('hybridCurriculumSection').style.display = 'none';
+    return;
+  }
+  
+  var curriculum = JSON.parse(localStorage.getItem('hybridCurriculum') || 'null');
+  if (!curriculum) {
+    document.getElementById('hybridCurriculumSection').style.display = 'none';
+    return;
+  }
+  
+  document.getElementById('hybridCurriculumSection').style.display = 'block';
+  var container = document.getElementById('hybridModulesDisplay');
+  container.innerHTML = '';
+  
+  curriculum.modules.forEach(function(mod) {
+    var moduleCard = document.createElement('div');
+    moduleCard.style.cssText = 'background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.2);border-radius:6px;padding:16px;';
+    
+    var lessonsHtml = '';
+    mod.lessons.forEach(function(lesson, lesIdx) {
+      var isLocked = lesIdx > 0;
+      var prevLesson = lesIdx > 0 ? mod.lessons[lesIdx - 1] : null;
+      var prevCompleted = prevLesson ? (student.hybridProgress && student.hybridProgress[prevLesson.id] === 'completed') : (lesIdx === 0);
+      
+      lessonsHtml += '<button onclick="window.startHybridLesson(\'' + mod.num + '\', ' + lesIdx + ')" ' +
+        'style="width:100%;padding:10px;margin-bottom:6px;background:' + (prevCompleted ? 'var(--gold)' : 'rgba(100,100,100,0.3)') + ';color:' + (prevCompleted ? '#000' : '#999') + ';border:none;font-weight:700;cursor:' + (prevCompleted ? 'pointer' : 'not-allowed') + ';border-radius:3px;font-size:0.8rem;' +
+        (prevCompleted ? '' : 'opacity:0.6;') + '">' +
+        (prevCompleted ? '▶' : '🔒') + ' Lesson ' + lesson.num + ': ' + lesson.title + '</button>';
+    });
+    
+    moduleCard.innerHTML = '<div style="font-weight:700;color:var(--white);margin-bottom:8px;">📚 Module ' + mod.num + ': ' + mod.title + '</div>' +
+      '<div style="font-size:0.8rem;color:#888;margin-bottom:12px;">' + mod.description + '</div>' +
+      lessonsHtml;
+    
+    container.appendChild(moduleCard);
+  });
+}
+
+function startHybridLesson(moduleNum, lessonIdx) {
+  var curriculum = JSON.parse(localStorage.getItem('hybridCurriculum') || 'null');
+  if (!curriculum) return;
+  
+  var module = curriculum.modules.find(function(m) { return m.num == moduleNum; });
+  var lesson = module.lessons[lessonIdx];
+  
+  document.getElementById('lessonTitle').textContent = 'Module ' + module.num + ' - ' + lesson.title;
+  
+  var video = document.getElementById('lessonVideo');
+  video.src = lesson.videoUrl;
+  video.currentTime = 0;
+  video.play();
+  
+  // Track video progress
+  var videoDuration = lesson.videoDuration * 60;
+  video.addEventListener('timeupdate', function() {
+    var progress = (video.currentTime / video.duration) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('progressPercent').textContent = Math.floor(progress) + '%';
+    
+    if (progress >= 95) {
+      document.getElementById('submitAnswersBtn').style.display = 'block';
+    }
+  });
+  
+  // Render questions
+  var qContainer = document.getElementById('questionsContainer');
+  qContainer.innerHTML = '';
+  lesson.questions.forEach(function(q, qIdx) {
+    var qDiv = document.createElement('div');
+    qDiv.style.cssText = 'background:rgba(0,0,0,0.5);padding:12px;border-radius:4px;margin-bottom:8px;';
+    qDiv.innerHTML = '<div style="color:var(--white);font-weight:700;margin-bottom:8px;font-size:0.9rem;">' + q.text + '</div>';
+    
+    q.answers.forEach(function(ans, aIdx) {
+      qDiv.innerHTML += '<label style="display:block;margin-bottom:6px;cursor:pointer;"><input type="radio" name="q' + qIdx + '" value="' + aIdx + '" style="margin-right:8px;">' +
+        '<span style="color:#ddd;font-size:0.85rem;">' + ans + '</span></label>';
+    });
+    
+    qContainer.appendChild(qDiv);
+  });
+  
+  document.getElementById('hybridLessonModal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  
+  window.currentHybridLesson = { moduleNum: moduleNum, lessonIdx: lessonIdx, lesson: lesson };
+}
+
+function closeHybridLesson() {
+  var video = document.getElementById('lessonVideo');
+  video.pause();
+  video.src = '';
+  
+  document.getElementById('hybridLessonModal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+  window.currentHybridLesson = null;
+}
+
+function submitHybridAnswers() {
+  if (!window.currentHybridLesson) return;
+  
+  var lesson = window.currentHybridLesson.lesson;
+  var answers = [];
+  var allAnswered = true;
+  
+  lesson.questions.forEach(function(q, qIdx) {
+    var selected = document.querySelector('input[name="q' + qIdx + '"]:checked');
+    if (!selected) {
+      allAnswered = false;
+      return;
+    }
+    answers.push({ qId: q.id, answer: parseInt(selected.value), correct: (parseInt(selected.value) === q.correctIdx) });
+  });
+  
+  if (!allAnswered) {
+    alert('Please answer all questions');
+    return;
+  }
+  
+  var allCorrect = answers.every(function(a) { return a.correct; });
+  if (!allCorrect) {
+    alert('Not all answers are correct. Try again!');
+    return;
+  }
+  
+  student = getStudent();
+  if (!student.hybridProgress) student.hybridProgress = {};
+  student.hybridProgress[lesson.id] = 'completed';
+  saveStudent(student);
+  
+  alert('✓ Lesson completed! Next lesson unlocked.');
+  closeHybridLesson();
+  renderHybridCurriculum();
+}
+
+// Expose to window
+window.handlePhotoUpload = handlePhotoUpload;
+window.handleHaircutUpload = handleHaircutUpload;
+window.removeHaircutPhoto = removeHaircutPhoto;
+window.saveProfile = saveProfile;
+window.loadProfile = loadProfile;
+window.toggleClock = toggleClock;
+window.logout = logout;
+window.submitAnswer = submitAnswer;
+window.startTest = startTest;
+window.renderHybridCurriculum = renderHybridCurriculum;
+window.startHybridLesson = startHybridLesson;
+window.closeHybridLesson = closeHybridLesson;
+window.submitHybridAnswers = submitHybridAnswers;
+window.renderPracticalHoursProgress = renderPracticalHoursProgress;
+window.renderTheoryProgress = renderTheoryProgress;
+</script>
+</body>
+</html>
