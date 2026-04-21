@@ -1,0 +1,1707 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBI School — Barber Education</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&amp;family=Raleway:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#6b21a8;
+  --purple-mid:#7c3aed;
+  --purple-light:#a855f7;
+  --gold:#c9a84c;
+  --gold-light:#e5c97a;
+  --gold-dark:#a07c28;
+  --black:#0a0806;
+  --card:#110f0c;
+  --border:rgba(201,168,76,0.2);
+  --border-purple:rgba(107,33,168,0.3);
+  --white:#faf8f5;
+  --muted:#9a8f7e;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Raleway',sans-serif;background:var(--black);color:var(--white);overflow-x:hidden;}
+
+/* NAV */
+nav{display:flex;align-items:center;padding:14px 32px;background:rgba(10,8,6,0.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;backdrop-filter:blur(16px);}
+.nav-logo{height:46px;width:46px;object-fit:contain;}
+.nav-brand{margin-left:12px;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--white);letter-spacing:1px;display:block;line-height:1.2;}
+.nav-brand-sub{font-size:0.55rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;display:block;}
+.nav-links{margin-left:auto;display:flex;gap:24px;align-items:center;}
+.nav-links a{color:#bbb;text-decoration:none;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;transition:color 0.2s;font-weight:600;}
+.nav-links a:hover{color:var(--gold);}
+.nav-cta{background:var(--gold)!important;color:#000!important;padding:9px 20px;font-weight:700!important;}
+.nav-cta:hover{background:var(--gold-light)!important;color:#000!important;}
+.hamburger-btn{display:none;background:none;border:none;color:var(--gold);font-size:1.5rem;cursor:pointer;padding:0;width:40px;height:40px;align-items:center;justify-content:center;z-index:300;}
+.hamburger-btn span{display:block;width:24px;height:2px;background:var(--gold);margin:5px 0;transition:all 0.3s;}
+.hamburger-btn.open span:nth-child(1){transform:rotate(45deg) translate(8px,8px);}
+.hamburger-btn.open span:nth-child(2){opacity:0;}
+.hamburger-btn.open span:nth-child(3){transform:rotate(-45deg) translate(7px,-7px);}
+.side-nav{position:fixed;left:-280px;top:60px;width:280px;height:calc(100vh - 60px);background:rgba(10,8,6,0.98);z-index:250;overflow-y:auto;border-right:1px solid var(--border);padding:20px 0;transition:left 0.3s ease;box-shadow:2px 0 8px rgba(0,0,0,0.5);}
+.side-nav.open{left:0;}
+.side-nav a{display:block;padding:14px 24px;color:#bbb;text-decoration:none;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;border-bottom:1px solid rgba(201,168,76,0.1);transition:all 0.2s;}
+.side-nav a:hover{color:var(--gold);background:rgba(201,168,76,0.05);}
+.nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:240;}
+.nav-overlay.open{display:block;}
+@media(max-width:900px){.hamburger-btn{display:flex;}.nav-links{display:none;}}
+
+/* HERO */
+.hero{position:relative;min-height:92vh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(107,33,168,0.25),transparent 65%),linear-gradient(180deg,#0a0806,#0f0b10 50%,#0a0806);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.04) 1px,transparent 1px);background-size:50px 50px;}
+.hero-content{position:relative;z-index:2;text-align:center;padding:60px 20px;display:flex;flex-direction:column;align-items:center;max-width:900px;}
+.hero-logo{width:180px;height:180px;object-fit:contain;filter:drop-shadow(0 0 50px rgba(107,33,168,0.6)) drop-shadow(0 0 20px rgba(201,168,76,0.3));animation:heroIn 1.4s ease both;margin-bottom:28px;}
+@keyframes heroIn{from{opacity:0;transform:scale(0.85) translateY(30px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.hero-eyebrow{font-size:0.6rem;letter-spacing:6px;text-transform:uppercase;color:var(--gold);font-weight:700;animation:fadeUp 1s 0.3s both;}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(2.6rem,8vw,6rem);font-weight:900;line-height:1.0;margin:14px 0 10px;animation:fadeUp 1s 0.4s both;}
+.hero-title em{font-style:italic;color:var(--gold);}
+.hero-sub{font-size:0.9rem;color:var(--muted);line-height:1.8;max-width:500px;margin:0 auto 36px;animation:fadeUp 1s 0.5s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;animation:fadeUp 1s 0.6s both;}
+.btn-gold{display:inline-block;background:var(--gold);color:#000;padding:16px 44px;text-decoration:none;font-weight:800;letter-spacing:3px;text-transform:uppercase;font-size:0.7rem;transition:all 0.25s;border:2px solid var(--gold);}
+.btn-gold:hover{background:transparent;color:var(--gold);}
+.btn-outline{display:inline-block;border:2px solid rgba(201,168,76,0.35);color:#ccc;padding:16px 44px;text-decoration:none;font-weight:600;letter-spacing:3px;text-transform:uppercase;font-size:0.7rem;transition:all 0.25s;}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+/* MARQUEE */
+.marquee-wrap{padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;}
+.marquee-track{display:flex;animation:marquee 28s linear infinite;width:max-content;}
+.marquee-item{font-family:'Playfair Display',serif;font-size:0.85rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dark);white-space:nowrap;padding:0 36px;font-style:italic;display:flex;align-items:center;gap:20px;}
+.marquee-sep{color:var(--gold);font-style:normal;font-size:0.6rem;}
+@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* SECTIONS */
+section{padding:90px 32px;}
+.section-inner{max-width:1040px;margin:0 auto;}
+.section-eyebrow{font-size:0.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:700;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;margin-bottom:6px;}
+.section-title em{font-style:italic;color:var(--gold);}
+.gold-rule{display:flex;align-items:center;gap:14px;margin-bottom:52px;}
+.gold-rule::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
+.gold-diamond{width:6px;height:6px;background:var(--gold);transform:rotate(45deg);flex-shrink:0;}
+
+/* COURSES SECTION */
+.course-notice{background:rgba(107,33,168,0.08);border:1px solid var(--border-purple);padding:18px 24px;margin-bottom:36px;font-size:0.82rem;color:var(--muted);line-height:1.7;text-align:center;}
+.course-notice strong{color:var(--purple-light);}
+
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-bottom:32px;}
+.course-card{background:var(--card);border:1px solid var(--border);position:relative;overflow:hidden;transition:transform 0.25s,border-color 0.25s;}
+.course-card:hover{transform:translateY(-4px);border-color:var(--gold);}
+.course-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));}
+.course-badge{position:absolute;top:14px;right:14px;font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;}
+.badge-new{background:var(--gold);color:#000;}
+.badge-popular{background:var(--purple);color:#fff;}
+.badge-owned{background:rgba(100,200,140,0.2);color:#6fcf97;border:1px solid rgba(100,200,140,0.3);}
+.badge-locked{background:rgba(80,70,50,0.3);color:#666;border:1px solid #222;}
+.course-img{height:160px;background:linear-gradient(135deg,rgba(107,33,168,0.3),rgba(201,168,76,0.1));display:flex;align-items:center;justify-content:center;font-size:3.5rem;border-bottom:1px solid var(--border);}
+.course-body{padding:24px;}
+.course-chapter-tag{font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;}
+.course-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:10px;line-height:1.3;}
+.course-desc{font-size:0.78rem;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.course-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.course-price{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--gold);}
+.course-chapters{font-size:0.7rem;color:#555;letter-spacing:1px;}
+.course-btn{display:block;width:100%;background:var(--gold);color:#000;border:none;padding:13px;font-family:'Raleway',sans-serif;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.7rem;cursor:pointer;transition:all 0.2s;text-align:center;text-decoration:none;}
+.course-btn:hover{background:var(--gold-light);}
+.course-btn-owned{background:rgba(100,200,140,0.1)!important;color:#6fcf97!important;border:1px solid rgba(100,200,140,0.3)!important;cursor:default!important;}
+.course-btn-owned:hover{background:rgba(100,200,140,0.15)!important;}
+
+/* COURSE CHAPTERS MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);max-width:680px;width:100%;max-height:88vh;overflow-y:auto;position:relative;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));}
+.modal-header{padding:28px 28px 20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;}
+.modal-title em{font-style:italic;color:var(--gold);}
+.modal-close{background:transparent;border:1px solid #333;color:#666;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;flex-shrink:0;transition:all 0.2s;}
+.modal-close:hover{border-color:var(--gold);color:var(--gold);}
+.modal-body{padding:24px 28px;}
+.chapter-list{display:flex;flex-direction:column;gap:10px;}
+.chapter-item{background:#0f0d0a;border:1px solid #1c1a16;padding:18px 20px;display:flex;align-items:center;gap:16px;transition:border-color 0.2s;cursor:pointer;}
+.chapter-item:hover{border-color:var(--gold);}
+.chapter-item.locked{cursor:not-allowed;opacity:0.5;}
+.chapter-item.locked:hover{border-color:#1c1a16;}
+.chapter-num{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--gold);opacity:0.4;min-width:32px;}
+.chapter-info{flex:1;}
+.chapter-name{font-weight:700;font-size:0.88rem;margin-bottom:3px;}
+.chapter-desc{font-size:0.73rem;color:var(--muted);}
+.chapter-icon{font-size:1.1rem;}
+.modal-buy-footer{padding:20px 28px;border-top:1px solid rgba(255,255,255,0.06);}
+
+/* LOGIN SECTION */
+.login-section{background:#0d0b09;}
+.login-wrapper{display:grid;grid-template-columns:1fr 1fr;gap:0;max-width:900px;margin:0 auto;border:1px solid var(--border);}
+.login-info{padding:48px 40px;background:linear-gradient(135deg,rgba(107,33,168,0.15),rgba(201,168,76,0.05));border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;}
+.login-info h3{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:14px;}
+.login-info h3 em{font-style:italic;color:var(--gold);}
+.login-info p{font-size:0.82rem;color:var(--muted);line-height:1.8;margin-bottom:20px;}
+.login-info-note{background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);padding:14px 16px;font-size:0.75rem;color:#bbb;line-height:1.7;}
+.login-info-note strong{color:var(--gold);}
+.login-form-panel{padding:48px 40px;display:flex;flex-direction:column;justify-content:center;}
+.login-form-panel h3{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:6px;}
+.login-form-panel p{font-size:0.72rem;color:var(--muted);margin-bottom:28px;letter-spacing:0.5px;}
+.form-label{display:block;font-size:0.6rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:7px;margin-top:18px;font-weight:700;}
+.form-label:first-of-type{margin-top:0;}
+.form-input{width:100%;padding:13px 16px;border:1px solid #1c1a16;background:#0a0806;color:var(--white);font-family:'Raleway',sans-serif;font-size:0.88rem;transition:border-color 0.2s;-webkit-appearance:none;}
+.form-input:focus{outline:none;border-color:var(--gold);}
+.login-btn-submit{width:100%;background:var(--gold);color:#000;border:none;padding:15px;font-family:'Raleway',sans-serif;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.72rem;cursor:pointer;margin-top:22px;transition:background 0.2s;}
+.login-btn-submit:hover{background:var(--gold-light);}
+.login-error{color:#e87b7b;font-size:0.75rem;margin-top:10px;display:none;letter-spacing:0.5px;}
+.login-location-note{font-size:0.7rem;color:#444;margin-top:14px;text-align:center;letter-spacing:0.5px;line-height:1.6;}
+.login-location-note span{color:var(--purple-light);}
+.owner-link{display:block;text-align:center;margin-top:28px;color:#2a2520;font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;transition:color 0.2s;}
+.owner-link:hover{color:#555;}
+
+/* WHY US */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;}
+.feature-card{background:var(--card);border:1px solid var(--border);padding:28px 24px;position:relative;overflow:hidden;}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
+.feature-icon{font-size:1.8rem;margin-bottom:14px;display:block;}
+.feature-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:8px;}
+.feature-desc{font-size:0.78rem;color:var(--muted);line-height:1.7;}
+
+/* FOOTER */
+footer{background:#000;border-top:1px solid var(--border);padding:48px 32px 28px;text-align:center;}
+.footer-logo{width:70px;height:70px;object-fit:contain;margin:0 auto 14px;display:block;}
+.footer-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;letter-spacing:2px;margin-bottom:4px;}
+.footer-sub{font-size:0.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:22px;}
+.footer-copy{color:#333;font-size:0.65rem;letter-spacing:1px;}
+
+/* EVENT AD */
+.event-ad{position:relative;min-height:92vh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.event-ad-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0.4;}
+.event-ad-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,8,6,0.9),rgba(107,33,168,0.3));}
+.event-ad-content{position:relative;z-index:2;text-align:center;padding:60px 20px;max-width:800px;}
+.event-ad-label{font-size:0.65rem;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;font-weight:700;}
+.event-ad-title{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,6vw,4.5rem);font-weight:900;margin-bottom:16px;line-height:1.1;}
+.event-ad-desc{font-size:0.95rem;color:var(--muted);line-height:1.8;margin-bottom:32px;max-width:600px;margin-left:auto;margin-right:auto;}
+.event-ad-time{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);margin-bottom:24px;font-weight:700;}
+
+/* STUDENT PROFILES */
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;}
+.profile-card{background:var(--card);border:1px solid var(--border);overflow:hidden;position:relative;cursor:pointer;transition:all 0.3s;text-decoration:none;color:inherit;}
+.profile-card:hover{border-color:var(--gold);transform:translateY(-6px);}
+.profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));}
+.profile-image{width:100%;height:200px;background:linear-gradient(135deg,rgba(107,33,168,0.2),rgba(201,168,76,0.1));display:flex;align-items:center;justify-content:center;font-size:3rem;overflow:hidden;background-size:cover;background-position:center;}
+.profile-body{padding:20px;}
+.profile-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:6px;color:var(--gold);}
+.profile-haircuts{font-size:0.7rem;color:var(--muted);margin-bottom:12px;line-height:1.5;}
+.profile-bio{font-size:0.78rem;color:#aaa;line-height:1.6;}
+.toggle-models{background:var(--gold);color:#000;border:none;padding:14px 40px;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.65rem;cursor:pointer;border-radius:4px;margin:20px auto;display:block;transition:all 0.3s;}
+.toggle-models:hover{background:var(--gold-light);}
+
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.staff-card{background:var(--card);border:1px solid var(--border);overflow:hidden;text-align:center;position:relative;}
+.staff-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple-mid),var(--gold));}
+.staff-photo{width:100%;height:160px;background:linear-gradient(135deg,rgba(107,33,168,0.15),rgba(201,168,76,0.05));display:flex;align-items:center;justify-content:center;font-size:2.5rem;overflow:hidden;background-size:cover;background-position:center;}
+.staff-info{padding:18px;}
+.staff-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:4px;color:var(--gold);}
+.staff-role{font-size:0.75rem;color:var(--muted);letter-spacing:0.5px;}
+
+.alumni-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;}
+.alumni-card{background:var(--card);border:1px solid var(--border-purple);overflow:hidden;position:relative;}
+.alumni-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple-light),var(--gold));}
+.alumni-photo{width:100%;height:180px;background:linear-gradient(135deg,rgba(107,33,168,0.15),rgba(201,168,76,0.05));display:flex;align-items:center;justify-content:center;font-size:2.5rem;overflow:hidden;background-size:cover;background-position:center;}
+.alumni-info{padding:18px;}
+.alumni-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:4px;color:var(--purple-light);}
+.alumni-status{font-size:0.78rem;color:var(--muted);line-height:1.6;}
+
+@media(max-width:700px){
+  nav{padding:12px 16px;}
+  .nav-links a:not(.nav-cta){display:none;}
+  section{padding:60px 20px;}
+  .login-wrapper{grid-template-columns:1fr;}
+  .login-info{border-right:none;border-bottom:1px solid var(--border);padding:32px 24px;}
+  .login-form-panel{padding:32px 24px;}
+  .courses-grid{grid-template-columns:1fr;}
+  .hero-title{font-size:2.4rem;}
+}
+</style>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<nav>
+  <img src="school_logo.png" alt="Barber School" class="nav-logo" onerror="this.style.display='none'">
+  <div class="nav-brand">
+    <span class="nav-brand-name">SBI</span>
+    <span class="nav-brand-sub">Next Generation Education</span>
+  </div>
+  <div class="nav-links">
+    <a href="#courses">NEW Online Courses</a>
+    <a href="#about">Why Us</a>
+    <a href="teacher.html">Teacher Login</a>
+    <a href="alumni.html">Alumni</a>
+    <a href="catalog.html">Shop</a>
+    <a href="#login" class="nav-cta">Student Login</a>
+  </div>
+  <button class="hamburger-btn" id="hamburger" onclick="window.toggleNav()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<div class="nav-overlay" id="navOverlay" onclick="window.closeNav()"></div>
+<nav class="side-nav" id="sideNav">
+  <a href="#courses" onclick="window.closeNav()">NEW Online Courses</a>
+  <a href="#about" onclick="window.closeNav()">Why Us</a>
+  <a href="teacher.html" onclick="window.closeNav()">Teacher Login</a>
+  <a href="alumni.html" onclick="window.closeNav()">Alumni</a>
+  <a href="catalog.html" onclick="window.closeNav()">Shop</a>
+  <a href="#login" onclick="window.closeNav()" style="background:var(--gold);color:#000;font-weight:700;margin-top:16px;">Student Login</a>
+</nav>
+
+<!-- HERO or EVENT AD -->
+<div id="heroSection" class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <img src="school_logo.png" alt="Classic Men Barber School" class="hero-logo" onerror="this.style.display='none'">
+    <p class="hero-eyebrow">Next Generation Education</p>
+    <h1 class="hero-title">Smith Barber<br><em>Institution</em></h1>
+    <p class="hero-sub">Master the craft with professional training, hands-on experience, and industry-leading instruction from licensed experts.</p>
+    <div class="hero-btns">
+      <a href="apply.html" class="btn-gold">Apply Now</a>
+      <a href="#login" class="btn-outline">Student Portal</a>
+    </div>
+  </div>
+</div>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">Professional Cuts <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Razor Techniques <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Color Theory <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">State Board Prep <span class="marquite-sep">✦</span></span>
+    <span class="marquee-item">Business Skills <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Licensed Instructors <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Professional Cuts <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Razor Techniques <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Color Theory <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">State Board Prep <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Business Skills <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">Licensed Instructors <span class="marquee-sep">✦</span></span>
+  </div>
+</div>
+
+<!-- IN-SCHOOL PROGRAMS -->
+<section id="programs" style="background:#0d0b09;">
+  <div class="section-inner">
+    <p class="section-eyebrow">Degree Programs</p>
+    <h2 class="section-title">In-School <em>Programs</em></h2>
+    <div class="gold-rule"><div class="gold-diamond"></div></div>
+
+    <div class="courses-grid">
+      <!-- Barber/Stylist Program -->
+      <div style="background:var(--card);border:2px solid var(--gold);position:relative;overflow:hidden;padding:0;display:flex;flex-direction:column;height:100%;">
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));"></div>
+        <div style="padding:28px;display:flex;flex-direction:column;flex:1;">
+          <div style="flex:1;">
+            <div style="font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;font-weight:700;">Professional Program</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:2px;">Barber / Stylist</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-bottom:20px;line-height:1.6;">Complete hands-on training with licensed instructors. State Board prep included.</div>
+            <div style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:16px;border-radius:4px;text-align:center;margin-bottom:20px;min-height:100px;display:flex;flex-direction:column;justify-content:center;">
+              <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px;">Program Length</div>
+              <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--gold);">1500</div>
+              <div style="font-size:0.7rem;color:var(--muted);">Hours Required</div>
+            </div>
+          </div>
+          <a href="apply.html?program=barber" class="btn-gold" style="display:block;text-align:center;text-decoration:none;background:var(--gold);color:#000;padding:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.7rem;margin-top:auto;">Apply Now</a>
+        </div>
+      </div>
+
+      <!-- Teacher/Instructor Program -->
+      <div style="background:var(--card);border:1px solid var(--border);position:relative;overflow:hidden;padding:0;display:flex;flex-direction:column;height:100%;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple-mid),var(--gold));"></div>
+        <div style="padding:28px;display:flex;flex-direction:column;flex:1;">
+          <div style="flex:1;">
+            <div style="font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--purple-light);margin-bottom:8px;font-weight:700;">Professional Program</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:2px;">Teacher / Instructor / Owner</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-bottom:20px;line-height:1.6;">Advanced certification for educators and shop owners. Leadership training included.</div>
+            <div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.2);padding:16px;border-radius:4px;text-align:center;margin-bottom:20px;min-height:100px;display:flex;flex-direction:column;justify-content:center;">
+              <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--purple-light);font-weight:700;margin-bottom:6px;">Program Length</div>
+              <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--purple-light);">600</div>
+              <div style="font-size:0.7rem;color:var(--muted);">Hours Required</div>
+            </div>
+          </div>
+          <a href="apply.html?program=teacher" class="btn-gold" style="display:block;text-align:center;text-decoration:none;background:var(--purple);color:#fff;padding:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.7rem;margin-top:auto;">Apply Now</a>
+        </div>
+      </div>
+
+      <!-- Crossover Program -->
+      <div style="background:var(--card);border:1px solid var(--border);position:relative;overflow:hidden;padding:0;display:flex;flex-direction:column;height:100%;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));"></div>
+        <div style="padding:28px;display:flex;flex-direction:column;flex:1;">
+          <div style="flex:1;">
+            <div style="font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:700;">Professional Program</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:2px;">Crossover (Cosmetology → Barber)</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-bottom:20px;line-height:1.6;">Fast-track program for licensed cosmetologists. Complete barber certification.</div>
+            <div style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:16px;border-radius:4px;text-align:center;margin-bottom:20px;min-height:100px;display:flex;flex-direction:column;justify-content:center;">
+              <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px;">Program Length</div>
+              <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--gold);">600</div>
+              <div style="font-size:0.7rem;color:var(--muted);">Hours Required</div>
+            </div>
+          </div>
+          <a href="apply.html?program=crossover" class="btn-gold" style="display:block;text-align:center;text-decoration:none;background:var(--gold);color:#000;padding:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.7rem;margin-top:auto;">Apply Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HYBRID PROGRAM -->
+<section style="background:#0d0b09;">
+  <div class="section-inner">
+    <div style="margin-bottom:60px;position:relative;margin-top:0;padding-top:0;border-top:none;">
+      <div style="background:linear-gradient(135deg,rgba(201,168,76,0.3),rgba(201,168,76,0.1));border:2px solid var(--gold);padding:40px;margin-bottom:24px;border-radius:6px;position:relative;overflow:hidden;">
+        <!-- Background Glow Effect -->
+        <div style="position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(201,168,76,0.15),transparent);border-radius:50%;pointer-events:none;"></div>
+        
+        <!-- Content -->
+        <div style="position:relative;z-index:2;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+            <div style="display:flex;align-items:flex-start;gap:16px;flex:1;">
+              <!-- Icon Badge -->
+              <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--gold),rgba(201,168,76,0.7));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;box-shadow:0 4px 16px rgba(201,168,76,0.3);">🎓</div>
+              
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;background:rgba(201,168,76,0.2);padding:4px 10px;border-radius:20px;">Special Program</div>
+                </div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:0;line-height:1.2;">Hybrid Barber<br>Program</h3>
+              </div>
+            </div>
+            
+            <!-- Success Seal -->
+            <div style="text-align:center;padding:0 16px;">
+              <div style="font-size:2.5rem;margin-bottom:4px;">⚡</div>
+              <div style="font-size:0.65rem;color:var(--gold);letter-spacing:1px;font-weight:700;text-transform:uppercase;">Flex Learning</div>
+            </div>
+          </div>
+
+          <p style="font-size:0.95rem;color:var(--muted);margin-bottom:16px;line-height:1.8;max-width:600px;">
+            <strong>Combine online theory with in-person practical hours</strong> on your schedule. Complete 120 theory hours through structured online modules, then build your 1380 practical hours with our expert instructors.
+          </p>
+
+          <!-- Info Badges -->
+          <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+            <div style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--gold);font-weight:700;margin-bottom:2px;">📚 120 Online Hours</div>
+              <div>Theory modules you control</div>
+            </div>
+            <div style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--gold);font-weight:700;margin-bottom:2px;">🛠️ 1380 Practical Hours</div>
+              <div>In-person with instructors</div>
+            </div>
+            <div style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--gold);font-weight:700;margin-bottom:2px;">📋 1500 Total Hours</div>
+              <div>Full barber certification</div>
+            </div>
+          </div>
+
+          <!-- CTA Section -->
+          <div style="display:flex;gap:16px;align-items:center;padding:20px;background:rgba(201,168,76,0.08);border-left:4px solid var(--gold);border-radius:4px;">
+            <div>
+              <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--muted);">Also offering hybrid courses</div>
+              <div style="font-size:0.7rem;color:#888;letter-spacing:1px;margin-top:2px;">Contact school for more information</div>
+            </div>
+            <button onclick="window.location.href='apply.html?program=hybrid'" style="padding:14px 32px;font-size:0.75rem;background:var(--gold);color:#000;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;border-radius:4px;flex:1;text-transform:uppercase;letter-spacing:2px;">
+              Apply Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REFRESHER WORKSHOPS -->
+<section id="workshops">
+  <div class="section-inner">
+    <p class="section-eyebrow">Short Courses</p>
+    <h2 class="section-title">Refresher <em>Workshops</em></h2>
+    <div class="gold-rule"><div class="gold-diamond"></div></div>
+
+    <div class="courses-grid">
+      <!-- Basic Refresher -->
+      <div style="background:var(--card);border:1px solid var(--border);padding:28px;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);"></div>
+        <div style="font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;font-weight:700;">Session</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:4px;">Basic Refresher</div>
+        <div style="color:var(--gold);font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;margin-bottom:16px;">$99</div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+          <div style="margin-bottom:12px;">✓ 2-hour class</div>
+          <div style="margin-bottom:12px;">✓ Weekly 1-on-1 sessions</div>
+          <div style="margin-bottom:12px;">✓ Fading & lining fundamentals</div>
+          <div>✓ Bring at least 1 model</div>
+        </div>
+        <a href="apply.html?program=basic-refresher" style="display:block;text-align:center;text-decoration:none;background:var(--gold);color:#000;padding:12px;border-radius:4px;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.7rem;margin-top:12px;">Apply Now</a>
+      </div>
+
+      <!-- Advanced Tune-Up -->
+      <div style="background:var(--card);border:1px solid var(--border);padding:28px;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);"></div>
+        <div style="font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;font-weight:700;">Session</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:4px;">Advanced Tune-Up</div>
+        <div style="color:var(--gold);font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;margin-bottom:16px;">$199</div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+          <div style="margin-bottom:12px;">✓ 3-hour class</div>
+          <div style="margin-bottom:12px;">✓ Advanced fades & beard work</div>
+          <div style="margin-bottom:12px;">✓ Shear work techniques</div>
+          <div>✓ Bring 2 models</div>
+        </div>
+        <a href="apply.html?program=advanced-tune-up" style="display:block;text-align:center;text-decoration:none;background:var(--gold);color:#000;padding:12px;border-radius:4px;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.7rem;margin-top:12px;">Apply Now</a>
+      </div>
+
+      <!-- Master's Hands Course -->
+      <div style="background:var(--card);border:1px solid var(--border);padding:28px;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);"></div>
+        <div style="font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;font-weight:700;">Session</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:4px;">Master's Hands Course</div>
+        <div style="color:var(--gold);font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;margin-bottom:16px;">$299</div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+          <div style="margin-bottom:12px;">✓ 4-5 hour intensive</div>
+          <div style="margin-bottom:12px;">✓ Full cut breakdown</div>
+          <div style="margin-bottom:12px;">✓ Advanced techniques</div>
+          <div>✓ Bring 2 models</div>
+        </div>
+        <a href="apply.html?program=masters-hands" style="display:block;text-align:center;text-decoration:none;background:var(--gold);color:#000;padding:12px;border-radius:4px;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.7rem;margin-top:12px;">Apply Now</a>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:32px;font-size:0.8rem;color:var(--muted);">
+      📍 1218 S. Main St., Pine Bluff, AR 71601
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER: ONLINE vs IN-SCHOOL -->
+<section style="background:#000;border-top:2px solid var(--border);border-bottom:2px solid var(--border);padding:48px 32px;">
+  <div class="section-inner" style="max-width:800px;">
+    <div style="background:rgba(107,33,168,0.08);border:1px solid rgba(107,33,168,0.2);padding:28px;border-radius:4px;text-align:center;">
+      <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--purple-light);margin-bottom:12px;font-weight:700;">Supplementary Learning</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;margin-bottom:14px;">Online Courses Are <em style="color:var(--gold);font-style:italic;">Complementary Resources</em></h3>
+      <p style="font-size:0.85rem;color:var(--muted);line-height:1.8;">Our online courses <strong>do not grant a degree</strong> or professional certification. However, they are designed to <strong>complement any barbering program</strong> — whether you're studying with us or at any other school. Use them as study guides, refreshers, and skill-building tools to accelerate your learning journey.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ONLINE LEARNING PROGRAMS -->
+<section id="courses">
+  <div class="section-inner">
+    <p class="section-eyebrow">Tiered Learning Paths</p>
+    <h2 class="section-title">Online Barber <em>Programs</em></h2>
+    <div class="gold-rule"><div class="gold-diamond"></div></div>
+
+    <div class="course-notice">
+      <strong>📚 For Everyone:</strong> These courses are for anyone interested in barbering—students, professionals, or curious learners. No student account required. Just pick a tier to get instant lifetime access to all materials. <a href="courses-public.html" style="color:var(--gold);">Browse all courses →</a> | <a href="#login" style="color:var(--gold);">Already enrolled?</a> Log in to your materials.
+    </div>
+
+    <!-- TIER 1: BEGINNER -->
+    <div style="margin-bottom:60px;position:relative;">
+      <!-- Accent Lines -->
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+      
+      <div style="background:linear-gradient(135deg,rgba(201,168,76,0.25),rgba(201,168,76,0.08));border:2px solid var(--gold);padding:40px;margin-bottom:24px;border-radius:6px;position:relative;overflow:hidden;">
+        <!-- Background Glow Effect -->
+        <div style="position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(201,168,76,0.1),transparent);border-radius:50%;pointer-events:none;"></div>
+        
+        <!-- Content -->
+        <div style="position:relative;z-index:2;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+            <div style="display:flex;align-items:flex-start;gap:16px;flex:1;">
+              <!-- Icon Badge -->
+              <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--gold),rgba(201,168,76,0.7));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;box-shadow:0 4px 16px rgba(201,168,76,0.3);">🥇</div>
+              
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;background:rgba(201,168,76,0.2);padding:4px 10px;border-radius:20px;">Foundation</div>
+                  <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;">Tier 1</div>
+                </div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:0;line-height:1.2;">Beginner Barber<br>Mastery</h3>
+              </div>
+            </div>
+            
+            <!-- Success Seal -->
+            <div style="text-align:center;padding:0 16px;">
+              <div style="font-size:2.5rem;margin-bottom:4px;">✨</div>
+              <div style="font-size:0.65rem;color:var(--gold);letter-spacing:1px;font-weight:700;text-transform:uppercase;">Start Here</div>
+            </div>
+          </div>
+
+          <p style="font-size:0.95rem;color:var(--muted);margin-bottom:16px;line-height:1.8;max-width:600px;">
+            <strong>Take someone from zero to confident entry-level barber</strong> ready to walk into any shop and start working. Complete system from tools to client experience in 90 days.
+          </p>
+
+          <!-- Info Badges -->
+          <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+            <div style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--gold);font-weight:700;margin-bottom:2px;">📅 90-Day Program</div>
+              <div>Fast-track foundation</div>
+            </div>
+            <div style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--gold);font-weight:700;margin-bottom:2px;">9 Modules</div>
+              <div>Complete curriculum</div>
+            </div>
+            <div style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--gold);font-weight:700;margin-bottom:2px;">✓ Job Ready</div>
+              <div>Entry-level barber skills</div>
+            </div>
+          </div>
+
+          <!-- CTA Section -->
+          <div style="display:flex;gap:16px;align-items:center;padding:20px;background:rgba(201,168,76,0.08);border-left:4px solid var(--gold);border-radius:4px;">
+            <div>
+              <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold);">$150</div>
+              <div style="font-size:0.7rem;color:#888;letter-spacing:1px;margin-top:2px;">One-time payment</div>
+            </div>
+            <button class="btn-gold" onclick="purchaseTier('tier1')" style="padding:14px 32px;font-size:0.75rem;background:var(--gold);color:#000;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;border-radius:4px;flex:1;text-transform:uppercase;letter-spacing:2px;">
+              Start Learning Today
+            </button>
+          </div>
+
+          <div style="margin-top:12px;font-size:0.7rem;color:#888;text-align:center;">
+            ✓ Lifetime Access · ✓ Video Lessons · ✓ Practice Guides
+          </div>
+          
+          <button class="toggle-models" onclick="window.toggleTierModels('tier1')" style="width:100%;margin-top:16px;">👥 View Models</button>
+        </div>
+      </div>
+
+      <div class="courses-grid" id="tier1Grid" style="margin-bottom:0;display:none;">
+        <!-- Modules populated by JS -->
+      </div>
+    </div>
+
+    <!-- TIER 2: ADVANCED -->
+    <div style="margin-bottom:60px;position:relative;">
+      <!-- Accent Lines -->
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple-mid),transparent);"></div>
+      
+      <div style="background:linear-gradient(135deg,rgba(107,33,168,0.25),rgba(107,33,168,0.08));border:2px solid var(--purple-mid);padding:40px;margin-bottom:24px;border-radius:6px;position:relative;overflow:hidden;">
+        <!-- Background Glow Effect -->
+        <div style="position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(107,33,168,0.1),transparent);border-radius:50%;pointer-events:none;"></div>
+        
+        <!-- Content -->
+        <div style="position:relative;z-index:2;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+            <div style="display:flex;align-items:flex-start;gap:16px;flex:1;">
+              <!-- Icon Badge -->
+              <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--purple-light),rgba(107,33,168,0.7));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;box-shadow:0 4px 16px rgba(107,33,168,0.3);">🏆</div>
+              
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--purple-light);font-weight:700;background:rgba(107,33,168,0.2);padding:4px 10px;border-radius:20px;">Advanced</div>
+                  <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--purple-light);font-weight:700;">Tier 2</div>
+                </div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:0;line-height:1.2;">Advanced Barber<br>Mastery</h3>
+              </div>
+            </div>
+            
+            <!-- Success Seal -->
+            <div style="text-align:center;padding:0 16px;">
+              <div style="font-size:2.5rem;margin-bottom:4px;">💪</div>
+              <div style="font-size:0.65rem;color:var(--purple-light);letter-spacing:1px;font-weight:700;text-transform:uppercase;">Level Up</div>
+            </div>
+          </div>
+
+          <p style="font-size:0.95rem;color:var(--muted);margin-bottom:16px;line-height:1.8;max-width:600px;">
+            <strong>Turn good barbers into exceptional professionals</strong> commanding premium prices. Master advanced techniques that set you apart from the competition.
+          </p>
+
+          <!-- Info Badges -->
+          <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+            <div style="background:rgba(107,33,168,0.15);border:1px solid rgba(107,33,168,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--purple-light);font-weight:700;margin-bottom:2px;">📅 Ongoing</div>
+              <div>Learn at your pace</div>
+            </div>
+            <div style="background:rgba(107,33,168,0.15);border:1px solid rgba(107,33,168,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--purple-light);font-weight:700;margin-bottom:2px;">7 Modules</div>
+              <div>Expert-level skills</div>
+            </div>
+            <div style="background:rgba(107,33,168,0.15);border:1px solid rgba(107,33,168,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--purple-light);font-weight:700;margin-bottom:2px;">💰 Premium Pricing</div>
+              <div>Earn more per cut</div>
+            </div>
+          </div>
+
+          <!-- CTA Section -->
+          <div style="display:flex;gap:16px;align-items:center;padding:20px;background:rgba(107,33,168,0.08);border-left:4px solid var(--purple-mid);border-radius:4px;">
+            <div>
+              <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--purple-light);">$213</div>
+              <div style="font-size:0.7rem;color:#888;letter-spacing:1px;margin-top:2px;">For experienced barbers</div>
+            </div>
+            <button class="btn-gold" onclick="purchaseTier('tier2')" style="padding:14px 32px;font-size:0.75rem;background:var(--purple);color:#fff;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;border-radius:4px;flex:1;text-transform:uppercase;letter-spacing:2px;">
+              Upgrade Your Skills
+            </button>
+          </div>
+
+          <div style="margin-top:12px;font-size:0.7rem;color:#888;text-align:center;">
+            ✓ Lifetime Access · ✓ Advanced Techniques · ✓ Competition Prep
+          </div>
+          
+          <button class="toggle-models" onclick="window.toggleTierModels('tier2')" style="width:100%;margin-top:16px;">👥 View Models</button>
+        </div>
+      </div>
+
+      <div class="courses-grid" id="tier2Grid" style="margin-bottom:0;display:none;">
+        <!-- Modules populated by JS -->
+      </div>
+    </div>
+
+    <!-- TIER 3: BUSINESS -->
+    <div style="margin-bottom:60px;position:relative;">
+      <!-- Accent Lines -->
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#cf5f1f,transparent);"></div>
+      
+      <div style="background:linear-gradient(135deg,rgba(207,95,31,0.25),rgba(207,95,31,0.08));border:2px solid #cf5f1f;padding:40px;margin-bottom:24px;border-radius:6px;position:relative;overflow:hidden;">
+        <!-- Background Glow Effect -->
+        <div style="position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(207,95,31,0.1),transparent);border-radius:50%;pointer-events:none;"></div>
+        
+        <!-- Content -->
+        <div style="position:relative;z-index:2;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+            <div style="display:flex;align-items:flex-start;gap:16px;flex:1;">
+              <!-- Icon Badge -->
+              <div style="width:60px;height:60px;background:linear-gradient(135deg,#cf5f1f,rgba(207,95,31,0.7));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;box-shadow:0 4px 16px rgba(207,95,31,0.3);">💼</div>
+              
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:#cf5f1f;font-weight:700;background:rgba(207,95,31,0.2);padding:4px 10px;border-radius:20px;">Business</div>
+                  <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:#cf5f1f;font-weight:700;">Tier 3</div>
+                </div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:0;line-height:1.2;">Barber Business<br>& Ownership</h3>
+              </div>
+            </div>
+            
+            <!-- Success Seal -->
+            <div style="text-align:center;padding:0 16px;">
+              <div style="font-size:2.5rem;margin-bottom:4px;">🚀</div>
+              <div style="font-size:0.65rem;color:#cf5f1f;letter-spacing:1px;font-weight:700;text-transform:uppercase;">Scale Up</div>
+            </div>
+          </div>
+
+          <p style="font-size:0.95rem;color:var(--muted);margin-bottom:16px;line-height:1.8;max-width:600px;">
+            <strong>Learn to open, operate, and scale a profitable barbershop.</strong> From booth rent systems to multi-location management, complete business playbook included.
+          </p>
+
+          <!-- Info Badges -->
+          <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+            <div style="background:rgba(207,95,31,0.15);border:1px solid rgba(207,95,31,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:#cf5f1f;font-weight:700;margin-bottom:2px;">📅 Flexible</div>
+              <div>Study at your pace</div>
+            </div>
+            <div style="background:rgba(207,95,31,0.15);border:1px solid rgba(207,95,31,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:#cf5f1f;font-weight:700;margin-bottom:2px;">8 Modules</div>
+              <div>Complete business system</div>
+            </div>
+            <div style="background:rgba(207,95,31,0.15);border:1px solid rgba(207,95,31,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:#cf5f1f;font-weight:700;margin-bottom:2px;">📈 Growth Path</div>
+              <div>Own your future</div>
+            </div>
+          </div>
+
+          <!-- CTA Section -->
+          <div style="display:flex;gap:16px;align-items:center;padding:20px;background:rgba(207,95,31,0.08);border-left:4px solid #cf5f1f;border-radius:4px;">
+            <div>
+              <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:#cf5f1f;">$263</div>
+              <div style="font-size:0.7rem;color:#888;letter-spacing:1px;margin-top:2px;">For shop owners & entrepreneurs</div>
+            </div>
+            <button class="btn-gold" onclick="purchaseTier('tier3')" style="padding:14px 32px;font-size:0.75rem;background:#cf5f1f;color:#fff;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;border-radius:4px;flex:1;text-transform:uppercase;letter-spacing:2px;">
+              Build Your Empire
+            </button>
+          </div>
+
+          <div style="margin-top:12px;font-size:0.7rem;color:#888;text-align:center;">
+            ✓ Lifetime Access · ✓ Business Templates · ✓ Bonus Tools
+          </div>
+          
+          <button class="toggle-models" onclick="window.toggleTierModels('tier3')" style="width:100%;margin-top:16px;">👥 View Models</button>
+        </div>
+      </div>
+
+      <div class="courses-grid" id="tier3Grid" style="margin-bottom:0;display:none;">
+        <!-- Modules populated by JS -->
+      </div>
+    </div>
+
+    <!-- TIER 4: STATE BOARD PREP -->
+    <div style="margin-bottom:60px;position:relative;">
+      <!-- Accent Lines -->
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--green),transparent);"></div>
+      
+      <div style="background:linear-gradient(135deg,rgba(100,200,140,0.25),rgba(100,200,140,0.08));border:2px solid var(--green);padding:40px;margin-bottom:24px;border-radius:6px;position:relative;overflow:hidden;">
+        <!-- Background Glow Effect -->
+        <div style="position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(100,200,140,0.1),transparent);border-radius:50%;pointer-events:none;"></div>
+        
+        <!-- Content -->
+        <div style="position:relative;z-index:2;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+            <div style="display:flex;align-items:flex-start;gap:16px;flex:1;">
+              <!-- Icon Badge -->
+              <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--green),rgba(100,200,140,0.7));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;box-shadow:0 4px 16px rgba(100,200,140,0.3);">🎓</div>
+              
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--green);font-weight:700;background:rgba(100,200,140,0.2);padding:4px 10px;border-radius:20px;">Certification</div>
+                  <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--green);font-weight:700;">Tier 4</div>
+                </div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:0;line-height:1.2;">State Board<br>Licensing Prep</h3>
+              </div>
+            </div>
+            
+            <!-- Success Seal -->
+            <div style="text-align:center;padding:0 16px;">
+              <div style="font-size:2.5rem;margin-bottom:4px;">📋</div>
+              <div style="font-size:0.65rem;color:var(--green);letter-spacing:1px;font-weight:700;text-transform:uppercase;">Pass Your Exam</div>
+            </div>
+          </div>
+
+          <p style="font-size:0.95rem;color:var(--muted);margin-bottom:16px;line-height:1.8;max-width:600px;">
+            <strong>Master the Arkansas State Board Exam</strong> with comprehensive, officially-approved prep modules. Written & practical exam preparation with proven success rates for barber licensing.
+          </p>
+
+          <!-- Info Badges -->
+          <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+            <div style="background:rgba(100,200,140,0.15);border:1px solid rgba(100,200,140,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--green);font-weight:700;margin-bottom:2px;">📚 4 Modules</div>
+              <div>Full exam coverage</div>
+            </div>
+            <div style="background:rgba(100,200,140,0.15);border:1px solid rgba(100,200,140,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--green);font-weight:700;margin-bottom:2px;">✓ Self-Paced</div>
+              <div>Study on your schedule</div>
+            </div>
+            <div style="background:rgba(100,200,140,0.15);border:1px solid rgba(100,200,140,0.3);padding:10px 14px;border-radius:4px;font-size:0.75rem;color:var(--muted);">
+              <div style="color:var(--green);font-weight:700;margin-bottom:2px;">🎯 Pass Guarantee</div>
+              <div>Proven success formula</div>
+            </div>
+          </div>
+
+          <!-- CTA Section -->
+          <div style="display:flex;gap:16px;align-items:center;padding:20px;background:rgba(100,200,140,0.08);border-left:4px solid var(--green);border-radius:4px;">
+            <div>
+              <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--green);">$117</div>
+              <div style="font-size:0.7rem;color:#888;letter-spacing:1px;margin-top:2px;">Licensing exam prep</div>
+            </div>
+            <button class="btn-gold" onclick="purchaseTier('tier4')" style="padding:14px 32px;font-size:0.75rem;background:#7fe0a3;color:#000;font-weight:800;border:none;cursor:pointer;transition:all 0.2s;border-radius:4px;flex:1;text-transform:uppercase;letter-spacing:2px;">
+              Get Licensed Now
+            </button>
+          </div>
+
+          <div style="margin-top:12px;font-size:0.7rem;color:#888;text-align:center;">
+            ✓ Lifetime Access · ✓ Practice Tests · ✓ Success Support
+          </div>
+          
+          <button class="toggle-models" onclick="window.toggleTierModels('tier4')" style="width:100%;margin-top:16px;">👥 View Models</button>
+        </div>
+      </div>
+
+      <div class="courses-grid" id="tier4Grid" style="margin-bottom:0;display:none;">
+        <!-- Modules populated by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STUDENT PROFILES -->
+<section id="students" style="background:#0d0b09;">
+  <div class="section-inner">
+    <p class="section-eyebrow">Our Emerging Professionals</p>
+    <h2 class="section-title">Active <em>Students</em></h2>
+    <div class="gold-rule"><div class="gold-diamond"></div></div>
+
+    <div class="profile-grid" id="studentProfilesGrid">
+      <div style="grid-column:1/-1;color:#555;text-align:center;padding:40px;font-style:italic;">Students will appear here as they complete their profiles</div>
+    </div>
+  </div>
+</section>
+
+<!-- STAFF SECTION -->
+<section id="staff">
+  <div class="section-inner">
+    <p class="section-eyebrow">Expert Instruction</p>
+    <h2 class="section-title">Our <em>Staff</em></h2>
+    <div class="gold-rule"><div class="gold-diamond"></div></div>
+
+    <div class="staff-grid" id="staffProfilesGrid">
+      <div style="grid-column:1/-1;color:#555;text-align:center;padding:40px;font-style:italic;">Staff members will appear here</div>
+    </div>
+  </div>
+</section>
+
+<!-- ALUMNI SECTION -->
+<section id="alumni" style="background:#0d0b09;">
+  <div class="section-inner">
+    <p class="section-eyebrow">Our Success Stories</p>
+    <h2 class="section-title">Alumni <em>Graduates</em></h2>
+    <div class="gold-rule"><div class="gold-diamond"></div></div>
+
+    <div class="alumni-grid" id="alumniProfilesGrid">
+      <div style="grid-column:1/-1;color:#555;text-align:center;padding:40px;font-style:italic;">Our graduates are out there changing the industry</div>
+    </div>
+  </div>
+</section>
+
+<!-- COURSE MODAL -->
+<div class="modal-overlay" id="courseModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;font-weight:700;" id="modalEyebrow">Course 01</div>
+        <div class="modal-title" id="modalTitle">The Fundamentals of Barbering</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.8rem;color:var(--muted);line-height:1.7;margin-bottom:24px;" id="modalDesc">Purchase this course to unlock all chapters.</p>
+      <div class="chapter-list" id="chapterList"></div>
+    </div>
+    <div class="modal-buy-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<!-- PAYMENT CONFIRMATION MODAL -->
+<div class="modal-overlay" id="paymentConfirmModal" style="display:none;">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="confirmTitle">Payment Instructions</h3>
+      <button class="modal-close" onclick="window.closePaymentConfirm()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="confirmContent" style="text-align:center;"></div>
+    </div>
+    <div style="display:flex;gap:12px;padding:20px;border-top:1px solid rgba(255,255,255,0.06);">
+      <button style="flex:1;padding:12px;background:transparent;border:1px solid #333;color:#888;font-weight:700;font-size:0.8rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border-radius:4px;" onclick="window.closePaymentConfirm()">Back</button>
+      <button style="flex:1;padding:12px;background:var(--gold);border:none;color:#000;font-weight:700;font-size:0.8rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border-radius:4px;" onclick="window.proceedToUnlock()">I've Sent Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL INPUT MODAL -->
+<div class="modal-overlay" id="emailModal" style="display:none;">
+  <div class="modal" style="max-width:450px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="emailModalTitle">Enter Your Email</h3>
+      <button class="modal-close" onclick="window.closeEmailModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;" id="emailModalDesc">We'll send you an unlock code after payment.</p>
+      <input type="email" id="emailInput" placeholder="your@email.com" style="width:100%;padding:12px 14px;background:#0a0806;border:1px solid var(--border-sub);color:var(--white);font-family:'Raleway',sans-serif;font-size:0.9rem;border-radius:4px;transition:border-color 0.2s;margin-bottom:20px;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border-sub)'" onkeypress="if(event.key==='Enter') window.submitEmail()">
+    </div>
+    <div style="display:flex;gap:12px;padding:20px;border-top:1px solid rgba(255,255,255,0.06);">
+      <button style="flex:1;padding:12px;background:transparent;border:1px solid #333;color:#888;font-weight:700;font-size:0.8rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border-radius:4px;" onclick="window.closeEmailModal()">Cancel</button>
+      <button style="flex:1;padding:12px;background:var(--gold);border:none;color:#000;font-weight:700;font-size:0.8rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border-radius:4px;" onclick="window.submitEmail()">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT METHODS MODAL -->
+<div class="modal-overlay" id="paymentModal" style="display:none;">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Choose Payment Method</h3>
+      <button class="modal-close" onclick="window.closePaymentModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="paymentMethodsContainer" style="display:grid;gap:16px;">
+        <!-- Payment methods will be inserted here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENT PROFILE MODAL -->
+<div class="modal-overlay" id="studentProfileModal" style="display:none;">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="studentProfileName"></h3>
+      <button class="modal-close" onclick="window.closeStudentProfile()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="studentProfileContent" style="display:flex;flex-direction:column;gap:20px;"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- WHY US -->
+<section id="about" style="background:#0d0b09;">
+  <div class="section-inner">
+    <p class="section-eyebrow">Why Choose Us</p>
+    <h2 class="section-title">Built for <em>Real Barbers</em></h2>
+    <div class="gold-rule"><div class="gold-diamond"></div></div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">🏆</span>
+        <div class="feature-title">Licensed Instructors</div>
+        <div class="feature-desc">Learn from experienced, licensed barbers with real shop experience and a passion for the craft.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📖</span>
+        <div class="feature-title">Digital Textbook</div>
+        <div class="feature-desc">Students get full access to our digital course book directly through the student portal.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📍</span>
+        <div class="feature-title">Attendance Tracking</div>
+        <div class="feature-desc">GPS-verified clock-in system tracks your hours automatically — no paperwork needed.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📊</span>
+        <div class="feature-title">Progress Dashboard</div>
+        <div class="feature-desc">Watch your hours and milestones build in real time with a personalized progress tracker.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📝</span>
+        <div class="feature-title">Live Assignments</div>
+        <div class="feature-desc">Instructors can push quizzes, assignments, and virtual day work directly to your dashboard.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎓</span>
+        <div class="feature-title">State Board Ready</div>
+        <div class="feature-desc">Our curriculum is designed to prepare students for state board exams with confidence.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STUDENT LOGIN -->
+<section id="login" class="login-section">
+  <div class="section-inner">
+    <p class="section-eyebrow">Students Only</p>
+    <h2 class="section-title">Student <em>Portal</em></h2>
+    <div class="gold-rule"><div class="gold-diamond"></div></div>
+
+    <div class="login-wrapper">
+      <div class="login-info">
+        <h3>This portal is for <em>enrolled students only</em></h3>
+        <p>If you're a customer looking to purchase a course, scroll up to the courses section above. This login area is exclusively for students enrolled in the in-person program.</p>
+        <div class="login-info-note">
+          <strong>Walk-ins &amp; Customers:</strong> You do not need an account to purchase online courses. Simply select a course above and complete your purchase to gain instant access.
+        </div>
+      </div>
+      <div class="login-form-panel">
+        <h3>Student Login</h3>
+        <p>Sign in to access your dashboard, hours &amp; assignments</p>
+        <label class="form-label">Student ID or Email</label>
+        <input type="text" class="form-input" id="loginId" placeholder="student@school.com" autocomplete="username">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+        <div class="login-error" id="loginError">Invalid credentials. Please try again.</div>
+        <button class="login-btn-submit" onclick="studentLogin()">Sign In to Portal</button>
+        <div class="login-location-note" id="locationNote">📍 <span>Location verification is currently off</span></div>
+        <a href="teacher.html" class="owner-link">Teacher Login</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <img src="school_logo.png" alt="Classic Men Barber School" class="footer-logo" onerror="this.style.display='none'">
+  <div class="footer-name">SBI</div>
+  <div class="footer-sub">Next Education Genaration</div>
+  <div class="footer-copy">© 2025 SBI School. All rights reserved.</div>
+  <a href="owner.html" class="owner-link">Instructor Access →</a>
+</footer>
+
+<script>
+// ─── FIREBASE INITIALIZATION ───────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyBn3N8MJ05dDIfVyeJqVh5KCrYZoljcvx0",
+  authDomain: "smithbarberinstitutionpb.firebaseapp.com",
+  databaseURL: "https://smithbarberinstitutionpb-default-rtdb.firebaseio.com",
+  projectId: "smithbarberinstitutionpb",
+  storageBucket: "smithbarberinstitutionpb.firebasestorage.app",
+  messagingSenderId: "251247559272",
+  appId: "1:251247559272:web:822a0761885c63faa9f1dd",
+  measurementId: "G-BD8Q192YS6"
+};
+
+let database = null;
+let firebaseReady = false;
+try {
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    database = firebase.database();
+    firebaseReady = true;
+    console.log('✓ Firebase initialized in index.html');
+  }
+} catch (e) {
+  console.warn('⚠️ Firebase not available:', e.message);
+}
+
+// Setup real-time listeners for public pages
+function setupPublicListeners() {
+  if (!database || !firebaseReady) return;
+  
+  console.log('⚙️  Setting up Firebase real-time listeners for public pages...');
+  
+  // Listen for staff/teacher changes
+  database.ref('schoolStaff').on('value', snapshot => {
+    const data = snapshot.val() || [];
+    localStorage.setItem('schoolStaff', JSON.stringify(data));
+    console.log('📥 Staff updated from Firebase in index.html');
+    // Refresh staff display if it's visible
+    if (typeof loadStaff === 'function') {
+      loadStaff();
+    }
+    if (typeof loadStaffProfiles === 'function') {
+      loadStaffProfiles();
+    }
+  }, err => {
+    console.warn('Firebase staff listener error:', err);
+  });
+  
+  console.log('✓ Public Firebase listeners active');
+}
+
+// Start listening when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  setupPublicListeners();
+});
+
+// ─── TIERED PROGRAM DATA ───────────────────────────────────────
+var tierData = {
+  tier1: {
+    name: 'Beginner Barber Mastery',
+    price: '$150',
+    icon: '🥇',
+    color: '#c9a84c',
+    modules: [
+      { id: 't1m1', title: 'Introduction to Barbering', desc: 'Barber mindset, industry overview, career paths (shop owner, booth rent, etc.)' },
+      { id: 't1m2', title: 'Tools & Setup', desc: 'Clippers, trimmers, razors, guard system explained, shop/station setup' },
+      { id: 't1m3', title: 'Sanitation & Arkansas Laws', desc: 'Proper disinfection, state board expectations, professional standards' },
+      { id: 't1m4', title: 'Hair Fundamentals', desc: 'Hair types (especially textured hair), growth patterns, head shape analysis' },
+      { id: 't1m5', title: 'Clipper Control Basics', desc: 'Lever control, sectioning, guidelines, beginner fades (low fade, taper fade, basic blending)' },
+      { id: 't1m6', title: 'Lineups & Edge-Ups', desc: 'Straight lines, enhancements (optional), beard basics, beard shaping, symmetry' },
+      { id: 't1m7', title: 'Client Experience', desc: 'Communication, professionalism, retention strategies' },
+      { id: 't1m8', title: 'Getting Paid', desc: 'Booth rent vs commission, pricing services, building clientele' },
+      { id: 't1m9', title: 'Your First Month', desc: 'Putting it all together, real client scenarios, troubleshooting' }
+    ]
+  },
+  tier2: {
+    name: 'Advanced Barber Mastery',
+    price: '$213',
+    icon: '🏆',
+    color: '#a855f7',
+    modules: [
+      { id: 't2m1', title: 'Bald Fades & Skin Fades', desc: 'Advanced fade techniques, taking it to zero without lines' },
+      { id: 't2m2', title: 'Burst Fades & Specialty Cuts', desc: 'Complex patterns, geometric designs, creative cutting' },
+      { id: 't2m3', title: 'Shear Work & Scissor Cutting', desc: 'Professional scissor techniques, precision cutting, blending' },
+      { id: 't2m4', title: 'Color Enhancements', desc: 'Design work, color application, creative finishes' },
+      { id: 't2m5', title: 'Premium Service Experience', desc: 'Luxury shave protocols, hot towel techniques, professional finishing' },
+      { id: 't2m6', title: 'Fast Cutting Techniques', desc: 'Efficiency without sacrificing quality, speed drills, time management' },
+      { id: 't2m7', title: 'Standing Out in Your Market', desc: 'Portfolio building, social media showcase, commanding premium prices' }
+    ]
+  },
+  tier3: {
+    name: 'Barber Business & Shop Ownership',
+    price: '$263',
+    icon: '💼',
+    color: '#cf5f1f',
+    modules: [
+      { id: 't3m1', title: 'How to Open a Barbershop', desc: 'Location scouting, licensing, startup costs, business plans' },
+      { id: 't3m2', title: 'Booth Rent Systems', desc: 'Using Dino\'s model ($75 weekly), booth arrangements, tenant agreements' },
+      { id: 't3m3', title: 'Hiring & Managing Barbers', desc: 'Recruiting talent, training systems, performance management' },
+      { id: 't3m4', title: 'Branding & Image', desc: 'Logos, brand identity, reputation management, community presence' },
+      { id: 't3m5', title: 'Social Media Growth', desc: 'Content strategy, Instagram/TikTok optimization, client acquisition' },
+      { id: 't3m6', title: 'Scaling to Multiple Locations', desc: 'Systems, franchising, managing multiple shops' },
+      { id: 't3m7', title: 'Creating Your Product Line', desc: 'Tie-in with "Forged by Dino", retail sales, revenue streams' },
+      { id: 't3m8', title: 'Financial Mastery', desc: 'P&L statements, pricing strategy, profit optimization' }
+    ]
+  },
+  tier4: {
+    name: 'Arkansas State Board Prep',
+    price: '$117',
+    icon: '✓',
+    color: '#6fcf97',
+    modules: [
+      { id: 't4m1', title: 'Written Exam Prep', desc: 'Study guide, practice questions, Arkansas-specific content' },
+      { id: 't4m2', title: 'Practical Exam Walkthrough', desc: 'Common mistakes, step-by-step execution, real exam scenarios' },
+      { id: 't4m3', title: 'Sanitation Rules & Protocols', desc: 'State board standards, disinfection procedures, hygiene expectations' },
+      { id: 't4m4', title: 'Exam Day Strategies', desc: 'Confidence building, time management, passing tips' }
+    ]
+  }
+};
+
+// Load from localStorage if available
+function loadTierDataFromStorage() {
+  var stored = localStorage.getItem('tierData');
+  if (stored) {
+    try {
+      var data = JSON.parse(stored);
+      tierData = data;
+      console.log('✅ Loaded course data from localStorage');
+    } catch(e) {
+      console.error('Error loading tierData from localStorage:', e);
+    }
+  }
+}
+
+loadTierDataFromStorage();
+
+// ─── RENDER PROGRAM TIERS ──────────────────────────────────────
+function renderProgramTiers() {
+  ['tier1', 'tier2', 'tier3', 'tier4'].forEach(function(tier) {
+    var data = tierData[tier];
+    var grid = document.getElementById(tier + 'Grid');
+    var colorClass = tier === 'tier1' ? 'var(--gold)' : 
+                     tier === 'tier2' ? 'var(--purple-light)' : 
+                     tier === 'tier3' ? '#cf5f1f' : 
+                     'var(--green)';
+    
+    grid.innerHTML = '';
+    data.modules.forEach(function(mod, idx) {
+      var card = document.createElement('div');
+      card.className = 'course-card';
+      card.style.borderTopColor = colorClass;
+      // Support both 'title'/'desc' (defaults) and 'name'/'description' (from owner portal)
+      var modTitle = mod.title || mod.name || 'Module ' + (idx+1);
+      var modDesc = mod.desc || mod.description || 'No description';
+      card.innerHTML = '<div class="course-badge" style="background:' + colorClass + 'cc;color:#fff;">' + (idx+1) + '/' + data.modules.length + '</div>' +
+        '<div class="course-body" style="padding:20px;">' +
+        '<div class="course-chapter-tag" style="color:' + colorClass + ';">' + data.name.split(' ')[0] + ' Module ' + (idx+1) + '</div>' +
+        '<div class="course-title">' + modTitle + '</div>' +
+        '<div class="course-desc">' + modDesc + '</div>' +
+        '<button class="course-btn" onclick="alert(\'✓ Module included in ' + data.name + ' (' + data.price + ')\n\nThis will be included when you enroll in the program.\')" style="margin-top:12px;background:' + colorClass + ';color:#fff;">View Lessons</button>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+  });
+}
+
+function purchaseTier(tier) {
+  var data = tierData[tier];
+  var price = tier === 'tier1' ? 150 : tier === 'tier2' ? 213 : tier === 'tier3' ? 263 : 117;
+  
+  window.selectedTier = tier;
+  document.getElementById('emailModalTitle').textContent = 'Complete Your Purchase: ' + data.name;
+  document.getElementById('emailModalDesc').textContent = 'We\'ll send you an unlock code after payment. Cost: $' + price;
+  document.getElementById('emailInput').value = '';
+  document.getElementById('emailInput').focus();
+  document.getElementById('emailModal').style.display = 'flex';
+}
+
+function closeEmailModal() {
+  document.getElementById('emailModal').style.display = 'none';
+}
+
+function submitEmail() {
+  var email = document.getElementById('emailInput').value.trim();
+  if (!email || !email.includes('@')) {
+    alert('Please enter a valid email address');
+    return;
+  }
+  
+  window.selectedEmail = email;
+  closeEmailModal();
+  
+  var tier = window.selectedTier;
+  var data = tierData[tier];
+  var price = tier === 'tier1' ? 150 : tier === 'tier2' ? 213 : tier === 'tier3' ? 263 : 117;
+  
+  var html = '<div style="display:grid;gap:12px;">';
+  
+  html += '<div style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);padding:16px;border-radius:6px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background=\'rgba(201,168,76,0.2)\'" onmouseout="this.style.background=\'rgba(201,168,76,0.1)\'" onclick="window.selectPaymentMethod(\'cashapp\')">';
+  html += '<div style="font-weight:700;font-size:0.9rem;color:var(--gold);margin-bottom:4px;">💵 Cash App</div>';
+  html += '<div style="font-size:0.75rem;color:var(--muted);">Send $' + price + ' to <strong>$dinodabarber</strong></div>';
+  html += '<div style="font-size:0.7rem;color:#888;margin-top:8px;">After sending, you\'ll receive an unlock code via email</div>';
+  html += '</div>';
+  
+  html += '<div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.3);padding:16px;border-radius:6px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background=\'rgba(107,33,168,0.2)\'" onmouseout="this.style.background=\'rgba(107,33,168,0.1)\'" onclick="window.selectPaymentMethod(\'zelle\')">';
+  html += '<div style="font-weight:700;font-size:0.9rem;color:var(--purple-light);margin-bottom:4px;">🏦 Zelle</div>';
+  html += '<div style="font-size:0.75rem;color:var(--muted);">Send $' + price + ' to <strong>870-489-3147</strong></div>';
+  html += '<div style="font-size:0.7rem;color:#888;margin-top:8px;">After sending, you\'ll receive an unlock code via email</div>';
+  html += '</div>';
+  
+  html += '<div style="background:rgba(168,33,168,0.1);border:1px solid rgba(168,33,168,0.3);padding:16px;border-radius:6px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background=\'rgba(168,33,168,0.2)\'" onmouseout="this.style.background=\'rgba(168,33,168,0.1)\'" onclick="window.selectPaymentMethod(\'chime\')">';
+  html += '<div style="font-weight:700;font-size:0.9rem;color:#c39aff;margin-bottom:4px;">💳 Chime</div>';
+  html += '<div style="font-size:0.75rem;color:var(--muted);">Send $' + price + ' to <strong>870-489-3147</strong></div>';
+  html += '<div style="font-size:0.7rem;color:#888;margin-top:8px;">After sending, you\'ll receive an unlock code via email</div>';
+  html += '</div>';
+  
+  html += '<div style="background:rgba(100,200,140,0.1);border:1px solid rgba(100,200,140,0.3);padding:16px;border-radius:6px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background=\'rgba(100,200,140,0.2)\'" onmouseout="this.style.background=\'rgba(100,200,140,0.1)\'" onclick="window.selectPaymentMethod(\'clover\')">';
+  html += '<div style="font-weight:700;font-size:0.9rem;color:#6fcf97;margin-bottom:4px;">🛒 Clover</div>';
+  html += '<div style="font-size:0.75rem;color:var(--muted);">Secure online payment processing</div>';
+  html += '<div style="font-size:0.7rem;color:#888;margin-top:8px;">You will be redirected to checkout</div>';
+  html += '</div>';
+  
+  html += '</div>';
+  
+  document.getElementById('paymentMethodsContainer').innerHTML = html;
+  document.getElementById('paymentModal').style.display = 'flex';
+}
+
+function selectPaymentMethod(method) {
+  var tier = window.selectedTier;
+  var email = window.selectedEmail;
+  var price = tier === 'tier1' ? 150 : tier === 'tier2' ? 213 : tier === 'tier3' ? 263 : 117;
+  
+  window.paymentMethod = method;
+  
+  var html = '';
+  var title = '';
+  
+  if (method === 'cashapp') {
+    title = '💵 Cash App Payment';
+    html = '<div style="margin-bottom:20px;">';
+    html += '<div style="font-size:0.9rem;color:var(--white);margin-bottom:8px;font-weight:700;">Send Payment To:</div>';
+    html += '<div style="background:rgba(201,168,76,0.2);border:1px solid rgba(201,168,76,0.3);padding:16px;border-radius:6px;margin-bottom:20px;">';
+    html += '<div style="font-family:monospace;font-size:1.2rem;font-weight:700;color:var(--gold);margin-bottom:6px;">$dinodabarber</div>';
+    html += '<div style="font-size:0.9rem;color:var(--white);font-weight:700;">Amount: $' + price + '</div>';
+    html += '</div>';
+    html += '<div style="background:rgba(100,150,200,0.1);border:1px solid rgba(100,150,200,0.2);padding:14px;border-radius:6px;font-size:0.8rem;color:var(--muted);line-height:1.6;">';
+    html += '✓ Send the payment via Cash App<br>';
+    html += '✓ Check your email for unlock code<br>';
+    html += '✓ Paste code on next page to activate<br>';
+    html += '</div>';
+    html += '</div>';
+  } else if (method === 'zelle') {
+    title = '🏦 Zelle Payment';
+    html = '<div style="margin-bottom:20px;">';
+    html += '<div style="font-size:0.9rem;color:var(--white);margin-bottom:8px;font-weight:700;">Send Payment To:</div>';
+    html += '<div style="background:rgba(107,33,168,0.2);border:1px solid rgba(107,33,168,0.3);padding:16px;border-radius:6px;margin-bottom:20px;">';
+    html += '<div style="font-family:monospace;font-size:1.2rem;font-weight:700;color:var(--purple-light);margin-bottom:6px;">870-489-3147</div>';
+    html += '<div style="font-size:0.9rem;color:var(--white);font-weight:700;">Amount: $' + price + '</div>';
+    html += '</div>';
+    html += '<div style="background:rgba(100,150,200,0.1);border:1px solid rgba(100,150,200,0.2);padding:14px;border-radius:6px;font-size:0.8rem;color:var(--muted);line-height:1.6;">';
+    html += '✓ Send the payment via Zelle<br>';
+    html += '✓ Check your email for unlock code<br>';
+    html += '✓ Paste code on next page to activate<br>';
+    html += '</div>';
+    html += '</div>';
+  } else if (method === 'chime') {
+    title = '💳 Chime Payment';
+    html = '<div style="margin-bottom:20px;">';
+    html += '<div style="font-size:0.9rem;color:var(--white);margin-bottom:8px;font-weight:700;">Send Payment To:</div>';
+    html += '<div style="background:rgba(195,154,255,0.2);border:1px solid rgba(195,154,255,0.3);padding:16px;border-radius:6px;margin-bottom:20px;">';
+    html += '<div style="font-family:monospace;font-size:1.2rem;font-weight:700;color:#c39aff;margin-bottom:6px;">870-489-3147</div>';
+    html += '<div style="font-size:0.9rem;color:var(--white);font-weight:700;">Amount: $' + price + '</div>';
+    html += '</div>';
+    html += '<div style="background:rgba(100,150,200,0.1);border:1px solid rgba(100,150,200,0.2);padding:14px;border-radius:6px;font-size:0.8rem;color:var(--muted);line-height:1.6;">';
+    html += '✓ Send the payment via Chime<br>';
+    html += '✓ Check your email for unlock code<br>';
+    html += '✓ Paste code on next page to activate<br>';
+    html += '</div>';
+    html += '</div>';
+  } else if (method === 'clover') {
+    title = '🛒 Clover Payment';
+    html = '<div style="margin-bottom:20px;">';
+    html += '<div style="font-size:0.95rem;color:var(--white);line-height:1.8;">';
+    html += 'You will be redirected to our secure Clover checkout.<br><br>';
+    html += '<strong>After purchase:</strong><br>';
+    html += '✓ You\'ll receive an unlock code via email<br>';
+    html += '✓ Paste it on the next page to activate<br>';
+    html += '</div>';
+    html += '</div>';
+  }
+  
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmContent').innerHTML = html;
+  document.getElementById('paymentModal').style.display = 'none';
+  document.getElementById('paymentConfirmModal').style.display = 'flex';
+}
+
+function closePaymentConfirm() {
+  document.getElementById('paymentConfirmModal').style.display = 'none';
+  document.getElementById('paymentModal').style.display = 'flex';
+}
+
+function proceedToUnlock() {
+  var tier = window.selectedTier;
+  var email = window.selectedEmail;
+  document.getElementById('paymentConfirmModal').style.display = 'none';
+  window.location.href = 'course-unlock.html?tier=' + tier + '&email=' + encodeURIComponent(email);
+}
+
+function closePaymentModal() {
+  document.getElementById('paymentModal').style.display = 'none';
+}
+
+function showStudentProfile(student) {
+  document.getElementById('studentProfileName').textContent = student.name || 'Student Profile';
+  
+  var haircutPhotos = student.haircutPhotos ? (typeof student.haircutPhotos === 'string' ? JSON.parse(student.haircutPhotos) : student.haircutPhotos) : [];
+  
+  var photoHTML = '';
+  if (student.profilePhoto) {
+    photoHTML = '<div style="width:120px;height:120px;border-radius:8px;background-image:url(' + student.profilePhoto + ');background-size:cover;background-position:center;border:2px solid var(--gold);margin:0 auto;"></div>';
+  } else {
+    photoHTML = '<div style="width:120px;height:120px;border-radius:8px;background:rgba(201,168,76,0.1);display:flex;align-items:center;justify-content:center;font-size:3rem;border:2px solid var(--gold);margin:0 auto;">✂️</div>';
+  }
+  
+  var haircutHTML = '';
+  if (haircutPhotos.length > 0) {
+    haircutHTML = '<div><strong style="color:var(--gold);font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;">Haircut Portfolio</strong><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;">';
+    haircutPhotos.forEach(function(photo) {
+      haircutHTML += '<img src="' + photo + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;border:1px solid var(--border);cursor:pointer;transition:transform 0.2s;hover:scale(1.05);" />';
+    });
+    haircutHTML += '</div></div>';
+  }
+  
+  var bioHTML = '<div><strong style="color:var(--gold);font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;">About</strong><p style="color:var(--muted);margin-top:8px;line-height:1.6;font-size:0.9rem;">' + (student.bio || 'Emerging barber professional') + '</p></div>';
+  
+  document.getElementById('studentProfileContent').innerHTML = photoHTML + haircutHTML + bioHTML;
+  document.getElementById('studentProfileModal').style.display = 'flex';
+}
+
+function closeStudentProfile() {
+  document.getElementById('studentProfileModal').style.display = 'none';
+}
+
+document.getElementById('courseModal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+
+// ─── STUDENT LOGIN ─────────────────────────────────────────────
+// Student credentials stored in owner portal — this checks against localStorage
+function studentLogin() {
+  var id = document.getElementById('loginId').value.trim();
+  var pass = document.getElementById('loginPass').value;
+  var errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+  if (!id || !pass) { errEl.textContent = 'Please enter your ID and password.'; errEl.style.display = 'block'; return; }
+
+  // Don't check location on login - only when clocking in
+  verifyAndLogin(id, pass, null, null);
+}
+
+function verifyAndLogin(id, pass, lat, lng) {
+  var errEl = document.getElementById('loginError');
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var student = students.find(function(s){ return (s.email === id || s.studentId === id) && s.password === pass; });
+
+  if (!student) {
+    errEl.textContent = 'Invalid credentials. Please try again or contact your instructor.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Location check
+  if (lat !== null) {
+    var schoolLat = parseFloat(localStorage.getItem('schoolLat') || '0');
+    var schoolLng = parseFloat(localStorage.getItem('schoolLng') || '0');
+    var maxDist = parseFloat(localStorage.getItem('maxDistanceMiles') || '0.25');
+    var dist = getDistanceMiles(lat, lng, schoolLat, schoolLng);
+    if (dist > maxDist) {
+      errEl.textContent = 'You must be at the school location to log in (' + dist.toFixed(2) + ' miles away).';
+      errEl.style.display = 'block';
+      return;
+    }
+  }
+
+  localStorage.setItem('currentStudentId', student.id);
+  window.location.href = 'student.html';
+}
+
+function getDistanceMiles(lat1, lon1, lat2, lon2) {
+  var R = 3958.8;
+  var dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
+  var a = Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+// Show location status
+var locationRequired = localStorage.getItem('locationRequired') === 'true';
+var note = document.getElementById('locationNote');
+if (locationRequired) {
+  note.innerHTML = '📍 <span style="color:#6fcf97;">Location verification is active</span>';
+} else {
+  note.innerHTML = '📍 <span>Location verification is currently off</span>';
+}
+
+document.addEventListener('keydown', function(e){ if(e.key==='Enter'&&document.getElementById('loginId')===document.activeElement||document.getElementById('loginPass')===document.activeElement) studentLogin(); });
+
+function updateCourseButtons() {
+  var tierData = JSON.parse(localStorage.getItem('tierData') || '{}');
+  
+  ['tier1', 'tier2', 'tier3', 'tier4'].forEach(function(tierName) {
+    var gridId = tierName + 'Grid';
+    var grid = document.getElementById(gridId);
+    if (!grid) return;
+    
+    var tier = tierData[tierName];
+    if (!tier || !tier.modules || tier.modules.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#888;">No modules added yet</div>';
+      return;
+    }
+    
+    grid.innerHTML = tier.modules.map(function(module) {
+      return '<div style="background:var(--border-sub);border:1px solid var(--border-main);border-radius:4px;overflow:hidden;">' +
+        (module.pictureUrl ? '<img src="' + module.pictureUrl + '" style="width:100%;height:200px;object-fit:cover;" alt="' + module.name + '">' : '') +
+        '<div style="padding:16px;">' +
+        '<div style="font-weight:700;margin-bottom:8px;color:var(--white);">' + module.name + '</div>' +
+        '<div style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">' + (module.description ? module.description.substring(0, 80) + '...' : 'No description') + '</div>' +
+        '</div>' +
+        '</div>';
+    }).join('');
+  });
+}
+
+updateCourseButtons();
+
+// ─── LOAD STAFF ────────────────────────────────────────────────
+function loadStaff() {
+  var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+  var grid = document.getElementById('staffGrid');
+  
+  if (!staff.length) { 
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#555;font-style:italic;grid-column:1/-1;">Staff profiles will appear here.</div>'; 
+    return; 
+  }
+  
+  grid.innerHTML = '';
+  staff.forEach(function(member) {
+    var card = document.createElement('div');
+    card.style.cssText = 'background:var(--card);border:1px solid var(--border-sub);padding:24px;text-align:center;position:relative;overflow:hidden;transition:transform 0.25s,border-color 0.25s;';
+    card.onmouseover = function(){ this.style.transform='translateY(-4px)'; this.style.borderColor='var(--gold)'; };
+    card.onmouseout = function(){ this.style.transform='translateY(0)'; this.style.borderColor='var(--border-sub)'; };
+    
+    var photo = member.photo ? '<img src="'+member.photo+'" style="width:100%;height:180px;object-fit:cover;border-radius:4px;margin-bottom:16px;border:1px solid var(--border-sub);">' : '<div style="width:100%;height:180px;background:linear-gradient(135deg,rgba(107,33,168,0.3),rgba(201,168,76,0.1));border-radius:4px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-size:2rem;border:1px solid var(--border-sub);">👨</div>';
+    
+    card.innerHTML = photo +
+      '<div style="font-family:Playfair Display,serif;font-size:1.1rem;font-weight:700;margin-bottom:6px;">'+member.name+'</div>' +
+      '<div style="font-size:0.75rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-weight:700;">'+member.role+'</div>' +
+      '<div style="font-size:0.75rem;color:var(--muted);line-height:1.6;">Certified instructor with expertise in advanced techniques and student success.</div>';
+    
+    grid.appendChild(card);
+  });
+}
+
+// ─── TOGGLE MODELS ────────────────────────────────────────────
+function toggleTierModels(tier) {
+  var grid = document.getElementById(tier + 'Grid');
+  var hidden = grid.style.display === 'none';
+  grid.style.display = hidden ? 'grid' : 'none';
+}
+
+function toggleModels() {
+  var tier1Grid = document.getElementById('tier1Grid');
+  var tier2Grid = document.getElementById('tier2Grid');
+  var tier3Grid = document.getElementById('tier3Grid');
+  var tier4Grid = document.getElementById('tier4Grid');
+  
+  var grids = [tier1Grid, tier2Grid, tier3Grid, tier4Grid];
+  var hidden = tier1Grid && tier1Grid.style.display === 'none';
+  
+  grids.forEach(function(grid) {
+    if (grid) {
+      grid.style.display = hidden ? 'grid' : 'none';
+    }
+  });
+}
+
+// ─── HAMBURGER MENU ────────────────────────────────────────────
+function toggleNav() {
+  if (window.innerWidth <= 900) {
+    var btn = document.getElementById('hamburger');
+    var nav = document.getElementById('sideNav');
+    var overlay = document.getElementById('navOverlay');
+    btn.classList.toggle('open');
+    nav.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+}
+
+function closeNav() {
+  var btn = document.getElementById('hamburger');
+  var nav = document.getElementById('sideNav');
+  var overlay = document.getElementById('navOverlay');
+  btn.classList.remove('open');
+  nav.classList.remove('open');
+  overlay.classList.remove('open');
+}
+
+// ─── EVENT AD DISPLAY ──────────────────────────────────────────
+function checkActiveEvent() {
+  var eventStr = localStorage.getItem('currentEvent');
+  if (!eventStr) {
+    console.log('No event stored');
+    return;
+  }
+  
+  var event = JSON.parse(eventStr);
+  var startDate = new Date(event.startDate);
+  var endDate = new Date(event.endDate);
+  var now = new Date();
+  
+  console.log('Event Check:', {
+    name: event.name,
+    now: now.toISOString(),
+    start: startDate.toISOString(),
+    end: endDate.toISOString(),
+    isActive: now >= startDate && now <= endDate
+  });
+  
+  // Check if event is within active time range
+  if (now < startDate || now > endDate) {
+    console.log('Event not in date range');
+    return;
+  }
+  
+  console.log('Event is ACTIVE - displaying');
+  
+  // Display event ad replacing hero section
+  var heroSection = document.getElementById('heroSection');
+  var bgColor = event.backgroundColor || '#7c3aed';
+  
+  heroSection.style.background = 'linear-gradient(135deg, ' + bgColor + '40, ' + bgColor + '20)';
+  heroSection.innerHTML = '<div class="hero-bg" style="background:linear-gradient(135deg,rgba(107,33,168,0.3),rgba(201,168,76,0.1));"></div>' +
+    '<div class="hero-grid"></div>' +
+    '<div class="hero-content">' +
+    '<div style="font-size:0.65rem;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;font-weight:700;">⭐ Special Announcement</div>' +
+    '<h1 class="hero-title">' + event.name + '<br><em>' + event.subtitle + '</em></h1>' +
+    '<p class="hero-sub">' + event.description + '</p>' +
+    '<div class="hero-btns">' +
+    '<a class="btn-gold" href="event-application.html">Apply Now →</a>' +
+    '<a href="#login" class="btn-outline">Student Portal</a>' +
+    '</div>' +
+    '</div>';
+}
+
+// ─── STUDENT PROFILES ──────────────────────────────────────────
+function loadStudentProfiles() {
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var activeStudents = students.filter(function(s){ return !s.graduated && s.bio; }).slice(0, 6);
+  var grid = document.getElementById('studentProfilesGrid');
+  
+  if (!activeStudents.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;color:#555;text-align:center;padding:40px;font-style:italic;">Students will appear here as they complete their profiles</div>';
+    return;
+  }
+  
+  grid.innerHTML = '';
+  activeStudents.forEach(function(student) {
+    var card = document.createElement('a');
+    card.href = '#';
+    card.className = 'profile-card';
+    card.style.textDecoration = 'none';
+    card.style.color = 'inherit';
+    
+    var photoStyle = student.profilePhoto ? 'background-image:url(' + student.profilePhoto + ');' : '';
+    var haircutPhotos = student.haircutPhotos ? (typeof student.haircutPhotos === 'string' ? JSON.parse(student.haircutPhotos) : student.haircutPhotos) : [];
+    
+    var haircutsHTML = '';
+    if (haircutPhotos.length > 0) {
+      haircutsHTML = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0;">';
+      haircutPhotos.forEach(function(photo) {
+        haircutsHTML += '<img src="' + photo + '" style="width:100%;height:60px;object-fit:cover;border-radius:3px;border:1px solid var(--border);" />';
+      });
+      haircutsHTML += '</div>';
+    } else {
+      haircutsHTML = '<div style="color:#555;font-size:0.8rem;font-style:italic;margin:10px 0;">No haircut photos yet</div>';
+    }
+    
+    card.innerHTML = '<div class="profile-image" style="' + photoStyle + '">' + 
+      (student.profilePhoto ? '' : '✂️') + 
+      '</div>' +
+      '<div class="profile-body">' +
+      '<div class="profile-name">' + student.name + '</div>' +
+      haircutsHTML +
+      '<div class="profile-bio">' + (student.bio || 'Emerging barber professional') + '</div>' +
+      '</div>';
+    
+    card.onclick = function(e){ 
+      e.preventDefault();
+      window.showStudentProfile(student);
+    };
+    
+    grid.appendChild(card);
+  });
+}
+
+// ─── STAFF & ALUMNI ────────────────────────────────────────────
+function loadStaffProfiles() {
+  var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+  var grid = document.getElementById('staffProfilesGrid');
+  
+  if (!staff.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#555;font-style:italic;">Staff members will appear here.</div>';
+    return;
+  }
+  
+  grid.innerHTML = '';
+  staff.forEach(function(member) {
+    var card = document.createElement('div');
+    card.className = 'staff-card';
+    var photoStyle = member.photo ? 'background-image:url(' + member.photo + ');' : '';
+    card.innerHTML = '<div class="staff-photo" style="' + photoStyle + '">' + 
+      (member.photo ? '' : '👨') + 
+      '</div>' +
+      '<div class="staff-info">' +
+      '<div class="staff-name">' + member.name + '</div>' +
+      '<div class="staff-role">' + member.role + '</div>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function loadAlumniProfiles() {
+  var alumni = JSON.parse(localStorage.getItem('alumni') || '[]');
+  var grid = document.getElementById('alumniProfilesGrid');
+  
+  if (!alumni.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#555;font-style:italic;">Our graduates are out there changing the industry</div>';
+    return;
+  }
+  
+  grid.innerHTML = '';
+  alumni.forEach(function(grad) {
+    var card = document.createElement('div');
+    card.className = 'alumni-card';
+    var photoStyle = grad.profilePhoto ? 'background-image:url(' + grad.profilePhoto + ');' : '';
+    card.innerHTML = '<div class="alumni-photo" style="' + photoStyle + '">' + 
+      (grad.profilePhoto ? '' : '🎓') + 
+      '</div>' +
+      '<div class="alumni-info">' +
+      '<div class="alumni-name">' + grad.name + '</div>' +
+      '<div class="alumni-status">' + grad.currentStatus + '</div>' +
+      (grad.totalHours ? '<div style="font-size:0.7rem;color:#888;margin-top:6px;">' + Math.round(grad.totalHours) + ' hours completed</div>' : '') +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+// ─── INIT ──────────────────────────────────────────────────────
+renderProgramTiers();
+checkActiveEvent();
+loadStudentProfiles();
+loadStaff();
+loadStaffProfiles();
+loadAlumniProfiles();
+
+// Refresh courses when page becomes visible (handles back navigation from other pages)
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden) {
+    loadTierDataFromStorage();
+    renderProgramTiers();
+    console.log('✅ Refreshed course data');
+  }
+});
+
+// Expose to window
+window.purchaseTier = purchaseTier;
+window.closeEmailModal = closeEmailModal;
+window.submitEmail = submitEmail;
+window.selectPaymentMethod = selectPaymentMethod;
+window.closePaymentModal = closePaymentModal;
+window.closePaymentConfirm = closePaymentConfirm;
+window.proceedToUnlock = proceedToUnlock;
+window.toggleTierModels = toggleTierModels;
+window.toggleNav = toggleNav;
+window.closeNav = closeNav;
+window.showStudentProfile = showStudentProfile;
+window.closeStudentProfile = closeStudentProfile;
+
+// Close payment modals when clicking outside
+document.getElementById('emailModal').addEventListener('click', function(e){ if(e.target===this) closeEmailModal(); });
+document.getElementById('paymentModal').addEventListener('click', function(e){ if(e.target===this) closePaymentModal(); });
+document.getElementById('paymentConfirmModal').addEventListener('click', function(e){ if(e.target===this) closePaymentConfirm(); });
+document.getElementById('studentProfileModal').addEventListener('click', function(e){ if(e.target===this) closeStudentProfile(); });
+</script>
+
+
+</body></html>

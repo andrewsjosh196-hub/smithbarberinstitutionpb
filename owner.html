@@ -1,0 +1,3347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner Portal — SBI School</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#6b21a8;--purple-mid:#7c3aed;--purple-light:#a855f7;
+  --gold:#c9a84c;--gold-light:#e5c97a;--gold-dark:#a07c28;
+  --black:#0a0806;--card:#110f0c;
+  --border:rgba(201,168,76,0.2);--border-sub:#1c1a16;
+  --white:#faf8f5;--muted:#9a8f7e;
+  --green:#6fcf97;--red:#e87b7b;
+}
+body{font-family:'Raleway',sans-serif;background:var(--black);color:var(--white);min-height:100vh;}
+
+#ownerLogin{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(107,33,168,0.14),transparent 70%);}
+.login-card{background:var(--card);border:1px solid var(--border);padding:48px 40px;width:100%;max-width:400px;text-align:center;position:relative;}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));}
+.login-logo{width:80px;height:80px;object-fit:contain;margin:0 auto 16px;display:block;}
+.login-eyebrow{font-size:0.58rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;font-weight:700;}
+.login-title{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;font-style:italic;margin-bottom:4px;}
+.login-sub{color:#555;font-size:0.72rem;letter-spacing:1px;margin-bottom:28px;}
+.login-rule{width:40px;height:1px;background:var(--gold);margin:0 auto 28px;}
+.form-label{display:block;font-size:0.6rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:7px;margin-top:18px;font-weight:700;text-align:left;}
+.form-label:first-of-type{margin-top:0;}
+.form-input,.form-textarea,.form-select{width:100%;padding:13px 16px;border:1px solid var(--border-sub);background:#0a0806;color:var(--white);font-family:'Raleway',sans-serif;font-size:0.88rem;transition:border-color 0.2s;-webkit-appearance:none;margin-bottom:10px;}
+.form-input:focus,.form-textarea:focus,.form-select:focus{outline:none;border-color:var(--gold);}
+.form-textarea{min-height:100px;resize:vertical;}
+.login-btn,.btn-submit,.btn-primary{width:100%;background:var(--gold);color:#000;border:none;padding:13px;font-family:'Raleway',sans-serif;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.72rem;cursor:pointer;margin-top:12px;transition:background 0.2s;}
+.login-btn:hover,.btn-submit:hover,.btn-primary:hover{background:var(--gold-light);}
+.btn-primary{width:auto;display:inline-block;padding:9px 14px;margin:0;}
+.login-err{color:var(--red);font-size:0.75rem;margin-top:10px;display:none;}
+
+#ownerDash{display:none;}
+nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);}
+.nav-logo{height:40px;width:40px;object-fit:contain;}
+.nav-brand{margin-left:10px;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:0.9rem;font-weight:700;display:block;line-height:1.2;}
+.nav-brand-sub{font-size:0.52rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;display:block;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:0.62rem;color:var(--gold);}
+.logout-btn{background:transparent;border:1px solid #222;color:#555;padding:7px 14px;cursor:pointer;font-family:'Raleway',sans-serif;font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;transition:all 0.2s;}
+.logout-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+.tab-bar{background:#0d0b09;border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:0;overflow-x:auto;}
+.tab{padding:14px 16px;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#555;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s;background:none;border:none;}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tab:hover:not(.active){color:#bbb;}
+
+.main{max-width:1100px;margin:0 auto;padding:32px 20px 80px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+.panel-card{background:var(--card);border:1px solid var(--border-sub);padding:28px;margin-bottom:20px;position:relative;}
+.panel-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
+.panel-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:20px;}
+.panel-title em{font-style:italic;color:var(--gold);}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-1{display:grid;grid-template-columns:1fr;gap:16px;}
+
+.student-row,.app-row,.alumni-row,.staff-row{background:#0f0d0a;border:1px solid var(--border-sub);padding:18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.row-col-1{flex:1;}
+.row-name{font-weight:700;margin-bottom:2px;}
+.row-meta{font-size:0.7rem;color:var(--muted);}
+.row-actions{display:flex;gap:8px;}
+.btn-sm{padding:6px 12px;font-size:0.6rem;background:var(--purple);color:#fff;border:none;cursor:pointer;transition:all 0.2s;font-weight:600;}
+.btn-sm:hover{background:var(--purple-light);}
+.btn-sm.danger{background:var(--red);}
+.btn-sm.danger:hover{background:#f09090;}
+.btn-sm.success{background:var(--green);}
+.btn-sm.success:hover{background:#86e5a8;}
+
+.schedule-item,.news-item{background:#0f0d0a;border:1px solid var(--border-sub);padding:18px;margin-bottom:10px;}
+.sched-time{font-family:'Playfair Display',serif;font-weight:700;color:var(--gold);margin-bottom:6px;}
+.sched-title{font-weight:700;margin-bottom:4px;}
+.sched-notes{font-size:0.78rem;color:var(--muted);}
+
+.course-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.course-tab{padding:6px 14px;border:1px solid var(--border-sub);background:transparent;color:#555;cursor:pointer;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;font-weight:600;transition:all 0.2s;}
+.course-tab.active{background:var(--gold);color:#000;border-color:var(--gold);}
+
+.module-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.module-item{background:#0a0806;border:1px solid var(--border-sub);padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:2px;}
+.module-item-name{flex:1;font-weight:600;color:var(--white);}
+.module-item-desc{font-size:0.7rem;color:var(--muted);margin-top:4px;}
+.module-item-actions{display:flex;gap:6px;}
+.btn-edit-module{padding:5px 10px;background:var(--purple);border:none;color:#fff;cursor:pointer;font-size:0.6rem;border-radius:2px;transition:all 0.2s;}
+.btn-edit-module:hover{background:var(--purple-light);}
+.btn-delete-module{padding:5px 10px;background:var(--red);border:none;color:#fff;cursor:pointer;font-size:0.6rem;border-radius:2px;transition:all 0.2s;}
+.btn-delete-module:hover{background:#f09090;}
+
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000;}
+.modal-overlay.active{display:flex;}
+.modal-content{background:var(--card);border:1px solid var(--border);padding:32px;max-width:500px;width:90%;border-radius:4px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:20px;}
+.modal-close{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
+
+.tier-modules{animation:slideDown 0.3s ease;}
+@keyframes slideDown{from{opacity:0;max-height:0;} to{opacity:1;max-height:1000px;}}
+
+@media(max-width:800px){
+  .grid-2{grid-template-columns:1fr;}
+  .tab{font-size:0.55rem;padding:12px 10px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="ownerLogin">
+  <div class="login-card">
+    <img src="school_logo.png" alt="SBI" class="login-logo" onerror="this.style.display='none'">
+    <p class="login-eyebrow">Owner Portal</p>
+    <h1 class="login-title">SBI <em>School</em></h1>
+    <p class="login-sub">Administrative Access</p>
+    <div class="login-rule"></div>
+    <label class="form-label">Username</label>
+    <input type="text" id="ownerUser" class="form-input" placeholder="owner">
+    <label class="form-label">Password</label>
+    <input type="password" id="ownerPass" class="form-input" placeholder="••••••••">
+    <button class="login-btn" onclick="ownerLogin()">Sign In</button>
+    <div id="ownerErr" class="login-err"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="ownerDash">
+  <nav>
+    <img src="school_logo.png" alt="SBI School" class="nav-logo" onerror="this.style.display='none'">
+    <div class="nav-brand">
+      <span class="nav-brand-name">SBI School</span>
+      <span class="nav-brand-sub">Owner Portal</span>
+    </div>
+    <div class="nav-right">
+      <span id="ownerNameBadge">Owner</span>
+      <button class="logout-btn" onclick="ownerLogout()">Log Out</button>
+    </div>
+  </nav>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('dashboard', this)">Dashboard</button>
+    <button class="tab" onclick="switchTab('students', this)">Students</button>
+    <button class="tab" onclick="switchTab('schedule', this)">Schedule</button>
+    <button class="tab" onclick="switchTab('staff', this)">Staff</button>
+    <button class="tab" onclick="switchTab('alumni', this)">Alumni</button>
+    <button class="tab" onclick="switchTab('courses', this)">Courses</button>
+    <button class="tab" onclick="switchTab('hybrid', this)">Hybrid Curriculum</button>
+    <button class="tab" onclick="switchTab('events', this)">Events</button>
+    <button class="tab" onclick="switchTab('catalog', this)">Store</button>
+    <button class="tab" onclick="switchTab('applications', this)">Applications</button>
+    <button class="tab" onclick="switchTab('reports', this)">Reports</button>
+    <button class="tab" onclick="switchTab('settings', this)">Settings</button>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard" class="tab-panel active">
+      <div class="panel-card">
+        <h3 class="panel-title">Dashboard <em>Overview</em></h3>
+        <div class="grid-2">
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--gold);" id="statStudents">0</div>
+            <div style="font-size:0.7rem;color:#555;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Active Students</div>
+          </div>
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--gold);" id="statClocked">0</div>
+            <div style="font-size:0.7rem;color:#555;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Clocked In Now</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Quick Actions</h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="switchTab('students', document.querySelectorAll('.tab')[1]); setTimeout(function(){ document.getElementById('addStudentForm').scrollIntoView(); }, 100);">+ Add Student</button>
+          <button class="btn-primary" onclick="switchTab('applications', document.querySelectorAll('.tab')[8])">📋 Applications</button>
+          <button class="btn-primary" onclick="switchTab('schedule', document.querySelectorAll('.tab')[2])">📅 Edit Schedule</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDENTS -->
+    <div id="tab-students" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Add <em>Student</em></h3>
+        <div id="addStudentForm">
+          <div class="grid-2">
+            <div>
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-input" id="newName" placeholder="John Doe">
+            </div>
+            <div>
+              <label class="form-label">Course Type</label>
+              <select class="form-select" id="newCourseType">
+                <option value="">— Select —</option>
+                <option value="531">Barber / Stylist</option>
+                <option value="532">Teacher / Manager / Instructor</option>
+                <option value="533">Crossover (Cosmetology→Barber)</option>
+                <option value="534">Hybrid (120 Theory Hours)</option>
+                <option value="535">Hybrid (120 Theory + 1380 Practical)</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="newEmail" placeholder="john@example.com">
+            </div>
+            <div>
+              <label class="form-label">Password</label>
+              <input type="password" class="form-input" id="newPass" placeholder="••••••••">
+            </div>
+          </div>
+          <button class="btn-submit" onclick="addStudent()">Add Student</button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Active <em>Students</em></h3>
+        <div id="studentsList"></div>
+      </div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div id="tab-schedule" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Daily <em>Schedule</em></h3>
+        <label class="form-label">Select Date</label>
+        <input type="date" class="form-input" id="scheduleDate" onchange="loadScheduleForDate()">
+        
+        <div style="margin-top:20px;" id="scheduleList"></div>
+
+        <h4 style="margin-top:30px;margin-bottom:12px;font-weight:700;">Add Class</h4>
+        <div class="grid-2">
+          <div>
+            <label class="form-label">Time (e.g., 9:00 AM)</label>
+            <input type="text" class="form-input" id="classTime" placeholder="9:00 AM">
+          </div>
+          <div>
+            <label class="form-label">Course Type</label>
+            <select class="form-select" id="classType">
+              <option value="all">All Students</option>
+              <option value="531">Barber / Stylist</option>
+              <option value="532">Teacher / Manager</option>
+              <option value="533">Crossover</option>
+            </select>
+          </div>
+        </div>
+        <label class="form-label">Class Title & Notes</label>
+        <textarea class="form-textarea" id="classNotes" placeholder="Class title and notes..."></textarea>
+        <button class="btn-submit" onclick="addScheduleItem()">Add to Schedule</button>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">School <em>Announcements</em></h3>
+        <label class="form-label">Announcement</label>
+        <textarea class="form-textarea" id="announcementText" placeholder="e.g., School closed tomorrow, Emergency drill at 2pm..."></textarea>
+        <button class="btn-submit" onclick="postAnnouncement()">Post Announcement</button>
+      </div>
+    </div>
+
+    <!-- STAFF -->
+    <div id="tab-staff" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Add Staff <em>Member</em></h3>
+        <div class="grid-2">
+          <div>
+            <label class="form-label">Name</label>
+            <input type="text" class="form-input" id="staffName" placeholder="Mr. Smith">
+          </div>
+          <div>
+            <label class="form-label">Role</label>
+            <input type="text" class="form-input" id="staffRole" placeholder="Lead Instructor">
+          </div>
+        </div>
+        <label class="form-label">Bio</label>
+        <textarea class="form-textarea" id="staffBio" placeholder="Brief biography and credentials..." style="min-height:60px;"></textarea>
+        <label class="form-label">Photo (Upload Image)</label>
+        <input type="file" class="form-input" id="staffPhoto" accept="image/*">
+        <button class="btn-submit" onclick="window.addStaffMember()">Add Staff</button>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Staff <em>List</em></h3>
+        <div id="staffList"></div>
+      </div>
+    </div>
+
+    <!-- ALUMNI -->
+    <div id="tab-alumni" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Active <em>Students</em></h3>
+        <p style="font-size:0.8rem;color:#555;margin-bottom:16px;">Click "Graduate" to move student to alumni</p>
+        <div id="graduationList"></div>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Manage <em>Alumni</em></h3>
+        <label class="form-label">Alumnus Name</label>
+        <input type="text" class="form-input" id="alumniName" placeholder="John Doe">
+        <label class="form-label">Current Status / Location</label>
+        <input type="text" class="form-input" id="alumniStatus" placeholder="Barber at Main Street Barbershop">
+        <label class="form-label">Photo (Upload Image)</label>
+        <input type="file" class="form-input" id="alumniPhoto" accept="image/*">
+        <button class="btn-submit" onclick="addAlumnus()">Add Alumnus</button>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Alumni <em>List</em></h3>
+        <div id="alumniList"></div>
+      </div>
+    </div>
+
+    <!-- COURSES -->
+    <div id="tab-courses" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Online Program <em>Tiers</em></h3>
+        <p style="font-size:0.8rem;color:#555;margin-bottom:16px;">Edit tier names, pricing, and modules. Changes save automatically.</p>
+        
+        <!-- HIERARCHY VIEW -->
+        <div style="background:#0a0806;border:1px solid rgba(201,168,76,0.3);border-radius:8px;padding:20px;margin-bottom:24px;">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--gold);margin-bottom:16px;font-weight:700;">📊 Quick Edit View - Click to Expand</div>
+          <div id="coursesHierarchyView" style="display:flex;flex-direction:column;gap:12px;"></div>
+          <button class="btn-submit" onclick="window.renderCoursesHierarchy()" style="margin-top:12px;background:rgba(201,168,76,0.2);border:1px solid rgba(201,168,76,0.4);">🔄 Refresh View</button>
+        </div>
+        
+        <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+          <button class="course-tab active" onclick="switchCourseTab('tier1', this)">🥇 Tier 1</button>
+          <button class="course-tab" onclick="switchCourseTab('tier2', this)">🏆 Tier 2</button>
+          <button class="course-tab" onclick="switchCourseTab('tier3', this)">💼 Tier 3</button>
+          <button class="course-tab" onclick="switchCourseTab('tier4', this)">🎓 Tier 4</button>
+        </div>
+
+        <!-- TIER 1 EDIT -->
+        <div id="tier1Content" style="display:block;">
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
+            <div class="grid-2">
+              <div>
+                <label class="form-label">Tier 1 Name</label>
+                <input type="text" class="form-input" id="tier1Name" placeholder="Beginner Barber Mastery" onchange="saveTierData('tier1')">
+              </div>
+              <div>
+                <label class="form-label">Price (Locked - $150)</label>
+                <input type="text" class="form-input" id="tier1Price" value="$150" readonly style="background:#0a0806;color:#888;cursor:not-allowed;">
+              </div>
+            </div>
+            <label class="form-label">Modules</label>
+            <div id="tier1ModulesList" class="module-list"></div>
+            <button class="btn-submit" onclick="window.addModuleToTier('tier1')" style="margin-bottom:12px;">+ Add Module</button>
+            
+            <hr style="border:none;border-top:1px solid var(--border-sub);margin:20px 0;">
+            <label class="form-label">Milestones & Tests</label>
+            <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">Set up milestone tests for this course</p>
+            <div id="tier1MilestonesList"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+              <input type="number" class="form-input" id="tier1MilestoneHours" placeholder="Hours (e.g. 300)" style="font-size:0.85rem;">
+              <input type="text" class="form-input" id="tier1MilestoneTest" placeholder="Test name" style="font-size:0.85rem;">
+            </div>
+            <button class="btn-submit" onclick="window.addMilestoneToTier('tier1')" style="margin-bottom:12px;">+ Add Milestone</button>
+            <button class="btn-submit" onclick="saveTierData('tier1')">Save Tier 1</button>
+          </div>
+        </div>
+
+        <!-- TIER 2 EDIT -->
+        <div id="tier2Content" style="display:none;">
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
+            <div class="grid-2">
+              <div>
+                <label class="form-label">Tier 2 Name</label>
+                <input type="text" class="form-input" id="tier2Name" placeholder="Advanced Barber Mastery" onchange="saveTierData('tier2')">
+              </div>
+              <div>
+                <label class="form-label">Price (Locked - $213)</label>
+                <input type="text" class="form-input" id="tier2Price" value="$213" readonly style="background:#0a0806;color:#888;cursor:not-allowed;">
+              </div>
+            </div>
+            <label class="form-label">Modules</label>
+            <div id="tier2ModulesList" class="module-list"></div>
+            <button class="btn-submit" onclick="window.addModuleToTier('tier2')" style="margin-bottom:12px;">+ Add Module</button>
+            
+            <hr style="border:none;border-top:1px solid var(--border-sub);margin:20px 0;">
+            <label class="form-label">Milestones & Tests</label>
+            <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">Set up milestone tests for this course</p>
+            <div id="tier2MilestonesList"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+              <input type="number" class="form-input" id="tier2MilestoneHours" placeholder="Hours (e.g. 300)" style="font-size:0.85rem;">
+              <input type="text" class="form-input" id="tier2MilestoneTest" placeholder="Test name" style="font-size:0.85rem;">
+            </div>
+            <button class="btn-submit" onclick="window.addMilestoneToTier('tier2')" style="margin-bottom:12px;">+ Add Milestone</button>
+            <button class="btn-submit" onclick="saveTierData('tier2')">Save Tier 2</button>
+          </div>
+        </div>
+
+        <!-- TIER 3 EDIT -->
+        <div id="tier3Content" style="display:none;">
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
+            <div class="grid-2">
+              <div>
+                <label class="form-label">Tier 3 Name</label>
+                <input type="text" class="form-input" id="tier3Name" placeholder="Barber Business & Shop Ownership" onchange="saveTierData('tier3')">
+              </div>
+              <div>
+                <label class="form-label">Price (Locked - $263)</label>
+                <input type="text" class="form-input" id="tier3Price" value="$263" readonly style="background:#0a0806;color:#888;cursor:not-allowed;">
+              </div>
+            </div>
+            <label class="form-label">Modules</label>
+            <div id="tier3ModulesList" class="module-list"></div>
+            <button class="btn-submit" onclick="window.addModuleToTier('tier3')" style="margin-bottom:12px;">+ Add Module</button>
+            
+            <hr style="border:none;border-top:1px solid var(--border-sub);margin:20px 0;">
+            <label class="form-label">Milestones & Tests</label>
+            <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">Set up milestone tests for this course</p>
+            <div id="tier3MilestonesList"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+              <input type="number" class="form-input" id="tier3MilestoneHours" placeholder="Hours (e.g. 300)" style="font-size:0.85rem;">
+              <input type="text" class="form-input" id="tier3MilestoneTest" placeholder="Test name" style="font-size:0.85rem;">
+            </div>
+            <button class="btn-submit" onclick="window.addMilestoneToTier('tier3')" style="margin-bottom:12px;">+ Add Milestone</button>
+            <button class="btn-submit" onclick="saveTierData('tier3')">Save Tier 3</button>
+          </div>
+        </div>
+
+        <!-- TIER 4 EDIT -->
+        <div id="tier4Content" style="display:none;">
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
+            <div class="grid-2">
+              <div>
+                <label class="form-label">Tier 4 Name</label>
+                <input type="text" class="form-input" id="tier4Name" placeholder="Arkansas State Board Prep" onchange="saveTierData('tier4')">
+              </div>
+              <div>
+                <label class="form-label">Price (Locked - $117)</label>
+                <input type="text" class="form-input" id="tier4Price" value="$117" readonly style="background:#0a0806;color:#888;cursor:not-allowed;">
+              </div>
+            </div>
+            <label class="form-label">Modules</label>
+            <div id="tier4ModulesList" class="module-list"></div>
+            <button class="btn-submit" onclick="window.addModuleToTier('tier4')" style="margin-bottom:12px;">+ Add Module</button>
+            
+            <hr style="border:none;border-top:1px solid var(--border-sub);margin:20px 0;">
+            <label class="form-label">Milestones & Tests</label>
+            <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">Set up milestone tests for this course</p>
+            <div id="tier4MilestonesList"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+              <input type="number" class="form-input" id="tier4MilestoneHours" placeholder="Hours (e.g. 300)" style="font-size:0.85rem;">
+              <input type="text" class="form-input" id="tier4MilestoneTest" placeholder="Test name" style="font-size:0.85rem;">
+            </div>
+            <button class="btn-submit" onclick="window.addMilestoneToTier('tier4')" style="margin-bottom:12px;">+ Add Milestone</button>
+            <button class="btn-submit" onclick="saveTierData('tier4')">Save Tier 4</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HYBRID CURRICULUM -->
+    <div id="tab-hybrid" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Hybrid <em>Curriculum</em></h3>
+        <p style="font-size:0.8rem;color:#555;margin-bottom:20px;">Design the 120-hour hybrid course with 12 modules × 6 lessons. Students watch videos, answer questions, and progress through lessons.</p>
+        
+        <div id="hybridModulesList" style="display:grid;gap:12px;margin-bottom:20px;">
+          <!-- Modules will be rendered here -->
+        </div>
+        
+        <button class="btn-submit" onclick="window.generateDefaultHybridCurriculum()" style="margin-bottom:20px;">📋 Generate Default 12 Modules</button>
+      </div>
+
+      <!-- MODULE EDITOR -->
+      <div id="moduleEditorSection" style="display:none;">
+        <div class="panel-card">
+          <h3 class="panel-title">Edit <em>Module</em></h3>
+          <button onclick="closeModuleEditor()" style="float:right;background:none;border:none;color:var(--gold);font-size:1.2rem;cursor:pointer;">✕</button>
+          <div style="clear:both;"></div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;">
+            <!-- Module Details -->
+            <div>
+              <h4 style="color:var(--gold);margin-bottom:12px;">Module Details</h4>
+              <div class="form-group">
+                <label class="form-label">Module Number</label>
+                <input type="number" class="form-input" id="editorModuleNum" min="1" max="12" placeholder="1" onchange="window.updateModulePreview()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Module Title</label>
+                <input type="text" class="form-input" id="editorModuleTitle" placeholder="e.g., Haircut Fundamentals" onchange="window.updateModulePreview()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Module Description</label>
+                <textarea class="form-textarea" id="editorModuleDesc" placeholder="What students will learn..." onchange="window.updateModulePreview()" style="min-height:80px;"></textarea>
+              </div>
+            </div>
+            
+            <!-- Preview -->
+            <div>
+              <h4 style="color:var(--gold);margin-bottom:12px;">📱 Preview</h4>
+              <div id="modulePreview" style="background:#0a0806;border:1px solid var(--border);border-radius:6px;padding:16px;min-height:200px;font-size:0.85rem;">
+                <div style="color:#555;font-style:italic;">Preview will appear here</div>
+              </div>
+            </div>
+          </div>
+          
+          <hr style="border:none;border-top:1px solid var(--border-sub);margin:20px 0;">
+          
+          <h4 style="color:var(--gold);margin-bottom:12px;">Lessons (6 per module)</h4>
+          <div id="lessonsEditorList" style="display:grid;gap:12px;margin-bottom:16px;">
+            <!-- Lessons will be rendered here -->
+          </div>
+          
+          <button class="btn-submit" onclick="window.saveModuleChanges()" style="background:var(--gold);color:#000;font-weight:700;">✓ Save Module</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVENTS -->
+    <div id="tab-events" class="tab-panel">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <!-- LEFT: Form -->
+        <div class="panel-card">
+          <h3 class="panel-title">Launch Event <em>Ad</em></h3>
+          <p style="font-size:0.8rem;color:#555;margin-bottom:16px;">Create a special event announcement</p>
+          
+          <div class="grid-2">
+            <div>
+              <label class="form-label">Event Title</label>
+              <input type="text" class="form-input" id="eventName" placeholder="Summer Intensive Program" oninput="window.updateEventPreview()">
+            </div>
+            <div>
+              <label class="form-label">Event Subtitle</label>
+              <input type="text" class="form-input" id="eventSubtitle" placeholder="Limited enrollment now open" oninput="window.updateEventPreview()">
+            </div>
+          </div>
+
+          <label class="form-label">Event Description</label>
+          <textarea class="form-textarea" id="eventDesc" placeholder="Full event description and details..." style="min-height:80px;" oninput="window.updateEventPreview()"></textarea>
+
+          <div class="grid-2">
+            <div>
+              <label class="form-label">Start Date & Time</label>
+              <input type="datetime-local" class="form-input" id="eventStartDate" oninput="window.updateEventPreview()">
+            </div>
+            <div>
+              <label class="form-label">End Date & Time</label>
+              <input type="datetime-local" class="form-input" id="eventEndDate" oninput="window.updateEventPreview()">
+            </div>
+          </div>
+
+          <label class="form-label">Background Color (hex)</label>
+          <input type="text" class="form-input" id="eventBgColor" placeholder="#7c3aed" value="#7c3aed" oninput="window.updateEventPreview()">
+
+          <label class="form-label" style="margin-top:16px;">Application Form</label>
+          <p style="font-size:0.75rem;color:#888;margin-bottom:8px;">Add fields that users fill out</p>
+          
+          <div id="eventApplicationFields" style="background:#0f0d0a;border:1px solid var(--border-sub);padding:12px;border-radius:4px;margin-bottom:12px;max-height:150px;overflow-y:auto;">
+            <div style="color:#555;text-align:center;padding:20px;">No fields added yet</div>
+          </div>
+          
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <input type="text" class="form-input" id="eventFieldName" placeholder="Field name" style="flex:1;">
+            <select class="form-input" id="eventFieldType" style="flex:0.5;">
+              <option value="text">Text</option>
+              <option value="email">Email</option>
+              <option value="tel">Phone</option>
+              <option value="textarea">Long Text</option>
+              <option value="checkbox">Checkbox</option>
+            </select>
+            <button class="btn-submit" onclick="try { window.addEventFormField(); } catch(e) { alert('Error: ' + e.message); console.error(e); }" style="flex:0.3;padding:8px;">Add</button>
+          </div>
+
+          <label class="form-label" style="margin-top:16px;">Liability Waiver</label>
+          <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;">
+            <input type="checkbox" id="eventWaiverEnabled" style="width:18px;height:18px;cursor:pointer;">
+            <label for="eventWaiverEnabled" style="cursor:pointer;margin:0;">Require liability waiver</label>
+          </div>
+
+          <label class="form-label">Waiver Text</label>
+          <textarea class="form-textarea" id="eventWaiverText" placeholder="Enter the liability waiver text..." style="min-height:80px;">I acknowledge that I have read and fully understand this liability waiver and assumption of risk agreement. I voluntarily agree to assume all risks of injury or death associated with my participation.</textarea>
+
+          <button class="btn-submit" onclick="window.launchEvent()" style="margin-top:12px;width:100%;">🚀 Launch Event</button>
+        </div>
+
+        <!-- RIGHT: Preview -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="panel-card" style="flex:1;display:flex;flex-direction:column;">
+            <h3 class="panel-title">Hero Section <em>Preview</em></h3>
+            <div id="eventPreview" style="flex:1;background:linear-gradient(135deg,rgba(107,33,168,0.3),rgba(201,168,76,0.1));border:1px solid var(--border-main);border-radius:4px;padding:24px;display:flex;flex-direction:column;justify-content:center;min-height:300px;text-align:center;">
+              <div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;font-weight:700;">⭐ Special Announcement</div>
+              <div style="font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:8px;line-height:1.3;">Fill in the event title<br><em style="font-size:1rem;font-style:italic;color:var(--gold);">and subtitle</em></div>
+              <div style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;">Event description appears here</div>
+              <div style="display:flex;gap:8px;justify-content:center;">
+                <button style="background:var(--gold);color:var(--black);padding:8px 16px;border:none;border-radius:3px;font-weight:600;font-size:0.9rem;cursor:default;">Apply Now →</button>
+              </div>
+            </div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-top:12px;text-align:center;">This is how it will look on your front page</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Active <em>Event</em></h3>
+        <div id="activeEventDisplay" style="padding:20px;background:#0f0d0a;border:1px solid var(--border-sub);text-align:center;color:#555;"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="btn-submit danger" onclick="window.disableEvent()" style="display:none;flex:1;" id="disableEventBtn">Disable Event</button>
+          <button class="btn-submit" onclick="window.testEventDates()" style="flex:1;">🔍 Debug Dates</button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Application <em>Submissions</em></h3>
+        <div id="submissionsDisplay" style="padding:20px;background:#0f0d0a;border:1px solid var(--border-sub);text-align:center;color:#555;">
+          <div style="color:#555;">No submissions yet</div>
+        </div>
+        <button class="btn-submit" onclick="window.exportSubmissions()" style="margin-top:12px;">📥 Export to CSV</button>
+      </div>
+    </div>
+
+    <!-- STORE -->
+    <div id="tab-catalog" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Add Store <em>Item</em></h3>
+        <label class="form-label">Item Name (e.g., SBI T-Shirt)</label>
+        <input type="text" class="form-input" id="itemName" placeholder="Product name">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="itemDesc" placeholder="Product details..."></textarea>
+        <label class="form-label">Color</label>
+        <input type="text" class="form-input" id="itemColor" placeholder="Navy Blue">
+        <label class="form-label">Image (Upload)</label>
+        <input type="file" class="form-input" id="itemImage" accept="image/*">
+        <button class="btn-submit" onclick="window.addCatalogItem()">Add Item</button>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Store <em>Items</em></h3>
+        <div id="catalogList"></div>
+      </div>
+    </div>
+
+    <!-- APPLICATIONS -->
+    <div id="tab-applications" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Student <em>Applications</em></h3>
+        <div id="applicationsList"></div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="tab-reports" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Monthly <em>Satisfaction Report</em></h3>
+        <label class="form-label">Select Month</label>
+        <input type="month" class="form-input" id="reportMonth" onchange="loadMonthlyReport()">
+        <div id="monthlyReportContent" style="margin-top:20px;"></div>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Report <em>Data</em></h3>
+        <div id="reportMetrics" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;text-align:center;">
+            <div style="font-size:0.7rem;color:#555;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Total Students Active</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold);" id="reportStudentsCount">0</div>
+          </div>
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;text-align:center;">
+            <div style="font-size:0.7rem;color:#555;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Avg Hours This Month</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold);" id="reportAvgHours">0</div>
+          </div>
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;text-align:center;">
+            <div style="font-size:0.7rem;color:#555;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Attendance Rate</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold);" id="reportAttendance">0%</div>
+          </div>
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;text-align:center;">
+            <div style="font-size:0.7rem;color:#555;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Milestones Completed</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold);" id="reportMilestones">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="tab-settings" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Location <em>Settings</em></h3>
+        <div style="background:#0a0806;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;">
+          <label style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+            <input type="checkbox" id="locRequired" onchange="saveSettings()">
+            <span>Require location verification for clock in (100 feet radius)</span>
+          </label>
+        </div>
+        <label class="form-label">School Latitude</label>
+        <input type="number" class="form-input" id="schoolLat" placeholder="40.7128" step="0.0001">
+        <label class="form-label">School Longitude</label>
+        <input type="number" class="form-input" id="schoolLng" placeholder="-74.0060" step="0.0001">
+        <button class="btn-submit" onclick="saveLocationSettings()">Save Location</button>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Location <em>Exemptions</em></h3>
+        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px;">Mark students who don't need to verify their location for clock-in.</p>
+        
+        <label class="form-label">Add Student to Exemptions</label>
+        <select class="form-input" id="exemptionStudent" style="margin-bottom:12px;">
+          <option value="">Select a student...</option>
+        </select>
+        <button class="btn-submit" onclick="window.addLocationExemption()" style="background:#7fe0a3;margin-bottom:20px;">Add Exemption</button>
+
+        <label class="form-label" style="margin-bottom:12px;display:block;">Exempt Students:</label>
+        <div id="exemptionsList" style="display:grid;gap:10px;margin-bottom:16px;">
+          <div style="color:var(--muted);font-size:0.8rem;font-style:italic;">No exemptions set yet</div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Change <em>Password</em></h3>
+        <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">⚠️ Password must be 8+ characters with numbers and special characters (!@#$%^&*)</p>
+        <label class="form-label">New Password</label>
+        <input type="password" class="form-input" id="newOwnerPass" placeholder="••••••••">
+        <label class="form-label" style="margin-top:16px;">Confirm Password</label>
+        <input type="password" class="form-input" id="confirmOwnerPass" placeholder="••••••••">
+        <button class="btn-submit" onclick="changeOwnerPass()">Update Password</button>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Security & <em>Sessions</em></h3>
+        <p style="font-size:0.8rem;color:#555;margin-bottom:16px;">🔒 Auto-logout after 30 minutes of inactivity. Force logout all sessions to ensure security.</p>
+        <button class="btn-submit" onclick="forceLogoutAllSessions()" style="background:var(--red);width:100%;">⚠️ Force Logout All Sessions</button>
+        <p style="font-size:0.7rem;color:#888;margin-top:12px;text-align:center;">This will log out all active sessions immediately. You will need to log in again.</p>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Milestones & <em>Tests</em></h3>
+        <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">Set up milestone tests that students must complete</p>
+        <div id="milestonesList"></div>
+        <button class="btn-primary" onclick="setupDefaultMilestones()">Setup Default Milestones</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EDIT STUDENT MODAL -->
+<div id="editStudentModal" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;align-items:center;justify-content:center;padding:20px;visibility:hidden;opacity:0;transition:opacity 0.2s;">
+  <div style="background:var(--card);border:1px solid var(--border);max-width:600px;width:100%;max-height:88vh;overflow-y:auto;position:relative;">
+    <div style="padding:28px 28px 20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;"><em id="editStudentName" style="font-style:italic;color:var(--gold);"></em></div>
+        <div style="font-size:0.7rem;color:#555;margin-top:4px;" id="editStudentId"></div>
+      </div>
+      <button onclick="closeEditStudent()" style="background:transparent;border:1px solid #333;color:#666;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;flex-shrink:0;transition:all 0.2s;">✕</button>
+    </div>
+    <div style="padding:24px 28px;">
+      <div class="grid-2">
+        <div>
+          <label class="form-label">Name</label>
+          <input type="text" class="form-input" id="editName" placeholder="Full name">
+        </div>
+        <div>
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="editEmail" placeholder="email@example.com">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label class="form-label">Total Hours</label>
+          <input type="number" class="form-input" id="editHours" min="0" step="0.5">
+        </div>
+        <div>
+          <label class="form-label">Days Attended</label>
+          <input type="number" class="form-input" id="editDays" min="0">
+        </div>
+      </div>
+
+      <label class="form-label">Progress to 1500 Hours</label>
+      <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:0.75rem;color:#555;" id="progressPercentDisplay">0%</span>
+          <span style="font-size:0.75rem;color:var(--gold);" id="progressHoursDisplay">0 / 1500 hours</span>
+        </div>
+        <div style="width:100%;height:12px;background:#1c1a16;border-radius:6px;overflow:hidden;border:1px solid var(--border-sub);">
+          <div id="progressBar" style="height:100%;background:linear-gradient(90deg,var(--gold),var(--purple-mid));width:0%;transition:width 0.3s ease;"></div>
+        </div>
+        <div style="margin-top:12px;font-size:0.7rem;color:#555;line-height:1.6;">
+          <div>✓ 0-300 hrs: <span id="test1Status" style="color:var(--green);">Not Taken</span></div>
+          <div>✓ 300-600 hrs: <span id="test2Status" style="color:var(--green);">Not Taken</span></div>
+          <div>✓ 600-900 hrs: <span id="test3Status" style="color:var(--green);">Not Taken</span></div>
+          <div>✓ 900-1500 hrs: <span id="test4Status" style="color:var(--green);">Not Taken</span></div>
+        </div>
+      </div>
+
+      <label class="form-label" style="margin-top:24px;">Password</label>
+      <input type="text" class="form-input" id="editPassword" placeholder="Enter new password (leave blank to keep current)">
+
+      <label class="form-label" style="margin-top:24px;">Student Profile (Public Display)</label>
+      <p style="font-size:0.75rem;color:#555;margin-bottom:12px;">These fields appear on the front page student profiles section</p>
+      
+      <label class="form-label">Profile Photo (Upload)</label>
+      <input type="file" class="form-input" id="editProfilePhoto" accept="image/*" onchange="previewProfilePhoto(event)">
+      <div id="photoPreview" style="width:80px;height:80px;background:#0f0d0a;border:1px solid var(--border-sub);margin-bottom:16px;display:none;background-size:cover;border-radius:4px;"></div>
+
+      <label class="form-label">Haircuts / Portfolio (Upload Images)</label>
+      <p style="font-size:0.7rem;color:#555;margin-bottom:12px;">Upload photos of haircuts to showcase on student profile</p>
+      <input type="file" class="form-input" id="editHaircutPhotos" accept="image/*" multiple onchange="previewHaircutPhotos(event)">
+      <div id="haircutsPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin:16px 0;"></div>
+
+      <label class="form-label">Short Bio</label>
+      <textarea class="form-textarea" id="editBio" placeholder="Brief description of the student (2-3 lines)" style="min-height:60px;"></textarea>
+
+      <div style="display:flex;gap:12px;margin-top:20px;">
+        <button class="btn-submit" onclick="saveEditedStudent()" style="flex:1;">Save Changes</button>
+        <button class="btn-submit" style="background:var(--red);flex:1;cursor:pointer;" onclick="closeEditStudent()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT ALUMNI MODAL -->
+<div id="editAlumnusModal" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;align-items:center;justify-content:center;padding:20px;visibility:hidden;opacity:0;transition:opacity 0.2s;">
+  <div style="background:var(--card);border:1px solid var(--border);max-width:600px;width:100%;max-height:88vh;overflow-y:auto;position:relative;">
+    <div style="padding:28px 28px 20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;"><em id="editAlumnusName" style="font-style:italic;color:var(--gold);"></em></div>
+        <div style="font-size:0.7rem;color:#555;margin-top:4px;">Alumni Profile</div>
+      </div>
+      <button onclick="closeEditAlumnus()" style="background:transparent;border:1px solid #333;color:#666;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;flex-shrink:0;transition:all 0.2s;">✕</button>
+    </div>
+    <div style="padding:24px 28px;">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-input" id="alumEditName" placeholder="Full name">
+      
+      <label class="form-label" style="margin-top:16px;">Graduation Date</label>
+      <input type="date" class="form-input" id="alumEditGradDate">
+      
+      <label class="form-label" style="margin-top:16px;">Where Are They Now?</label>
+      <input type="text" class="form-input" id="alumEditStatus" placeholder="e.g., Barber at Main Street Barbershop">
+      
+      <label class="form-label" style="margin-top:16px;">Bio</label>
+      <textarea class="form-textarea" id="alumEditBio" placeholder="Alumni story or achievements" style="min-height:80px;"></textarea>
+      
+      <label class="form-label" style="margin-top:16px;">Graduation Photo</label>
+      <input type="file" class="form-input" id="alumEditPhoto" accept="image/*" onchange="previewAlumnusPhoto(event)">
+      <div id="alumPhotoPreview" style="width:100px;height:100px;background:#0f0d0a;border:1px solid var(--border-sub);margin-top:8px;display:none;background-size:cover;border-radius:4px;"></div>
+
+      <div style="display:flex;gap:12px;margin-top:20px;">
+        <button class="btn-submit" onclick="saveEditedAlumnus()" style="flex:1;">Save Changes</button>
+        <button class="btn-submit" style="background:var(--red);flex:1;cursor:pointer;" onclick="closeEditAlumnus()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── FIREBASE INITIALIZATION ───────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyBn3N8MJ05dDIfVyeJqVh5KCrYZoljcvx0",
+  authDomain: "smithbarberinstitutionpb.firebaseapp.com",
+  databaseURL: "https://smithbarberinstitutionpb-default-rtdb.firebaseio.com",
+  projectId: "smithbarberinstitutionpb",
+  storageBucket: "smithbarberinstitutionpb.firebasestorage.app",
+  messagingSenderId: "251247559272",
+  appId: "1:251247559272:web:822a0761885c63faa9f1dd",
+  measurementId: "G-BD8Q192YS6"
+};
+
+let database = null;
+let firebaseReady = false;
+try {
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    database = firebase.database();
+    firebaseReady = true;
+    console.log('✓ Firebase initialized');
+  } else {
+    console.warn('⚠️ Firebase SDK not loaded, using localStorage only');
+  }
+} catch (e) {
+  console.warn('⚠️ Firebase initialization failed, using localStorage only:', e);
+}
+
+// Sync functions with fallback to localStorage
+function syncToFirebase(path, data) {
+  if (database) {
+    database.ref(path).set(data).catch(err => console.error('Firebase sync error:', err));
+  }
+  // Always backup to localStorage
+  localStorage.setItem(path, JSON.stringify(data));
+}
+
+function loadFromFirebase(path, callback) {
+  if (database && firebaseReady) {
+    database.ref(path).once('value', snapshot => {
+      const data = snapshot.val() || null;
+      if (data) {
+        localStorage.setItem(path, JSON.stringify(data));
+      }
+      callback(data);
+    }).catch(err => {
+      console.warn('Firebase load error, falling back to localStorage:', err);
+      const stored = localStorage.getItem(path);
+      callback(stored ? JSON.parse(stored) : null);
+    });
+  } else {
+    const stored = localStorage.getItem(path);
+    callback(stored ? JSON.parse(stored) : null);
+  }
+}
+
+// Setup real-time listeners for key data
+function setupFirebaseListeners() {
+  if (!database || !firebaseReady) return;
+  
+  console.log('⚙️  Setting up Firebase real-time listeners...');
+  
+  // Listen for students changes
+  database.ref('students').on('value', snapshot => {
+    const data = snapshot.val() || [];
+    localStorage.setItem('students', JSON.stringify(data));
+    console.log('📥 Students updated from Firebase:', data.length, 'students');
+  }, err => {
+    console.warn('Firebase students listener error:', err);
+  });
+  
+  // Listen for schedule changes
+  database.ref('dailySchedule').on('value', snapshot => {
+    const data = snapshot.val() || {};
+    Object.keys(data).forEach(date => {
+      localStorage.setItem('dailySchedule_' + date, JSON.stringify(data[date]));
+    });
+    console.log('📥 Schedule updated from Firebase');
+  }, err => {
+    console.warn('Firebase schedule listener error:', err);
+  });
+  
+  // Listen for staff changes
+  database.ref('schoolStaff').on('value', snapshot => {
+    const data = snapshot.val() || [];
+    localStorage.setItem('schoolStaff', JSON.stringify(data));
+    console.log('📥 Staff updated from Firebase');
+  }, err => {
+    console.warn('Firebase staff listener error:', err);
+  });
+  
+  // Listen for alumni changes
+  database.ref('alumni').on('value', snapshot => {
+    const data = snapshot.val() || [];
+    localStorage.setItem('alumni', JSON.stringify(data));
+    console.log('📥 Alumni updated from Firebase');
+  }, err => {
+    console.warn('Firebase alumni listener error:', err);
+  });
+  
+  // Listen for announcements
+  database.ref('schoolNewsFeed').on('value', snapshot => {
+    const data = snapshot.val() || [];
+    localStorage.setItem('schoolNewsFeed', JSON.stringify(data));
+    console.log('📥 News feed updated from Firebase');
+  }, err => {
+    console.warn('Firebase news feed listener error:', err);
+  });
+  
+  // Listen for catalog
+  database.ref('catalog').on('value', snapshot => {
+    const data = snapshot.val() || [];
+    localStorage.setItem('catalog', JSON.stringify(data));
+    console.log('📥 Catalog updated from Firebase');
+  }, err => {
+    console.warn('Firebase catalog listener error:', err);
+  });
+  
+  // Listen for tier data
+  database.ref('tierData').on('value', snapshot => {
+    const data = snapshot.val() || {};
+    localStorage.setItem('tierData', JSON.stringify(data));
+    console.log('📥 Tier data updated from Firebase');
+  }, err => {
+    console.warn('Firebase tier data listener error:', err);
+  });
+  
+  console.log('✓ Firebase real-time listeners active');
+}
+
+// ─── AUTH ──────────────────────────────────────────────────────
+var OWNER_CREDS = { user: 'owner', pass: localStorage.getItem('ownerPassword') || 'Lasonja00$' };
+var currentOwnerId = null;
+var eventFormFields = [];
+var tierData = {};
+var sessionTimeout = 30 * 60 * 1000; // 30 minutes
+var inactivityTimer = null;
+
+// Session timeout on inactivity
+function resetInactivityTimer() {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(function() {
+    console.warn('⏱️ Session timeout - logging out due to inactivity');
+    alert('Session expired. Please log in again.');
+    ownerLogout();
+  }, sessionTimeout);
+}
+
+// Track user activity
+document.addEventListener('keydown', resetInactivityTimer);
+document.addEventListener('click', resetInactivityTimer);
+document.addEventListener('mousemove', resetInactivityTimer);
+
+function ownerLogin() {
+  try {
+    console.log('Login attempt...');
+    var u = document.getElementById('ownerUser').value.trim();
+    var p = document.getElementById('ownerPass').value;
+    console.log('Username:', u, 'Password length:', p.length);
+    var err = document.getElementById('ownerErr');
+    
+    console.log('Checking credentials - user:', OWNER_CREDS.user, 'vs', u, '| pass match:', p === OWNER_CREDS.pass);
+    
+    if (u === OWNER_CREDS.user && p === OWNER_CREDS.pass) {
+      console.log('✓ Credentials match - logging in');
+      currentOwnerId = 'owner_' + Date.now();
+      localStorage.setItem('currentOwnerId', currentOwnerId);
+      syncToFirebase('currentOwnerId', currentOwnerId);
+      console.log('Hiding login, showing dashboard');
+      document.getElementById('ownerLogin').style.display = 'none';
+      document.getElementById('ownerDash').style.display = 'block';
+      console.log('Initializing dashboard');
+      resetInactivityTimer(); // Start session timeout
+      initDash();
+      console.log('✓ Login complete');
+    } else {
+      console.log('✗ Credentials do not match');
+      err.textContent = 'Invalid username or password';
+      err.style.display = 'block';
+    }
+  } catch(e) {
+    console.error('Login error:', e);
+    alert('Login error: ' + e.message);
+  }
+}
+
+document.getElementById('ownerPass').addEventListener('keydown', function(e){ if(e.key==='Enter') ownerLogin(); });
+
+function ownerLogout() {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  localStorage.removeItem('currentOwnerId');
+  document.getElementById('ownerLogin').style.display = 'flex';
+  document.getElementById('ownerDash').style.display = 'none';
+  document.getElementById('ownerUser').value = '';
+  document.getElementById('ownerPass').value = '';
+  console.log('✓ Logged out');
+}
+
+function forceLogoutAllSessions() {
+  if (!confirm('⚠️ This will log you out immediately. Continue?')) return;
+  
+  // Clear all session data from localStorage and Firebase
+  localStorage.clear();
+  syncToFirebase('currentOwnerId', null);
+  
+  alert('✓ All sessions cleared. Redirecting to login...');
+  setTimeout(function() {
+    location.reload();
+  }, 500);
+}
+
+// ─── TABS ──────────────────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  
+  // Update tab-specific content
+  if (id === 'events') {
+    displayActiveEvent();
+    renderSubmissions();
+    window.updateEventPreview();
+  } else if (id === 'settings') {
+    renderExemptions();
+    populateExemptionStudents();
+  } else if (id === 'hybrid') {
+    renderHybridCurriculum();
+  }
+}
+
+// ─── STUDENTS ──────────────────────────────────────────────────
+function getStudents() { return JSON.parse(localStorage.getItem('students') || '[]'); }
+function saveStudents(arr) { 
+  localStorage.setItem('students', JSON.stringify(arr)); 
+  syncToFirebase('students', arr);
+}
+
+function generateStudentId(courseType) {
+  var students = getStudents();
+  
+  // For hybrid students, use H prefix (H001, H002, etc)
+  if (courseType === '535') {
+    var hybridCount = students.filter(function(s){ return s.courseType === '535'; }).length + 1;
+    return 'H' + String(hybridCount).padStart(3, '0');
+  }
+  
+  // For other courses, use existing format
+  var count = students.filter(function(s){ return s.studentId.substring(3,6) == courseType; }).length + 1;
+  return 'stu' + courseType + '00' + count;
+}
+
+function addStudent() {
+  var name = document.getElementById('newName').value.trim();
+  var course = document.getElementById('newCourseType').value;
+  var email = document.getElementById('newEmail').value.trim();
+  var pass = document.getElementById('newPass').value;
+  
+  if (!name || !course || !email || !pass) { alert('Please fill all fields'); return; }
+  
+  var students = getStudents();
+  var studentId = generateStudentId(course);
+  
+  var newStudent = {
+    id: 'stu_' + Date.now(),
+    name: name,
+    studentId: studentId,
+    email: email,
+    password: pass,
+    courseType: course,
+    totalHours: 0,
+    daysAttended: 0,
+    clockedIn: false,
+    clockLog: [],
+    answers: [],
+    milestoneChecks: {}
+  };
+  
+  if (course === '534') {
+    newStudent.hybridProgress = {};
+  }
+  
+  if (course === '535') {
+    newStudent.practicalHours = 0;
+    newStudent.clockSessions = [];
+    newStudent.hybridProgress = {};
+  }
+  
+  students.push(newStudent);
+  
+  saveStudents(students);
+  document.getElementById('newName').value = '';
+  document.getElementById('newCourseType').value = '';
+  document.getElementById('newEmail').value = '';
+  document.getElementById('newPass').value = '';
+  renderStudents();
+  alert('Student ' + studentId + ' added!');
+}
+
+function renderStudents() {
+  var students = getStudents();
+  var el = document.getElementById('studentsList');
+  
+  if (!students.length) { el.innerHTML = '<div style="color:#333;text-align:center;padding:24px;">No students yet.</div>'; return; }
+  
+  el.innerHTML = '';
+  
+  // Group students by course type
+  var groups = {
+    '531': { label: 'Barber / Stylist', students: [] },
+    '532': { label: 'Teacher / Manager', students: [] },
+    '533': { label: 'Crossover', students: [] },
+    '534': { label: 'Hybrid (Theory Only)', students: [] },
+    '535': { label: 'Hybrid Program', students: [] }
+  };
+  
+  students.forEach(function(s) {
+    if (groups[s.courseType]) groups[s.courseType].students.push(s);
+  });
+  
+  // Render each group
+  Object.keys(groups).forEach(function(typeKey) {
+    var group = groups[typeKey];
+    if (group.students.length === 0) return;
+    
+    var section = document.createElement('div');
+    section.style.cssText = 'margin-bottom:28px;background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;';
+    
+    var header = document.createElement('div');
+    header.style.cssText = 'font-weight:700;font-size:0.9rem;color:var(--gold);margin-bottom:12px;border-bottom:1px solid var(--border-sub);padding-bottom:8px;';
+    header.textContent = group.label + ' (' + group.students.length + ')';
+    section.appendChild(header);
+    
+    group.students.forEach(function(s) {
+      var div = document.createElement('div');
+      div.className = 'student-row';
+      var courseName = group.label;
+      
+      if (typeKey === '535') {
+        var practical = s.practicalHours || 0;
+        var theory = s.hybridProgress ? Object.keys(s.hybridProgress).length : 0;
+        var status = practical >= 1380 && theory >= 12 ? '✓ Ready to Graduate' : 'In Progress';
+        div.innerHTML = '<div class="row-col-1"><div class="row-name">' + s.name + '</div><div class="row-meta">' + s.studentId + ' • ' + courseName + ' • Practical: ' + practical.toFixed(1) + '/1380h • Theory: ' + theory + '/12 • ' + status + '</div></div>' +
+          '<div class="row-actions"><button class="btn-sm" onclick="editHybridStudent(\'' + s.id + '\')">Edit Hours</button><button class="btn-sm" onclick="openEditStudent(\'' + s.id + '\')">View</button><button class="btn-sm danger" onclick="deleteStudent(\'' + s.id + '\')">Delete</button></div>';
+      } else {
+        var progressPct = (s.totalHours / 1500) * 100;
+        div.innerHTML = '<div class="row-col-1"><div class="row-name">' + s.name + '</div><div class="row-meta">' + s.studentId + ' • ' + courseName + ' • ' + s.totalHours.toFixed(1) + ' hours (' + progressPct.toFixed(0) + '%)</div></div>' +
+          '<div class="row-actions"><button class="btn-sm" onclick="openEditStudent(\'' + s.id + '\')">Edit</button><button class="btn-sm danger" onclick="deleteStudent(\'' + s.id + '\')">Delete</button></div>';
+      }
+      section.appendChild(div);
+    });
+    
+    el.appendChild(section);
+  });
+}
+
+function editHybridStudent(id) {
+  var students = getStudents();
+  var student = students.find(function(s) { return s.id === id; });
+  if (!student) { alert('Student not found'); return; }
+  
+  var currentHours = student.practicalHours || 0;
+  var newHours = prompt('Edit practical hours for ' + student.name + ':\n\nCurrent: ' + currentHours.toFixed(1) + ' hours\nRequired: 1380 hours\n\nEnter new value:', currentHours.toFixed(1));
+  
+  if (newHours === null) return;
+  
+  var parsed = parseFloat(newHours);
+  if (isNaN(parsed) || parsed < 0) { alert('Please enter a valid number'); return; }
+  
+  student.practicalHours = parsed;
+  saveStudents(students);
+  renderStudents();
+  alert('Hours updated to ' + parsed.toFixed(1));
+}
+
+function deleteStudent(id) {
+  if (!confirm('Delete this student?')) return;
+  var students = getStudents();
+  students = students.filter(function(s){ return s.id !== id; });
+  saveStudents(students);
+  renderStudents();
+}
+
+// ─── SCHEDULE & ANNOUNCEMENTS ──────────────────────────────────
+function loadScheduleForDate() {
+  var date = document.getElementById('scheduleDate').value;
+  if (!date) return;
+  var schedule = JSON.parse(localStorage.getItem('dailySchedule_' + date) || '[]');
+  var list = document.getElementById('scheduleList');
+  
+  if (!schedule.length) { list.innerHTML = '<div style="color:#333;text-align:center;padding:20px;font-style:italic;">No classes scheduled for this date.</div>'; return; }
+  
+  list.innerHTML = '';
+  schedule.forEach(function(item) {
+    var div = document.createElement('div');
+    div.className = 'schedule-item';
+    div.innerHTML = '<div class="sched-time">' + item.time + '</div><div class="sched-title">' + item.title + '</div><div class="sched-notes">' + item.notes + '</div>';
+    list.appendChild(div);
+  });
+}
+
+function addScheduleItem() {
+  var date = document.getElementById('scheduleDate').value;
+  var time = document.getElementById('classTime').value;
+  var type = document.getElementById('classType').value;
+  var notes = document.getElementById('classNotes').value.trim();
+  
+  if (!date || !time || !notes) { alert('Fill all fields'); return; }
+  
+  var schedule = JSON.parse(localStorage.getItem('dailySchedule_' + date) || '[]');
+  schedule.push({ time: time, courseType: type, title: notes.split('\n')[0], notes: notes, addedAt: new Date().toISOString() });
+  localStorage.setItem('dailySchedule_' + date, JSON.stringify(schedule));
+  syncToFirebase('dailySchedule_' + date, schedule);
+  
+  document.getElementById('classTime').value = '';
+  document.getElementById('classNotes').value = '';
+  loadScheduleForDate();
+  alert('Class added!');
+}
+
+function postAnnouncement() {
+  var text = document.getElementById('announcementText').value.trim();
+  if (!text) { alert('Enter announcement text'); return; }
+  
+  var feed = JSON.parse(localStorage.getItem('schoolNewsFeed') || '[]');
+  feed.push({ title: 'School Update', message: text, date: new Date().toISOString() });
+  localStorage.setItem('schoolNewsFeed', JSON.stringify(feed));
+  syncToFirebase('schoolNewsFeed', feed);
+  
+  document.getElementById('announcementText').value = '';
+  alert('Announcement posted!');
+}
+
+// ─── STAFF ─────────────────────────────────────────────────────
+function addStaffMember() {
+  var name = document.getElementById('staffName').value.trim();
+  var role = document.getElementById('staffRole').value.trim();
+  var bio = document.getElementById('staffBio').value.trim();
+  var photoFile = document.getElementById('staffPhoto').files[0];
+  
+  if (!name || !role) { alert('Enter name and role'); return; }
+  
+  var fileReader = new FileReader();
+  fileReader.onload = function(e) {
+    var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+    staff.push({ id: 'staff_' + Date.now(), name: name, role: role, bio: bio, photo: e.target.result });
+    localStorage.setItem('schoolStaff', JSON.stringify(staff));
+    syncToFirebase('schoolStaff', staff);
+    
+    document.getElementById('staffName').value = '';
+    document.getElementById('staffRole').value = '';
+    document.getElementById('staffBio').value = '';
+    document.getElementById('staffPhoto').value = '';
+    renderStaff();
+    alert('Staff member added!');
+  };
+  
+  if (photoFile) {
+    fileReader.readAsDataURL(photoFile);
+  } else {
+    var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+    staff.push({ id: 'staff_' + Date.now(), name: name, role: role, bio: bio, photo: '' });
+    localStorage.setItem('schoolStaff', JSON.stringify(staff));
+    syncToFirebase('schoolStaff', staff);
+    
+    document.getElementById('staffName').value = '';
+    document.getElementById('staffRole').value = '';
+    document.getElementById('staffBio').value = '';
+    renderStaff();
+    alert('Staff member added!');
+  }
+}
+
+function renderStaff() {
+  var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+  var list = document.getElementById('staffList');
+  
+  if (!staff.length) { list.innerHTML = '<div style="color:#333;text-align:center;padding:20px;">No staff members.</div>'; return; }
+  
+  list.innerHTML = '';
+  staff.forEach(function(m) {
+    var div = document.createElement('div');
+    div.className = 'staff-row';
+    var bioText = m.bio ? '<div class="row-meta" style="margin-top:6px;font-size:0.7rem;line-height:1.4;">' + m.bio + '</div>' : '';
+    div.innerHTML = '<div><div class="row-name">' + m.name + '</div><div class="row-meta">' + m.role + '</div>' + bioText + '</div>' +
+      '<div class="row-actions"><button class="btn-sm danger" onclick="deleteStaff(\'' + m.id + '\')">Delete</button></div>';
+    list.appendChild(div);
+  });
+}
+
+function deleteStaff(id) {
+  if (!confirm('Delete staff member?')) return;
+  var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+  staff = staff.filter(function(s){ return s.id !== id; });
+  localStorage.setItem('schoolStaff', JSON.stringify(staff));
+  syncToFirebase('schoolStaff', staff);
+  renderStaff();
+}
+
+// ─── ALUMNI & GRADUATION ───────────────────────────────────────
+function renderGraduationList() {
+  var students = getStudents().filter(function(s){ return !s.graduated; });
+  var list = document.getElementById('graduationList');
+  
+  if (!students.length) { list.innerHTML = '<div style="color:#333;text-align:center;padding:20px;">No active students.</div>'; return; }
+  
+  list.innerHTML = '';
+  students.forEach(function(s) {
+    var div = document.createElement('div');
+    div.className = 'student-row';
+    div.innerHTML = '<div><div class="row-name">' + s.name + '</div><div class="row-meta">' + s.studentId + ' • ' + s.totalHours.toFixed(1) + ' hours</div></div>' +
+      '<div class="row-actions"><button class="btn-sm success" onclick="window.graduateStudent(\'' + s.id + '\')">Graduate</button></div>';
+    list.appendChild(div);
+  });
+}
+
+function graduateStudent(id) {
+  var students = getStudents();
+  var student = students.find(function(s){ return s.id === id; });
+  if (!student) return;
+  
+  // Add to alumni
+  var alumni = JSON.parse(localStorage.getItem('alumni') || '[]');
+  alumni.push({
+    name: student.name,
+    currentStatus: 'Recently Graduated',
+    totalHours: student.totalHours,
+    timeLogs: student.clockLog,
+    graduatedAt: new Date().toISOString(),
+    graduationDate: new Date().toLocaleDateString()
+  });
+  localStorage.setItem('alumni', JSON.stringify(alumni));
+  syncToFirebase('alumni', alumni);
+  
+  // Remove from active students (permanently delete account)
+  var beforeCount = students.length;
+  students = students.filter(function(s){ return s.id !== id; });
+  saveStudents(students);
+  console.log('✅ Student deleted: ' + student.name + ' (ID: ' + id + '). Active students: ' + beforeCount + ' → ' + students.length);
+  
+  // Create downloadable graduation certificate with clock logs
+  var programName = {'531': 'Barber/Stylist', '532': 'Teacher/Manager', '533': 'Crossover', '534': 'Hybrid', '535': 'Hybrid'}[student.courseType] || 'Barber Program';
+  var gradDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  var totalHours = (student.totalHours || 0).toString();
+  
+  // Build clock log HTML
+  var clockLogHTML = '';
+  if (student.clockLog && student.clockLog.length > 0) {
+    clockLogHTML += '<div style="margin-top:40px;padding:20px;background:rgba(107,33,168,0.1);border:1px solid #c9a84c;border-radius:6px;">';
+    clockLogHTML += '<h3 style="color:#c9a84c;margin-bottom:15px;text-transform:uppercase;font-size:14px;letter-spacing:1px;">Clock In/Out Log</h3>';
+    clockLogHTML += '<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+    clockLogHTML += '<tr style="background:rgba(201,168,76,0.2);"><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Date</td><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Clock In</td><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Clock Out</td><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Hours</td></tr>';
+    
+    student.clockLog.forEach(function(log) {
+      var inTime = new Date(log.in);
+      var outTime = log.out ? new Date(log.out) : null;
+      var hours = log.hours || 0;
+      var dateStr = inTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
+      var inStr = inTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      var outStr = outTime ? outTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : '(Still clocked in)';
+      
+      clockLogHTML += '<tr><td style="padding:8px;border-bottom:1px solid rgba(201,168,76,0.2);color:#faf8f5;">' + dateStr + '</td>';
+      clockLogHTML += '<td style="padding:8px;border-bottom:1px solid rgba(201,168,76,0.2);color:#faf8f5;">' + inStr + '</td>';
+      clockLogHTML += '<td style="padding:8px;border-bottom:1px solid rgba(201,168,76,0.2);color:#faf8f5;">' + outStr + '</td>';
+      clockLogHTML += '<td style="padding:8px;border-bottom:1px solid rgba(201,168,76,0.2);color:#e5c97a;font-weight:bold;">' + hours.toFixed(2) + '</td></tr>';
+    });
+    
+    clockLogHTML += '</table></div>';
+  }
+  
+  // Create simple HTML certificate that fits on one page
+  var certHTML = '<html><head><meta charset="UTF-8"><style>';
+  certHTML += 'body{font-family:Georgia,serif;margin:0;padding:40px;background:linear-gradient(135deg,#1a0f2e 0%,#0a0806 50%,#1c1a16 100%);min-height:100vh;}';
+  certHTML += '.cert{max-width:900px;margin:0 auto;background:linear-gradient(135deg,#0a0806 0%,#1c1a16 100%);padding:60px;border:3px solid #c9a84c;border-radius:15px;text-align:center;color:#faf8f5;box-shadow:0 20px 60px rgba(0,0,0,0.8),inset 0 1px 0 rgba(201,168,76,0.3);}';
+  certHTML += '.title{font-size:48px;font-weight:bold;margin:40px 0;color:#e5c97a;text-shadow:0 2px 10px rgba(201,168,76,0.3);}';
+  certHTML += '.name{font-size:36px;font-weight:bold;margin:30px 0;color:#c9a84c;text-decoration:underline;text-shadow:0 2px 8px rgba(201,168,76,0.4);}';
+  certHTML += '.details{margin:40px 0;font-size:16px;line-height:2;}';
+  certHTML += '.detail-line{margin:15px 0;}';
+  certHTML += '.label{font-weight:bold;color:#e5c97a;}';
+  certHTML += '.log{margin-top:30px;padding:20px;background:rgba(107,33,168,0.15);border:2px solid #c9a84c;border-radius:10px;box-shadow:inset 0 1px 10px rgba(0,0,0,0.3);}';
+  certHTML += '.log-title{color:#e5c97a;margin:0 0 15px 0;text-transform:uppercase;font-size:13px;letter-spacing:2px;font-weight:bold;}';
+  certHTML += 'table{width:100%;border-collapse:collapse;font-size:12px;}';
+  certHTML += 'th{background:linear-gradient(135deg,rgba(201,168,76,0.3),rgba(201,168,76,0.1));padding:10px;border:1px solid #c9a84c;color:#e5c97a;font-weight:bold;text-align:left;}';
+  certHTML += 'td{padding:8px;border:1px solid rgba(201,168,76,0.2);color:#faf8f5;}';
+  certHTML += 'tr:nth-child(even){background:rgba(107,33,168,0.1);}';
+  certHTML += '.footer{margin-top:60px;padding-top:30px;border-top:2px solid #c9a84c;font-size:12px;color:#9a8f7e;}';
+  certHTML += '.school-header{font-size:32px;font-weight:bold;color:#c9a84c;letter-spacing:2px;margin-bottom:10px;text-shadow:0 2px 8px rgba(201,168,76,0.2);}';
+  certHTML += '.subtitle{font-size:14px;color:#9a8f7e;margin-bottom:30px;text-transform:uppercase;letter-spacing:1px;}';
+  certHTML += '@media print{body{background:#fff;padding:0;margin:0;}@page{size:8.5in 11in;margin:0.3in;}.cert{max-width:8.5in;padding:0.4in;border:2px solid #c9a84c;box-shadow:none;margin:0;}.title{font-size:28px;margin:10px 0;text-shadow:none;}';
+  certHTML += '.name{font-size:22px;margin:8px 0;text-shadow:none;}';
+  certHTML += '.details{margin:12px 0;font-size:12px;line-height:1.4;}';
+  certHTML += '.detail-line{margin:6px 0;}';
+  certHTML += '.log{margin-top:12px;padding:10px;border:1px solid #c9a84c;border-radius:4px;background:rgba(107,33,168,0.1);}';
+  certHTML += '.log-title{font-size:11px;margin:0 0 6px 0;}';
+  certHTML += 'table{font-size:10px;}';
+  certHTML += 'th{padding:4px;font-size:10px;}';
+  certHTML += 'td{padding:3px;font-size:9px;}';
+  certHTML += '.footer{margin-top:12px;padding-top:8px;font-size:9px;border-top:1px solid #c9a84c;}';
+  certHTML += '.school-header{font-size:18px;margin-bottom:6px;text-shadow:none;}';
+  certHTML += '.subtitle{font-size:9px;margin-bottom:8px;}';
+  certHTML += '.no-print{display:none !important;}}';
+  certHTML += '</style></head><body><div class="cert">';
+  certHTML += '<div class="school-header">🎓 SBI SCHOOL</div>';
+  certHTML += '<div class="subtitle">Excellence in Barbering Education</div>';
+  certHTML += '<div style="font-size:60px;margin:20px 0;filter:drop-shadow(0 4px 8px rgba(201,168,76,0.3));">🏆</div>';
+  certHTML += '<div class="title">CERTIFICATE OF GRADUATION</div>';
+  certHTML += '<p style="margin:10px 0;font-size:13px;">This is to certify that</p>';
+  certHTML += '<div class="name">' + student.name + '</div>';
+  certHTML += '<p style="margin:10px 0;font-size:12px;">has successfully completed the requirements for graduation from</p>';
+  certHTML += '<div class="details">';
+  certHTML += '<div class="detail-line"><span class="label">Program:</span> ' + programName + '</div>';
+  certHTML += '<div class="detail-line"><span class="label">Total Hours:</span> ' + totalHours + ' hours</div>';
+  certHTML += '<div class="detail-line"><span class="label">Graduation Date:</span> ' + gradDate + '</div>';
+  certHTML += '</div>';
+  certHTML += clockLogHTML;
+  certHTML += '<p style="margin:30px 0 0 0;font-size:12px;">In witness whereof, this certificate is awarded with recognition of achievement and excellence.</p>';
+  certHTML += '<div class="footer"><p style="margin:0;"><strong>© 2026 SBI School. All rights reserved.</strong></p><p style="margin:10px 0 0 0;font-size:11px;">Student ID: ' + student.id + '</p></div>';
+  certHTML += '<div class="no-print" style="margin-top:40px;padding:20px;background:rgba(201,168,76,0.1);border:2px solid #c9a84c;border-radius:8px;"><button onclick="window.print()" style="padding:12px 24px;background:linear-gradient(135deg,#c9a84c,#e5c97a);color:#0a0806;border:none;border-radius:6px;font-weight:bold;cursor:pointer;font-size:14px;box-shadow:0 4px 12px rgba(201,168,76,0.3);">Print Certificate (1 Page)</button></div>';
+  certHTML += '</div></body></html>';
+  
+  // Create blob and download
+  var blob = new Blob([certHTML], { type: 'text/html' });
+  var url = window.URL.createObjectURL(blob);
+  var link = document.createElement('a');
+  link.href = url;
+  link.download = student.name + ' graduation form.html';
+  document.body.appendChild(link);
+  link.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(link);
+  
+  // Update UI
+  renderGraduationList();
+  renderAlumni();
+  renderStudents();
+  updateStats();
+  
+  alert('Student graduated! ✅\n\nGraduation certificate downloaded:\n"' + student.name + ' graduation form.html"\n\nThey can now share this file or print it!');
+}
+
+function addAlumnus() {
+  var name = document.getElementById('alumniName').value.trim();
+  var status = document.getElementById('alumniStatus').value.trim();
+  var photoFile = document.getElementById('alumniPhoto').files[0];
+  
+  if (!name || !status) { alert('Enter name and status'); return; }
+  
+  var fileReader = new FileReader();
+  fileReader.onload = function(e) {
+    var alumni = JSON.parse(localStorage.getItem('alumni') || '[]');
+    alumni.push({ name: name, currentStatus: status, photo: e.target.result, addedAt: new Date().toISOString() });
+    localStorage.setItem('alumni', JSON.stringify(alumni));
+    syncToFirebase('alumni', alumni);
+    
+    document.getElementById('alumniName').value = '';
+    document.getElementById('alumniStatus').value = '';
+    document.getElementById('alumniPhoto').value = '';
+    renderAlumni();
+    alert('Alumnus added!');
+  };
+  
+  if (photoFile) {
+    fileReader.readAsDataURL(photoFile);
+  } else {
+    var alumni = JSON.parse(localStorage.getItem('alumni') || '[]');
+    alumni.push({ name: name, currentStatus: status, photo: '', addedAt: new Date().toISOString() });
+    localStorage.setItem('alumni', JSON.stringify(alumni));
+    syncToFirebase('alumni', alumni);
+    
+    document.getElementById('alumniName').value = '';
+    document.getElementById('alumniStatus').value = '';
+    renderAlumni();
+    alert('Alumnus added!');
+  }
+}
+
+function renderAlumni() {
+  var alumni = JSON.parse(localStorage.getItem('alumni') || '[]');
+  var list = document.getElementById('alumniList');
+  
+  if (!alumni.length) { list.innerHTML = '<div style="color:#333;text-align:center;padding:20px;">No alumni yet.</div>'; return; }
+  
+  list.innerHTML = '';
+  alumni.forEach(function(a, idx) {
+    var div = document.createElement('div');
+    div.className = 'alumni-row';
+    div.innerHTML = '<div><div class="row-name">' + a.name + '</div><div class="row-meta">' + a.currentStatus + ' · ' + a.graduationDate + '</div></div>' +
+      '<div class="row-actions"><button class="btn-sm" onclick="openEditAlumnus(' + idx + ')">Edit</button><button class="btn-sm danger" onclick="deleteAlumnus(' + idx + ')">Remove</button></div>';
+    list.appendChild(div);
+  });
+}
+
+function deleteAlumnus(idx) {
+  if (!confirm('Remove from alumni?')) return;
+  var alumni = JSON.parse(localStorage.getItem('alumni') || '[]');
+  alumni.splice(idx, 1);
+  localStorage.setItem('alumni', JSON.stringify(alumni));
+  syncToFirebase('alumni', alumni);
+  renderAlumni();
+}
+
+// ─── STORE ───────────────────────────────────────────────────
+function addCatalogItem() {
+  var name = document.getElementById('itemName').value.trim();
+  var desc = document.getElementById('itemDesc').value.trim();
+  var color = document.getElementById('itemColor').value.trim();
+  var imageFile = document.getElementById('itemImage').files[0];
+  
+  if (!name) { alert('Enter item name'); return; }
+  
+  var fileReader = new FileReader();
+  fileReader.onload = function(e) {
+    var catalog = JSON.parse(localStorage.getItem('shopCatalog') || '[]');
+    catalog.push({ id: 'item_' + Date.now(), name: name, description: desc, color: color, image: e.target.result });
+    localStorage.setItem('shopCatalog', JSON.stringify(catalog));
+    syncToFirebase('shopCatalog', catalog);
+    
+    document.getElementById('itemName').value = '';
+    document.getElementById('itemDesc').value = '';
+    document.getElementById('itemColor').value = '';
+    document.getElementById('itemImage').value = '';
+    renderCatalog();
+    alert('Item added!');
+  };
+  
+  if (imageFile) {
+    fileReader.readAsDataURL(imageFile);
+  } else {
+    var catalog = JSON.parse(localStorage.getItem('shopCatalog') || '[]');
+    catalog.push({ id: 'item_' + Date.now(), name: name, description: desc, color: color, image: '' });
+    localStorage.setItem('shopCatalog', JSON.stringify(catalog));
+    syncToFirebase('shopCatalog', catalog);
+    
+    document.getElementById('itemName').value = '';
+    document.getElementById('itemDesc').value = '';
+    document.getElementById('itemColor').value = '';
+    renderCatalog();
+    alert('Item added!');
+  }
+}
+
+function renderCatalog() {
+  var items = JSON.parse(localStorage.getItem('shopCatalog') || '[]');
+  var list = document.getElementById('catalogList');
+  
+  if (!items.length) { list.innerHTML = '<div style="color:#333;text-align:center;padding:20px;">No catalog items.</div>'; return; }
+  
+  list.innerHTML = '';
+  items.forEach(function(item) {
+    var div = document.createElement('div');
+    div.className = 'student-row';
+    div.innerHTML = '<div><div class="row-name">' + item.name + '</div><div class="row-meta">' + item.color + '</div></div>' +
+      '<div class="row-actions"><button class="btn-sm danger" onclick="window.deleteCatalogItem(\'' + item.id + '\')">Delete</button></div>';
+    list.appendChild(div);
+  });
+}
+
+function deleteCatalogItem(id) {
+  if (!confirm('Delete item?')) return;
+  var catalog = JSON.parse(localStorage.getItem('shopCatalog') || '[]');
+  catalog = catalog.filter(function(i){ return i.id !== id; });
+  localStorage.setItem('shopCatalog', JSON.stringify(catalog));
+  syncToFirebase('shopCatalog', catalog);
+  renderCatalog();
+}
+
+// ─── APPLICATIONS ──────────────────────────────────────────────
+function renderApplications() {
+  var apps = JSON.parse(localStorage.getItem('studentApplications') || '[]');
+  var list = document.getElementById('applicationsList');
+  
+  if (!apps.length) { list.innerHTML = '<div style="color:#333;text-align:center;padding:20px;">No applications yet.</div>'; return; }
+  
+  list.innerHTML = '';
+  apps.forEach(function(app) {
+    var div = document.createElement('div');
+    div.className = 'app-row';
+    div.innerHTML = '<div style="flex:1;"><div class="row-name">' + app.name + '</div><div class="row-meta">' + app.email + ' • ' + app.phone + ' • Felony: ' + app.felony + '</div></div>' +
+      '<div class="row-actions"><button class="btn-sm" onclick="window.viewApplicationModal(\'' + app.email.replace(/'/g, "\\'") + '\')">View Details</button></div>';
+    list.appendChild(div);
+  });
+}
+
+function viewApplicationModal(email) {
+  var apps = JSON.parse(localStorage.getItem('studentApplications') || '[]');
+  var app = apps.find(function(a){ return a.email === email; });
+  if (!app) return;
+  
+  document.getElementById('viewAppName').textContent = app.name;
+  document.getElementById('viewAppEmail').textContent = app.email;
+  document.getElementById('viewAppPhone').textContent = app.phone;
+  document.getElementById('viewAppContact').textContent = app.preferredContact;
+  document.getElementById('viewAppFelony').textContent = app.felony;
+  document.getElementById('viewAppEmail').dataset.email = app.email;
+  
+  // Show all application details
+  var detailsHtml = '';
+  detailsHtml += '<div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.3);padding:16px;border-radius:8px;margin-bottom:16px;">';
+  detailsHtml += '<div style="font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:12px;">All Application Details</div>';
+  detailsHtml += '<div style="font-size:0.85rem;color:var(--white);line-height:1.8;">';
+  detailsHtml += '<div><strong>Date of Birth:</strong> ' + (app.dob || 'N/A') + '</div>';
+  detailsHtml += '<div><strong>Program:</strong> ' + (app.program || 'N/A') + '</div>';
+  detailsHtml += '<div><strong>Drivers License:</strong> ' + (app.hasLicense ? '✓ Yes' : '✗ No') + '</div>';
+  detailsHtml += '<div><strong>Social Security Number:</strong> ' + (app.hasSSN ? '✓ Yes' : '✗ No') + '</div>';
+  detailsHtml += '<div><strong>Grade 9+ Proof:</strong> ' + (app.hasGrade9 ? '✓ Yes' : '✗ No') + '</div>';
+  detailsHtml += '<div><strong>Submitted:</strong> ' + new Date(app.submittedAt).toLocaleString() + '</div>';
+  detailsHtml += '</div></div>';
+  
+  document.getElementById('applicationDetailsContainer').innerHTML = detailsHtml;
+  
+  document.getElementById('applicationModal').style.display = 'flex';
+}
+
+function closeApplicationModal() {
+  document.getElementById('applicationModal').style.display = 'none';
+}
+
+function declineApplication(email) {
+  if (!confirm('Decline this application?')) return;
+  var apps = JSON.parse(localStorage.getItem('studentApplications') || '[]');
+  apps = apps.filter(function(a){ return a.email !== email; });
+  localStorage.setItem('studentApplications', JSON.stringify(apps));
+  syncToFirebase('studentApplications', apps);
+  closeApplicationModal();
+  renderApplications();
+  alert('Application declined');
+}
+
+function convertToStudent(email) {
+  if (!confirm('Convert to student?')) return;
+  var apps = JSON.parse(localStorage.getItem('studentApplications') || '[]');
+  var appIdx = apps.findIndex(function(a){ return a.email === email; });
+  if (appIdx === -1) return;
+  
+  var app = apps[appIdx];
+  
+  // Map program to course type
+  var courseTypeMap = {
+    'barber': '531',
+    'teacher': '532',
+    'crossover': '533',
+    'hybrid': '535'
+  };
+  var courseType = courseTypeMap[app.program] || '531';
+  
+  // Create student from application
+  var pass = Math.random().toString(36).substring(7);
+  var students = getStudents();
+  var studentId = generateStudentId(courseType);
+  
+  var newStudent = {
+    id: 'stu_' + Date.now(),
+    name: app.name,
+    studentId: studentId,
+    email: app.email,
+    password: pass,
+    courseType: courseType,
+    totalHours: 0,
+    daysAttended: 0,
+    clockedIn: false,
+    clockLog: [],
+    answers: []
+  };
+  
+  // Initialize hybrid-specific fields
+  if (courseType === '535') {
+    newStudent.practicalHours = 0;
+    newStudent.clockSessions = [];
+    newStudent.hybridProgress = {};
+  }
+  
+  students.push(newStudent);
+  
+  saveStudents(students);
+  
+  // Remove application from list
+  apps.splice(appIdx, 1);
+  localStorage.setItem('studentApplications', JSON.stringify(apps));
+  syncToFirebase('studentApplications', apps);
+  
+  closeApplicationModal();
+  alert('Student created with ID ' + studentId + ' and temp password: ' + pass);
+  renderApplications();
+  renderStudents();
+}
+
+// ─── SETTINGS ──────────────────────────────────────────────────
+function changeOwnerPass() {
+  var np = document.getElementById('newOwnerPass').value;
+  var confirm_p = document.getElementById('confirmOwnerPass').value;
+  
+  // Password validation
+  if (!np || np.length < 8) { 
+    alert('Password must be at least 8 characters'); 
+    return; 
+  }
+  if (!/[0-9]/.test(np)) {
+    alert('Password must contain at least one number');
+    return;
+  }
+  if (!/[!@#$%^&*]/.test(np)) {
+    alert('Password must contain at least one special character (!@#$%^&*)');
+    return;
+  }
+  if (np !== confirm_p) {
+    alert('Passwords do not match');
+    return;
+  }
+  
+  localStorage.setItem('ownerPassword', np);
+  syncToFirebase('ownerPassword', np);
+  alert('✓ Password updated! You will need to log in again.');
+  setTimeout(ownerLogout, 1000);
+}
+
+function saveLocationSettings() {
+  var lat = document.getElementById('schoolLat').value;
+  var lng = document.getElementById('schoolLng').value;
+  if (!lat || !lng) { alert('Enter latitude and longitude'); return; }
+  localStorage.setItem('schoolLat', lat);
+  localStorage.setItem('schoolLng', lng);
+  localStorage.setItem('locationRequired', document.getElementById('locRequired').checked ? 'true' : 'false');
+  syncToFirebase('schoolLat', lat);
+  syncToFirebase('schoolLng', lng);
+  syncToFirebase('locationRequired', document.getElementById('locRequired').checked ? 'true' : 'false');
+  alert('Location settings saved!');
+}
+
+function saveSettings() {
+  var val = document.getElementById('locRequired').checked ? 'true' : 'false';
+  localStorage.setItem('locationRequired', val);
+  syncToFirebase('locationRequired', val);
+}
+
+function addLocationExemption() {
+  var select = document.getElementById('exemptionStudent');
+  var email = select.value;
+  if (!email) { alert('Select a student'); return; }
+  
+  var exemptions = JSON.parse(localStorage.getItem('locationExemptions') || '[]');
+  if (!exemptions.includes(email)) {
+    exemptions.push(email);
+    localStorage.setItem('locationExemptions', JSON.stringify(exemptions));
+    syncToFirebase('locationExemptions', exemptions);
+    select.value = '';
+    renderExemptions();
+    alert('Student added to exemptions');
+  } else {
+    alert('Student already exempt');
+  }
+}
+
+function removeLocationExemption(email) {
+  if (!confirm('Remove ' + email + ' from exemptions?')) return;
+  var exemptions = JSON.parse(localStorage.getItem('locationExemptions') || '[]');
+  exemptions = exemptions.filter(function(e){ return e !== email; });
+  localStorage.setItem('locationExemptions', JSON.stringify(exemptions));
+  syncToFirebase('locationExemptions', exemptions);
+  renderExemptions();
+}
+
+function renderExemptions() {
+  var exemptions = JSON.parse(localStorage.getItem('locationExemptions') || '[]');
+  var list = document.getElementById('exemptionsList');
+  
+  if (!exemptions.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;font-style:italic;">No exemptions set yet</div>';
+    return;
+  }
+  
+  list.innerHTML = exemptions.map(function(email) {
+    return '<div style="background:rgba(100,200,140,0.1);border:1px solid rgba(100,200,140,0.3);padding:12px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;">' +
+      '<span style="color:#6fcf97;font-size:0.85rem;">' + email + '</span>' +
+      '<button onclick="window.removeLocationExemption(\'' + email + '\')" style="background:#d32f2f;color:#fff;border:none;padding:6px 12px;border-radius:3px;cursor:pointer;font-size:0.7rem;font-weight:700;">Remove</button>' +
+      '</div>';
+  }).join('');
+}
+
+function populateExemptionStudents() {
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var select = document.getElementById('exemptionStudent');
+  var exemptions = JSON.parse(localStorage.getItem('locationExemptions') || '[]');
+  
+  var options = students
+    .filter(function(s){ return !exemptions.includes(s.email); })
+    .map(function(s){ return '<option value="' + s.email + '">' + s.name + ' (' + s.email + ')</option>'; })
+    .join('');
+  
+  select.innerHTML = '<option value="">Select a student...</option>' + options;
+}
+
+function setupDefaultMilestones() {
+  var milestones = [
+    { hours: 300, test: 'Fundamentals Test' },
+    { hours: 600, test: 'Intermediate Skills Test' },
+    { hours: 900, test: 'Advanced Techniques Test' },
+    { hours: 1500, test: 'Final Certification Exam' }
+  ];
+  localStorage.setItem('milestoneMilestones', JSON.stringify(milestones));
+  syncToFirebase('milestoneMilestones', milestones);
+  alert('Default milestones set!');
+  renderMilestones();
+}
+
+function renderMilestones() {
+  var milestones = JSON.parse(localStorage.getItem('milestoneMilestones') || '[]');
+  var list = document.getElementById('milestonesList');
+  
+  if (!milestones.length) { list.innerHTML = '<div style="color:#333;font-size:0.8rem;">No milestones set.</div>'; return; }
+  
+  list.innerHTML = '';
+  milestones.forEach(function(m) {
+    list.innerHTML += '<div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:12px;margin-bottom:8px;">' + m.hours + ' hours → ' + m.test + '</div>';
+  });
+}
+
+// ─── INIT ──────────────────────────────────────────────────────
+function initDash() {
+  try {
+    console.log('Initializing dashboard...');
+    console.log('tierData status:', typeof tierData, tierData ? 'valid' : 'invalid');
+    
+    // Setup Firebase real-time listeners IMMEDIATELY
+    setupFirebaseListeners();
+    
+    // Load initial data from Firebase if available
+    if (database && firebaseReady) {
+      console.log('⏳ Loading data from Firebase...');
+      const keysToLoad = ['students', 'schoolStaff', 'alumni', 'catalog', 'tierData', 'schoolNewsFeed'];
+      let loadedCount = 0;
+      
+      keysToLoad.forEach(key => {
+        loadFromFirebase(key, function(data) {
+          loadedCount++;
+          console.log('✓ Loaded', key, 'from Firebase');
+        });
+      });
+      
+      // Wait a bit for Firebase to load, then render
+      setTimeout(function() {
+        renderDashboardContent();
+      }, 1000);
+    } else {
+      console.log('Firebase not available, rendering from localStorage');
+      renderDashboardContent();
+    }
+  } catch(e) {
+    console.error('Dashboard init error:', e);
+    alert('Error loading dashboard: ' + e.message);
+  }
+}
+
+function renderDashboardContent() {
+  try {
+    console.log('Rendering dashboard content...');
+    
+    if (!tierData || typeof tierData !== 'object') {
+      console.warn('tierData was invalid, resetting...');
+      tierData = getTierData();
+    }
+    
+    renderStudents();
+    console.log('✓ Students rendered');
+    renderStaff();
+    console.log('✓ Staff rendered');
+    renderGraduationList();
+    console.log('✓ Graduation list rendered');
+    renderAlumni();
+    console.log('✓ Alumni rendered');
+    renderCatalog();
+    console.log('✓ Catalog rendered');
+    renderApplications();
+    console.log('✓ Applications rendered');
+    renderMilestones();
+    console.log('✓ Milestones rendered');
+    displayActiveEvent();
+    console.log('✓ Active event displayed');
+    initCourseForms();
+    console.log('✓ Course forms initialized');
+    updateStats();
+    console.log('✓ Stats updated - Dashboard ready');
+    
+    console.log('✓ Dashboard fully loaded and synced with Firebase');
+  } catch(e) {
+    console.error('Dashboard rendering error:', e);
+  }
+}
+
+function updateStats() {
+  var students = getStudents();
+  document.getElementById('statStudents').textContent = students.length;
+  document.getElementById('statClocked').textContent = students.filter(function(s){ return s.clockedIn; }).length;
+}
+
+// Refresh stats
+setInterval(function(){ updateStats(); }, 5000);
+
+// ─── EDIT STUDENT ──────────────────────────────────────────────
+var editingStudentId = null;
+
+function openEditStudent(id) {
+  var students = getStudents();
+  var student = students.find(function(s){ return s.id === id; });
+  if (!student) return;
+  
+  editingStudentId = id;
+  document.getElementById('editStudentName').textContent = student.name;
+  document.getElementById('editStudentId').textContent = student.studentId;
+  document.getElementById('editName').value = student.name;
+  document.getElementById('editEmail').value = student.email;
+  document.getElementById('editHours').value = student.totalHours;
+  document.getElementById('editDays').value = student.daysAttended;
+  document.getElementById('editNotes').value = student.notes || '';
+  document.getElementById('editBio').value = student.bio || '';
+  
+  // Show profile photo preview
+  if (student.profilePhoto) {
+    var preview = document.getElementById('photoPreview');
+    preview.style.backgroundImage = 'url(' + student.profilePhoto + ')';
+    preview.style.display = 'block';
+  } else {
+    document.getElementById('photoPreview').style.display = 'none';
+  }
+  
+  // Show haircut photos preview
+  var haircutsPreview = document.getElementById('haircutsPreview');
+  if (student.haircutPhotos && student.haircutPhotos.length > 0) {
+    haircutsPreview.innerHTML = student.haircutPhotos.map(function(photo, idx) {
+      return '<div style="width:80px;height:80px;background-size:cover;border-radius:4px;border:1px solid var(--border-sub);background-image:url(' + photo + ');position:relative;" title="Haircut ' + (idx+1) + '"></div>';
+    }).join('');
+  } else {
+    haircutsPreview.innerHTML = '<div style="grid-column:1/-1;color:#555;font-size:0.75rem;padding:12px;text-align:center;">No haircut photos uploaded yet</div>';
+  }
+  
+  // Update progress bar
+  var pct = Math.min((student.totalHours / 1500) * 100, 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressPercentDisplay').textContent = Math.round(pct) + '%';
+  document.getElementById('progressHoursDisplay').textContent = Math.round(student.totalHours) + ' / 1500 hours';
+  
+  // Milestone status
+  document.getElementById('test1Status').textContent = student.milestoneChecks && student.milestoneChecks[300] ? '✓ Passed' : 'Not Taken';
+  document.getElementById('test2Status').textContent = student.milestoneChecks && student.milestoneChecks[600] ? '✓ Passed' : 'Not Taken';
+  document.getElementById('test3Status').textContent = student.milestoneChecks && student.milestoneChecks[900] ? '✓ Passed' : 'Not Taken';
+  document.getElementById('test4Status').textContent = student.milestoneChecks && student.milestoneChecks[1500] ? '✓ Passed' : 'Not Taken';
+  
+  document.getElementById('editStudentModal').style.visibility = 'visible';
+  document.getElementById('editStudentModal').style.opacity = '1';
+}
+
+function closeEditStudent() {
+  document.getElementById('editStudentModal').style.visibility = 'hidden';
+  document.getElementById('editStudentModal').style.opacity = '0';
+  editingStudentId = null;
+}
+
+function openEditAlumnus(idx) {
+  var alumni = JSON.parse(localStorage.getItem('alumni') || '[]');
+  var alumnus = alumni[idx];
+  if (!alumnus) return;
+  
+  editingAlumnusIdx = idx;
+  document.getElementById('editAlumnusName').textContent = alumnus.name;
+  document.getElementById('alumEditName').value = alumnus.name;
+  document.getElementById('alumEditGradDate').value = alumnus.graduationDate || '';
+  document.getElementById('alumEditStatus').value = alumnus.currentStatus || '';
+  document.getElementById('alumEditBio').value = alumnus.bio || '';
+  
+  if (alumnus.photo) {
+    document.getElementById('alumPhotoPreview').style.backgroundImage = 'url(' + alumnus.photo + ')';
+    document.getElementById('alumPhotoPreview').style.display = 'block';
+  } else {
+    document.getElementById('alumPhotoPreview').style.display = 'none';
+  }
+  
+  document.getElementById('editAlumnusModal').style.visibility = 'visible';
+  document.getElementById('editAlumnusModal').style.opacity = '1';
+}
+
+function closeEditAlumnus() {
+  document.getElementById('editAlumnusModal').style.visibility = 'hidden';
+  document.getElementById('editAlumnusModal').style.opacity = '0';
+  editingAlumnusIdx = null;
+}
+
+function previewAlumnusPhoto(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var preview = document.getElementById('alumPhotoPreview');
+    preview.style.backgroundImage = 'url(' + ev.target.result + ')';
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveEditedAlumnus() {
+  var alumni = JSON.parse(localStorage.getItem('alumni') || '[]');
+  var alumnus = alumni[editingAlumnusIdx];
+  if (!alumnus) return;
+  
+  alumnus.name = document.getElementById('alumEditName').value;
+  alumnus.graduationDate = document.getElementById('alumEditGradDate').value;
+  alumnus.currentStatus = document.getElementById('alumEditStatus').value;
+  alumnus.bio = document.getElementById('alumEditBio').value;
+  
+  // Process photo if uploaded
+  var photoFile = document.getElementById('alumEditPhoto').files[0];
+  if (photoFile) {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      alumnus.photo = ev.target.result;
+      localStorage.setItem('alumni', JSON.stringify(alumni));
+      syncToFirebase('alumni', alumni);
+      closeEditAlumnus();
+      renderAlumni();
+      alert('Alumni profile saved!');
+    };
+    reader.readAsDataURL(photoFile);
+  } else {
+    localStorage.setItem('alumni', JSON.stringify(alumni));
+    syncToFirebase('alumni', alumni);
+    closeEditAlumnus();
+    renderAlumni();
+    alert('Alumni profile saved!');
+  }
+}
+
+var editingAlumnusIdx = null;
+
+function previewProfilePhoto(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var preview = document.getElementById('photoPreview');
+    preview.style.backgroundImage = 'url(' + ev.target.result + ')';
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewHaircutPhotos(e) {
+  var files = e.target.files;
+  if (!files || files.length === 0) return;
+  
+  var preview = document.getElementById('haircutsPreview');
+  var previews = [];
+  var loaded = 0;
+  
+  Array.from(files).forEach(function(file, idx) {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      previews[idx] = ev.target.result;
+      loaded++;
+      if (loaded === files.length) {
+        preview.innerHTML = previews.map(function(photo, i) {
+          return '<div style="width:80px;height:80px;background-size:cover;border-radius:4px;border:1px solid var(--border-sub);background-image:url(' + photo + ');position:relative;" title="Haircut ' + (i+1) + '"></div>';
+        }).join('');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function saveEditedStudent() {
+  var students = getStudents();
+  var student = students.find(function(s){ return s.id === editingStudentId; });
+  if (!student) return;
+  
+  student.name = document.getElementById('editName').value;
+  student.email = document.getElementById('editEmail').value;
+  student.totalHours = parseFloat(document.getElementById('editHours').value) || 0;
+  student.daysAttended = parseInt(document.getElementById('editDays').value) || 0;
+  student.notes = document.getElementById('editNotes').value;
+  student.bio = document.getElementById('editBio').value;
+  
+  // Update password if provided
+  var newPassword = document.getElementById('editPassword').value.trim();
+  if (newPassword) {
+    student.password = newPassword;
+  }
+  
+  var photoFile = document.getElementById('editProfilePhoto').files[0];
+  var haircutFiles = document.getElementById('editHaircutPhotos').files;
+  var filesProcessed = 0;
+  var totalFiles = (photoFile ? 1 : 0) + (haircutFiles ? haircutFiles.length : 0);
+  
+  function finalizeSave() {
+    saveStudents(students);
+    closeEditStudent();
+    renderStudents();
+    updateStats();
+    alert('Student saved!' + (newPassword ? ' Password updated.' : ''));
+  }
+  
+  if (totalFiles === 0) {
+    finalizeSave();
+    return;
+  }
+  
+  // Handle profile photo
+  if (photoFile) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      student.profilePhoto = e.target.result;
+      filesProcessed++;
+      if (filesProcessed === totalFiles) finalizeSave();
+    };
+    reader.readAsDataURL(photoFile);
+  }
+  
+  // Handle haircut photos
+  if (haircutFiles && haircutFiles.length > 0) {
+    student.haircutPhotos = [];
+    var haircutsProcessed = 0;
+    Array.from(haircutFiles).forEach(function(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        student.haircutPhotos.push(e.target.result);
+        haircutsProcessed++;
+        filesProcessed++;
+        if (filesProcessed === totalFiles) finalizeSave();
+      };
+      reader.readAsDataURL(file);
+    });
+  } else {
+    if (filesProcessed === totalFiles) finalizeSave();
+  }
+}
+
+
+// ─── MONTHLY REPORT ────────────────────────────────────────────
+function loadMonthlyReport() {
+  var month = document.getElementById('reportMonth').value;
+  if (!month) return;
+  
+  var students = getStudents();
+  var monthStart = new Date(month + '-01');
+  var monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
+  
+  // Calculate metrics
+  var totalStudents = students.length;
+  var totalHoursInMonth = 0;
+  var daysWithActivity = 0;
+  var milestonesCompleted = 0;
+  
+  students.forEach(function(s) {
+    var honthours = s.clockLog.filter(function(log) {
+      var logDate = new Date(log.clockInTime);
+      return logDate >= monthStart && logDate <= monthEnd;
+    }).reduce(function(sum, log) {
+      return sum + (log.hoursWorked || 0);
+    }, 0);
+    totalHoursInMonth += honthours;
+    
+    if (s.milestoneChecks) {
+      Object.keys(s.milestoneChecks).forEach(function(key) {
+        if (s.milestoneChecks[key]) milestonesCompleted++;
+      });
+    }
+  });
+  
+  var avgHours = students.length > 0 ? (totalHoursInMonth / students.length).toFixed(1) : 0;
+  var attendance = students.length > 0 ? Math.round((students.filter(function(s){ return s.daysAttended > 0; }).length / students.length) * 100) : 0;
+  
+  document.getElementById('reportStudentsCount').textContent = totalStudents;
+  document.getElementById('reportAvgHours').textContent = avgHours;
+  document.getElementById('reportAttendance').textContent = attendance + '%';
+  document.getElementById('reportMilestones').textContent = milestonesCompleted;
+  
+  document.getElementById('monthlyReportContent').innerHTML = '<div style="text-align:center;color:#555;font-size:0.8rem;padding:20px;">Report generated for ' + month + '</div>';
+}
+
+// ─── COURSE TIER MANAGEMENT ────────────────────────────────────
+var DEFAULT_TIER_DATA = {
+  tier1: {
+    name: 'Beginner Barber Mastery',
+    price: '$149–299',
+    modules: [
+      'Introduction to Barbering',
+      'Tools & Setup',
+      'Sanitation & Arkansas Laws',
+      'Hair Fundamentals',
+      'Clipper Control Basics',
+      'Lineups & Edge-Ups',
+      'Client Experience',
+      'Getting Paid',
+      'Your First Month'
+    ]
+  },
+  tier2: {
+    name: 'Advanced Barber Mastery',
+    price: '$299–599',
+    modules: [
+      'Bald Fades & Skin Fades',
+      'Burst Fades & Specialty Cuts',
+      'Shear Work & Scissor Cutting',
+      'Color Enhancements',
+      'Premium Service Experience',
+      'Fast Cutting Techniques',
+      'Standing Out in Your Market'
+    ]
+  },
+  tier3: {
+    name: 'Barber Business & Shop Ownership',
+    price: '$199–499',
+    modules: [
+      'How to Open a Barbershop',
+      'Booth Rent Systems',
+      'Hiring & Managing Barbers',
+      'Branding & Image',
+      'Social Media Growth',
+      'Scaling to Multiple Locations',
+      'Creating Your Product Line',
+      'Financial Mastery'
+    ]
+  },
+  tier4: {
+    name: 'Arkansas State Board Prep',
+    price: '$99–199',
+    modules: [
+      'Written Exam Prep',
+      'Practical Exam Walkthrough',
+      'Sanitation Rules & Protocols',
+      'Exam Day Strategies'
+    ]
+  }
+};
+
+function getTierData() {
+  // This will be called with Firebase listener
+  var saved = localStorage.getItem('tierData');
+  if (!saved) return DEFAULT_TIER_DATA;
+  try {
+    return JSON.parse(saved);
+  } catch(e) {
+    console.error('Corrupted tierData in localStorage:', e);
+    localStorage.removeItem('tierData');
+    return DEFAULT_TIER_DATA;
+  }
+}
+
+var tierData = getTierData();
+
+// Ensure tierData is valid
+if (!tierData || typeof tierData !== 'object') {
+  tierData = DEFAULT_TIER_DATA;
+}
+
+function saveTierData(tierName) {
+  var nameInput = document.getElementById(tierName + 'Name');
+  var priceInput = document.getElementById(tierName + 'Price');
+  
+  if (!nameInput || !priceInput) return;
+  
+  var currentData = getTierData();
+  var defaultData = DEFAULT_TIER_DATA[tierName] || { name: '', price: '', modules: [], milestones: [] };
+  var existingTier = currentData[tierName] || defaultData;
+  
+  currentData[tierName] = {
+    name: nameInput.value || existingTier.name || defaultData.name || '',
+    price: priceInput.value || existingTier.price || defaultData.price || '',
+    modules: existingTier.modules || [],
+    milestones: existingTier.milestones || []
+  };
+  
+  tierData = currentData;
+  localStorage.setItem('tierData', JSON.stringify(currentData));
+  syncToFirebase('tierData', currentData);
+  renderMilestonesList(tierName);
+  alert('Tier saved!');
+}
+
+function renderModulesList(tierName) {
+  var currentData = getTierData();
+  var tier = currentData[tierName] || DEFAULT_TIER_DATA[tierName] || { modules: [] };
+  var list = document.getElementById(tierName + 'ModulesList');
+  if (!list) return;
+  
+  if (!tier.modules || tier.modules.length === 0) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:0.75rem;padding:10px;text-align:center;">No modules yet. Click "Add Module" to create one.</div>';
+    return;
+  }
+  
+  list.innerHTML = tier.modules.map(function(mod, idx) {
+    // Handle both string modules (from defaults) and object modules (from edits)
+    var modName = (typeof mod === 'string') ? mod : (mod.name || 'Untitled Module');
+    var modDesc = (typeof mod === 'string') ? '' : (mod.description || 'No description');
+    var desc = modDesc ? modDesc.substring(0, 40) + (modDesc.length > 40 ? '...' : '') : 'No description';
+    return '<div class="module-item">' +
+      '<div>' +
+        '<div class="module-item-name">' + modName + '</div>' +
+        '<div class="module-item-desc">' + desc + '</div>' +
+      '</div>' +
+      '<div class="module-item-actions">' +
+        '<button class="btn-edit-module" onclick="window.editModule(\'' + tierName + '\', ' + idx + ')">Edit</button>' +
+        '<button class="btn-delete-module" onclick="window.deleteModule(\'' + tierName + '\', ' + idx + ')">Delete</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function addModuleToTier(tierName) {
+  var currentData = getTierData();
+  if (!currentData[tierName]) currentData[tierName] = { modules: [] };
+  if (!currentData[tierName].modules) currentData[tierName].modules = [];
+  
+  currentData[tierName].modules.push({
+    name: 'New Module',
+    description: '',
+    pictureUrl: '',
+    pictureBase64: '',
+    videoUrl: '',
+    videoBase64: ''
+  });
+  
+  tierData = currentData;
+  localStorage.setItem('tierData', JSON.stringify(currentData));
+  syncToFirebase('tierData', currentData);
+  renderModulesList(tierName);
+  var idx = currentData[tierName].modules.length - 1;
+  editModule(tierName, idx);
+}
+
+function deleteModule(tierName, idx) {
+  if (!confirm('Delete this module?')) return;
+  var currentData = getTierData();
+  if (currentData[tierName] && currentData[tierName].modules) {
+    currentData[tierName].modules.splice(idx, 1);
+    tierData = currentData;
+    localStorage.setItem('tierData', JSON.stringify(currentData));
+    syncToFirebase('tierData', currentData);
+    renderModulesList(tierName);
+  }
+}
+
+function editModule(tierName, idx) {
+  var currentData = getTierData();
+  var module = currentData[tierName] && currentData[tierName].modules ? currentData[tierName].modules[idx] : null;
+  if (!module) return;
+  
+  // Convert string modules to objects (from defaults)
+  if (typeof module === 'string') {
+    module = {
+      name: module,
+      description: '',
+      pictureUrl: '',
+      videoUrl: ''
+    };
+    currentData[tierName].modules[idx] = module;
+  }
+  
+  var modal = document.getElementById('moduleModal');
+  document.getElementById('moduleModalName').value = module.name || '';
+  document.getElementById('moduleModalDesc').value = module.description || '';
+  
+  // Show preview if data URL exists
+  var picturePreview = document.getElementById('moduleModalPicturePreview');
+  var videoPreview = document.getElementById('moduleModalVideoPreview');
+  
+  if (module.pictureUrl) {
+    picturePreview.innerHTML = '<img src="' + module.pictureUrl + '" style="max-width:150px;max-height:150px;border-radius:6px;margin-bottom:10px;">';
+  } else {
+    picturePreview.innerHTML = '';
+  }
+  
+  if (module.videoUrl) {
+    videoPreview.innerHTML = '<div style="color:#e5c97a;font-size:12px;margin-bottom:10px;">Video attached: ' + (module.videoUrl.substring(0, 50) + '...') + '</div>';
+  } else {
+    videoPreview.innerHTML = '';
+  }
+  
+  // Store tier and index for save
+  window.editingModuleTier = tierName;
+  window.editingModuleIdx = idx;
+  window.editingModulePictureUrl = module.pictureUrl || '';
+  window.editingModuleVideoUrl = module.videoUrl || '';
+  
+  document.getElementById('moduleSaveBtn').onclick = function() {
+    saveModule(tierName, idx);
+  };
+  
+  modal.classList.add('active');
+}
+
+function handleModulePictureSelect(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      window.editingModulePictureUrl = e.target.result;
+      var preview = document.getElementById('moduleModalPicturePreview');
+      preview.innerHTML = '<img src="' + e.target.result + '" style="max-width:150px;max-height:150px;border-radius:6px;margin-bottom:10px;">';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+  input.value = ''; // Reset for next selection
+}
+
+function handleModuleVideoSelect(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      window.editingModuleVideoUrl = e.target.result;
+      var preview = document.getElementById('moduleModalVideoPreview');
+      preview.innerHTML = '<div style="color:#e5c97a;font-size:12px;margin-bottom:10px;">Video loaded: ' + input.files[0].name + '</div>';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+  input.value = ''; // Reset for next selection
+}
+
+function saveModule(tierName, idx) {
+  var currentData = getTierData();
+  var module = currentData[tierName].modules[idx];
+  
+  module.name = document.getElementById('moduleModalName').value || 'Untitled';
+  module.description = document.getElementById('moduleModalDesc').value || '';
+  module.pictureUrl = window.editingModulePictureUrl || '';
+  module.videoUrl = window.editingModuleVideoUrl || '';
+  
+  tierData = currentData;
+  localStorage.setItem('tierData', JSON.stringify(currentData));
+  syncToFirebase('tierData', currentData);
+  console.log('✅ Module saved:', module.name);
+  closeModuleModal();
+  renderModulesList(tierName);
+  renderCoursesHierarchy();
+}
+
+function closeModuleModal() {
+  document.getElementById('moduleModal').classList.remove('active');
+}
+
+function loadCourseForm(tierName) {
+  if (!tierData || typeof tierData !== 'object') {
+    tierData = getTierData();
+  }
+  
+  var data = tierData && tierData[tierName] ? tierData[tierName] : DEFAULT_TIER_DATA[tierName];
+  if (!data) return;
+  
+  var nameEl = document.getElementById(tierName + 'Name');
+  var priceEl = document.getElementById(tierName + 'Price');
+  
+  if (!nameEl || !priceEl) return;
+  
+  nameEl.value = data.name || '';
+  priceEl.value = data.price || '';
+  renderModulesList(tierName);
+  renderMilestonesList(tierName);
+  renderCoursesHierarchy();
+}
+
+// ─── MILESTONE FUNCTIONS ───────────────────────────────────────
+function renderMilestonesList(tierName) {
+  var currentData = getTierData();
+  var tier = currentData[tierName] || DEFAULT_TIER_DATA[tierName] || { milestones: [] };
+  var list = document.getElementById(tierName + 'MilestonesList');
+  if (!list) return;
+  
+  var milestones = tier.milestones || [];
+  
+  if (!milestones.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:0.75rem;padding:10px;text-align:center;">No milestones set for this course.</div>';
+    return;
+  }
+  
+  list.innerHTML = milestones.map(function(m, idx) {
+    return '<div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.3);padding:10px;margin-bottom:8px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;">' +
+      '<div style="font-size:0.85rem;"><strong>' + m.hours + ' hrs</strong> → ' + m.test + '</div>' +
+      '<button class="btn-sm danger" onclick="window.removeMilestoneFromTier(\'' + tierName + '\', ' + idx + ')" style="padding:4px 8px;font-size:0.7rem;">Remove</button>' +
+      '</div>';
+  }).join('');
+}
+
+function addMilestoneToTier(tierName) {
+  var hoursInput = document.getElementById(tierName + 'MilestoneHours');
+  var testInput = document.getElementById(tierName + 'MilestoneTest');
+  
+  if (!hoursInput || !testInput) return;
+  
+  var hours = parseInt(hoursInput.value, 10);
+  var test = testInput.value.trim();
+  
+  if (!hours || isNaN(hours) || !test) {
+    alert('Please enter both hours and test name');
+    return;
+  }
+  
+  var currentData = getTierData();
+  if (!currentData[tierName]) currentData[tierName] = { modules: [], milestones: [] };
+  if (!currentData[tierName].milestones) currentData[tierName].milestones = [];
+  
+  currentData[tierName].milestones.push({ hours: hours, test: test });
+  
+  tierData = currentData;
+  localStorage.setItem('tierData', JSON.stringify(currentData));
+  syncToFirebase('tierData', currentData);
+  
+  hoursInput.value = '';
+  testInput.value = '';
+  renderMilestonesList(tierName);
+  alert('Milestone added!');
+}
+
+function removeMilestoneFromTier(tierName, idx) {
+  var currentData = getTierData();
+  if (currentData[tierName] && currentData[tierName].milestones) {
+    currentData[tierName].milestones.splice(idx, 1);
+    tierData = currentData;
+    localStorage.setItem('tierData', JSON.stringify(currentData));
+    syncToFirebase('tierData', currentData);
+    renderMilestonesList(tierName);
+  }
+}
+
+function initCourseForms() {
+  try {
+    if (!tierData || typeof tierData !== 'object') {
+      tierData = getTierData();
+    }
+    ['tier1', 'tier2', 'tier3', 'tier4'].forEach(function(tier) {
+      loadCourseForm(tier);
+    });
+  } catch(e) {
+    console.error('Error initializing course forms:', e);
+    tierData = DEFAULT_TIER_DATA;
+  }
+}
+
+function switchCourseTab(tier, btn) {
+  if (!tier) return;
+  ['tier1', 'tier2', 'tier3', 'tier4'].forEach(function(t) {
+    var el = document.getElementById(t + 'Content');
+    if (el) el.style.display = 'none';
+  });
+  document.querySelectorAll('.course-tab').forEach(function(b){ b.classList.remove('active'); });
+  var content = document.getElementById(tier + 'Content');
+  if (content) content.style.display = 'block';
+  if (btn) btn.classList.add('active');
+  loadCourseForm(tier);
+}
+
+function renderCoursesHierarchy() {
+  var tierData = getTierData();
+  var tiers = ['tier1', 'tier2', 'tier3', 'tier4'];
+  var tierLabels = {tier1: '🥇 Tier 1', tier2: '🏆 Tier 2', tier3: '💼 Tier 3', tier4: '🎓 Tier 4'};
+  var tierPrices = {tier1: '$150', tier2: '$213', tier3: '$263', tier4: '$117'};
+  
+  var html = '';
+  tiers.forEach(function(tierName) {
+    var tier = tierData[tierName] || {};
+    var tierId = 'tierCard_' + tierName;
+    var isExpanded = document.getElementById(tierId) && document.getElementById(tierId).dataset.expanded === 'true';
+    var modules = tier.modules || [];
+    
+    html += '<div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.3);border-radius:6px;overflow:hidden;">';
+    html += '<div onclick="window.toggleTierCard(\'' + tierName + '\')" style="padding:16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:rgba(107,33,168,0.15);transition:all 0.2s ease;">';
+    html += '<div>';
+    html += '<div style="font-size:1rem;font-weight:700;color:var(--white);">' + tierLabels[tierName] + '</div>';
+    html += '<div style="font-size:0.8rem;color:var(--muted);">Price: ' + tierPrices[tierName] + ' • Modules: ' + modules.length + '</div>';
+    html += '</div>';
+    html += '<div style="color:var(--gold);font-size:1.2rem;font-weight:700;transition:transform 0.2s ease;" class="tier-expand-icon" id="expandIcon_' + tierName + '">▼</div>';
+    html += '</div>';
+    
+    html += '<div id="' + tierId + '" class="tier-modules" data-expanded="false" style="display:none;padding:12px;border-top:1px solid rgba(107,33,168,0.3);background:#0a0806;">';
+    if (modules && modules.length > 0) {
+      modules.forEach(function(mod, idx) {
+        var modName = mod.name || mod || ('Module ' + (idx + 1));
+        html += '<div onclick="window.editModule(\'' + tierName + '\', ' + idx + ')" style="padding:12px;margin-bottom:8px;background:rgba(107,33,168,0.1);border:1px solid rgba(201,168,76,0.3);border-radius:4px;cursor:pointer;transition:all 0.2s ease;">';
+        html += '<div style="font-weight:600;color:var(--white);">📚 ' + modName + '</div>';
+        html += '<div style="font-size:0.8rem;color:var(--muted);margin-top:4px;">Click to edit • Delete available in detail view</div>';
+        html += '</div>';
+      });
+    } else {
+      html += '<div style="padding:12px;color:var(--muted);text-align:center;font-size:0.85rem;">No modules yet • Click "+ Add Module" below to create one</div>';
+    }
+    html += '<button class="btn-submit" onclick="window.addModuleToTier(\'' + tierName + '\')" style="width:100%;margin-top:8px;font-size:0.85rem;">+ Add Module</button>';
+    html += '</div>';
+    html += '</div>';
+  });
+  
+  document.getElementById('coursesHierarchyView').innerHTML = html;
+}
+
+function toggleTierCard(tierName) {
+  var tierCard = document.getElementById('tierCard_' + tierName);
+  var expandIcon = document.getElementById('expandIcon_' + tierName);
+  if (!tierCard) return;
+  
+  var isExpanded = tierCard.dataset.expanded === 'true';
+  tierCard.style.display = isExpanded ? 'none' : 'block';
+  tierCard.dataset.expanded = !isExpanded;
+  
+  if (expandIcon) {
+    expandIcon.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+  }
+}
+
+// ─── INIT & DASHBOARD ──────────────────────────────────────────
+// Auto-check on load (after tierData is defined)
+var currentOwnerId = localStorage.getItem('currentOwnerId');
+if (currentOwnerId) {
+  document.getElementById('ownerLogin').style.display = 'none';
+  document.getElementById('ownerDash').style.display = 'block';
+  resetInactivityTimer(); // Start session timeout
+  initDash();
+  displayActiveEvent();
+}
+
+// ─── EVENTS ────────────────────────────────────────────────────
+
+function addEventFormField() {
+  console.log('addEventFormField called');
+  var nameInput = document.getElementById('eventFieldName');
+  var typeSelect = document.getElementById('eventFieldType');
+  var container = document.getElementById('eventApplicationFields');
+  
+  if (!nameInput) {
+    alert('ERROR: eventFieldName input not found');
+    return;
+  }
+  if (!typeSelect) {
+    alert('ERROR: eventFieldType select not found');
+    return;
+  }
+  if (!container) {
+    alert('ERROR: eventApplicationFields container not found');
+    return;
+  }
+  
+  var name = nameInput.value.trim();
+  var type = typeSelect.value;
+  
+  console.log('Name:', name, 'Type:', type);
+  
+  if (!name) {
+    alert('Please enter a field name');
+    return;
+  }
+  
+  eventFormFields.push({
+    name: name,
+    type: type,
+    required: true
+  });
+  
+  console.log('Added field. Total fields:', eventFormFields.length);
+  
+  nameInput.value = '';
+  typeSelect.value = 'text';
+  
+  window.renderEventFormPreview();
+}
+
+function removeEventFormField(idx) {
+  eventFormFields.splice(idx, 1);
+  window.renderEventFormPreview();
+}
+
+function renderEventFormPreview() {
+  console.log('renderEventFormPreview called, fields:', eventFormFields);
+  var container = document.getElementById('eventApplicationFields');
+  
+  if (!container) {
+    console.error('Container eventApplicationFields not found');
+    return;
+  }
+  
+  if (eventFormFields.length === 0) {
+    console.log('No fields to render');
+    container.innerHTML = '<div style="color:#555;text-align:center;padding:20px;">No fields added yet</div>';
+    return;
+  }
+  
+  console.log('Rendering', eventFormFields.length, 'fields');
+  container.innerHTML = eventFormFields.map(function(field, idx) {
+    return '<div style="padding:8px;margin:4px;background:#1a1815;border:1px solid var(--border-sub);border-radius:2px;display:flex;justify-content:space-between;align-items:center;">' +
+      '<span style="font-size:0.85rem;"><strong>' + field.name + '</strong> <em style="color:#888;">(' + field.type + ')</em></span>' +
+      '<button class="btn-sm danger" onclick="window.removeEventFormField(' + idx + ')" style="padding:2px 6px;font-size:0.75rem;">Remove</button>' +
+    '</div>';
+  }).join('');
+}
+
+function updateEventPreview() {
+  var name = document.getElementById('eventName').value.trim() || 'Event Title';
+  var subtitle = document.getElementById('eventSubtitle').value.trim() || 'Event Subtitle';
+  var desc = document.getElementById('eventDesc').value.trim() || 'Event description appears here';
+  var bgColor = document.getElementById('eventBgColor').value || '#7c3aed';
+  var startDate = document.getElementById('eventStartDate').value;
+  
+  var previewBox = document.getElementById('eventPreview');
+  
+  // Calculate time remaining
+  var timeRemaining = '';
+  if (startDate) {
+    var start = new Date(startDate);
+    var now = new Date();
+    if (now > start) {
+      var endDate = document.getElementById('eventEndDate').value;
+      var end = new Date(endDate);
+      var timeLeft = Math.floor((end - now) / 1000 / 60);
+      var days = Math.floor(timeLeft / 1440);
+      var hours = Math.floor((timeLeft % 1440) / 60);
+      timeRemaining = (days > 0 ? days + 'd ' : '') + hours + 'h';
+    } else {
+      timeRemaining = 'Starting soon';
+    }
+  }
+  
+  previewBox.style.background = 'linear-gradient(135deg, ' + bgColor + '40, ' + bgColor + '20)';
+  previewBox.innerHTML = 
+    '<div style="font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;font-weight:700;">⭐ Special Announcement</div>' +
+    '<div style="font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:8px;line-height:1.3;">' + name + '<br><em style="font-size:1rem;font-style:italic;color:var(--gold);">' + subtitle + '</em></div>' +
+    '<div style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;max-height:100px;overflow:hidden;">' + desc.substring(0, 150) + (desc.length > 150 ? '...' : '') + '</div>' +
+    (timeRemaining ? '<div style="font-size:0.75rem;color:var(--gold);margin-bottom:12px;">⏱ ' + timeRemaining + '</div>' : '') +
+    '<div style="display:flex;gap:8px;justify-content:center;">' +
+    '<button style="background:var(--gold);color:var(--black);padding:8px 16px;border:none;border-radius:3px;font-weight:600;font-size:0.9rem;cursor:default;">Apply Now →</button>' +
+    '</div>';
+}
+
+function testEventDates() {
+  var eventStr = localStorage.getItem('currentEvent');
+  if (!eventStr) {
+    alert('No event launched yet');
+    return;
+  }
+  
+  var event = JSON.parse(eventStr);
+  var startDate = new Date(event.startDate);
+  var endDate = new Date(event.endDate);
+  var now = new Date();
+  var isActive = now >= startDate && now <= endDate;
+  
+  var message = 'Event: ' + event.name + '\n\n' +
+    'Current Time: ' + now.toLocaleString() + '\n' +
+    'Start Date: ' + startDate.toLocaleString() + '\n' +
+    'End Date: ' + endDate.toLocaleString() + '\n\n' +
+    'Status: ' + (isActive ? '✅ ACTIVE (visible on front page)' : '❌ NOT ACTIVE (hidden)') + '\n\n' +
+    (now < startDate ? 'Reason: Event hasn\'t started yet' : '') +
+    (now > endDate ? 'Reason: Event has ended' : '');
+  
+  alert(message);
+  console.log('Event Debug Info:', { event, now, startDate, endDate, isActive });
+}
+
+function launchEvent() {
+  var name = document.getElementById('eventName').value.trim();
+  var subtitle = document.getElementById('eventSubtitle').value.trim();
+  var desc = document.getElementById('eventDesc').value.trim();
+  var start = document.getElementById('eventStartDate').value;
+  var end = document.getElementById('eventEndDate').value;
+  var bgColor = document.getElementById('eventBgColor').value || '#7c3aed';
+  var waiverEnabled = document.getElementById('eventWaiverEnabled').checked;
+  var waiverText = document.getElementById('eventWaiverText').value.trim();
+
+  if (!name || !desc || !start || !end) {
+    alert('Please fill in all required fields');
+    return;
+  }
+  
+  if (eventFormFields.length === 0) {
+    alert('Please add at least one form field');
+    return;
+  }
+
+  var applicationId = 'app_' + Date.now();
+  var application = {
+    id: applicationId,
+    fields: eventFormFields,
+    waiverEnabled: waiverEnabled,
+    waiverText: waiverText,
+    createdAt: new Date().toISOString()
+  };
+  
+  var apps = JSON.parse(localStorage.getItem('eventApplications') || '{}');
+  apps[applicationId] = application;
+  localStorage.setItem('eventApplications', JSON.stringify(apps));
+  syncToFirebase('eventApplications', apps);
+
+  var event = {
+    name: name,
+    subtitle: subtitle,
+    description: desc,
+    startDate: start,
+    endDate: end,
+    applicationId: applicationId,
+    backgroundColor: bgColor,
+    createdAt: new Date().toISOString()
+  };
+
+  localStorage.setItem('currentEvent', JSON.stringify(event));
+  syncToFirebase('currentEvent', event);
+  alert('Event launched! It will appear on the front page now.');
+  
+  eventFormFields = [];
+  window.renderEventFormPreview();
+  window.displayActiveEvent();
+  document.getElementById('eventName').value = '';
+  document.getElementById('eventSubtitle').value = '';
+  document.getElementById('eventDesc').value = '';
+  document.getElementById('eventStartDate').value = '';
+  document.getElementById('eventEndDate').value = '';
+  document.getElementById('eventWaiverEnabled').checked = false;
+  document.getElementById('eventWaiverText').value = '';
+}
+
+function displayActiveEvent() {
+  var eventStr = localStorage.getItem('currentEvent');
+  var display = document.getElementById('activeEventDisplay');
+  var disableBtn = document.getElementById('disableEventBtn');
+  
+  if (!eventStr) {
+    display.innerHTML = '<p style="color:var(--muted);">No active event</p>';
+    disableBtn.style.display = 'none';
+    return;
+  }
+
+  var event = JSON.parse(eventStr);
+  var now = new Date();
+  var endTime = new Date(event.endDate);
+  
+  if (now > endTime) {
+    display.innerHTML = '<p style="color:var(--muted);">Event has ended. <a href="javascript:void(0)" onclick="window.disableEvent()" style="color:var(--gold);">Remove it</a></p>';
+  } else {
+    var timeLeft = Math.floor((endTime - now) / 1000 / 60);
+    var days = Math.floor(timeLeft / 1440);
+    var hours = Math.floor((timeLeft % 1440) / 60);
+    
+    display.innerHTML = '<div>' +
+      '<div style="font-weight:700;font-size:1.1rem;margin-bottom:8px;color:var(--white);">' + event.name + '</div>' +
+      '<div style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">' + event.subtitle + '</div>' +
+      '<div style="font-size:0.75rem;color:var(--gold);margin-bottom:12px;">⏱ ' + (days > 0 ? days + 'd ' : '') + hours + 'h remaining</div>' +
+      '<a href="event-application.html" style="color:var(--gold);text-decoration:underline;font-size:0.8rem;">→ View Application</a>' +
+    '</div>';
+  }
+  
+  disableBtn.style.display = 'block';
+}
+
+function disableEvent() {
+  if (confirm('Remove this event from the front page?')) {
+    localStorage.removeItem('currentEvent');
+    window.displayActiveEvent();
+    alert('Event removed');
+  }
+}
+
+function renderSubmissions() {
+  var submissions = JSON.parse(localStorage.getItem('eventApplicationSubmissions') || '[]');
+  var display = document.getElementById('submissionsDisplay');
+  
+  if (submissions.length === 0) {
+    display.innerHTML = '<div style="color:#555;text-align:center;padding:20px;">No submissions yet</div>';
+    return;
+  }
+  
+  var html = '<div style="overflow-x:auto;">';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:0.85rem;">';
+  
+  if (submissions.length > 0) {
+    var firstSubmission = submissions[0];
+    var headers = Object.keys(firstSubmission.data);
+    
+    html += '<thead><tr style="border-bottom:2px solid var(--border-main);">';
+    html += '<th style="padding:8px;text-align:left;color:var(--gold);">Date</th>';
+    headers.forEach(function(h) {
+      html += '<th style="padding:8px;text-align:left;color:var(--gold);">' + h + '</th>';
+    });
+    html += '<th style="padding:8px;text-align:left;color:var(--gold);">Action</th>';
+    html += '</tr></thead><tbody>';
+    
+    submissions.forEach(function(sub, idx) {
+      var date = new Date(sub.timestamp).toLocaleString();
+      html += '<tr style="border-bottom:1px solid var(--border-sub);">';
+      html += '<td style="padding:8px;color:var(--muted);">' + date + '</td>';
+      headers.forEach(function(h) {
+        html += '<td style="padding:8px;max-width:200px;overflow:hidden;text-overflow:ellipsis;">' + (sub.data[h] || '') + '</td>';
+      });
+      html += '<td style="padding:8px;"><button class="btn-sm danger" onclick="window.deleteSubmission(' + idx + ')" style="font-size:0.7rem;">Delete</button></td>';
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table>';
+  }
+  
+  html += '</div>';
+  display.innerHTML = html;
+}
+
+function deleteSubmission(idx) {
+  if (!confirm('Delete this submission?')) return;
+  var submissions = JSON.parse(localStorage.getItem('eventApplicationSubmissions') || '[]');
+  submissions.splice(idx, 1);
+  localStorage.setItem('eventApplicationSubmissions', JSON.stringify(submissions));
+  syncToFirebase('eventApplicationSubmissions', submissions);
+  renderSubmissions();
+}
+
+function exportSubmissions() {
+  var submissions = JSON.parse(localStorage.getItem('eventApplicationSubmissions') || '[]');
+  
+  if (submissions.length === 0) {
+    alert('No submissions to export');
+    return;
+  }
+  
+  var csv = '';
+  var firstSubmission = submissions[0];
+  var headers = ['Date', ...Object.keys(firstSubmission.data)];
+  
+  csv += headers.join(',') + '\n';
+  
+  submissions.forEach(function(sub) {
+    var date = new Date(sub.timestamp).toLocaleString();
+    var row = [date];
+    Object.keys(firstSubmission.data).forEach(function(h) {
+      var val = sub.data[h] || '';
+      val = '"' + val.replace(/"/g, '""') + '"';
+      row.push(val);
+    });
+    csv += row.join(',') + '\n';
+  });
+  
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var url = window.URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'event-submissions-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
+
+// ─── HYBRID CURRICULUM ────────────────────────────────────────
+function generateDefaultHybridCurriculum() {
+  var existing = JSON.parse(localStorage.getItem('hybridCurriculum') || 'null');
+  if (existing) {
+    if (!confirm('Curriculum already exists. Overwrite with defaults?')) return;
+  }
+  
+  var curriculum = {
+    title: 'Hybrid Barber Program - 120 Theory Hours',
+    modules: []
+  };
+  
+  for (var m = 1; m <= 12; m++) {
+    var module = {
+      id: 'mod_' + m,
+      num: m,
+      title: 'Module ' + m + ': Fundamentals',
+      description: 'Learn the core concepts and techniques',
+      lessons: []
+    };
+    
+    for (var l = 1; l <= 6; l++) {
+      module.lessons.push({
+        id: 'les_' + m + '_' + l,
+        num: l,
+        title: 'Lesson ' + l,
+        videoUrl: 'https://example.com/videos/module' + m + '-lesson' + l + '.mp4',
+        videoDuration: 10,
+        questions: [
+          {
+            id: 'q1',
+            text: 'What is the main topic of this lesson?',
+            answers: ['Answer A', 'Answer B', 'Answer C'],
+            correctIdx: 0
+          },
+          {
+            id: 'q2',
+            text: 'How would you apply this technique?',
+            answers: ['Method 1', 'Method 2', 'Method 3'],
+            correctIdx: 1
+          }
+        ]
+      });
+    }
+    
+    curriculum.modules.push(module);
+  }
+  
+  localStorage.setItem('hybridCurriculum', JSON.stringify(curriculum));
+  syncToFirebase('hybridCurriculum', curriculum);
+  alert('✓ Default curriculum created with 12 modules!');
+  renderHybridCurriculum();
+}
+
+function renderHybridCurriculum() {
+  var curriculum = JSON.parse(localStorage.getItem('hybridCurriculum') || 'null');
+  var container = document.getElementById('hybridModulesList');
+  
+  if (!curriculum) {
+    container.innerHTML = '<div style="color:#555;text-align:center;padding:40px;font-style:italic;">No curriculum created yet. Generate defaults or create custom modules.</div>';
+    return;
+  }
+  
+  container.innerHTML = '';
+  curriculum.modules.forEach(function(mod) {
+    var completed = Math.floor(Math.random() * 7);
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;cursor:pointer;transition:all 0.2s;';
+    card.onmouseover = function() { this.style.borderColor = 'var(--gold)'; };
+    card.onmouseout = function() { this.style.borderColor = 'var(--border-sub)'; };
+    card.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">' +
+      '<div><div style="font-weight:700;color:var(--white);">📚 ' + mod.title + '</div>' +
+      '<div style="font-size:0.8rem;color:#888;">' + mod.lessons.length + ' lessons (10 hrs each)</div></div>' +
+      '<button onclick="window.editHybridModule(' + mod.num + ')" style="padding:6px 12px;background:var(--gold);color:#000;border:none;cursor:pointer;font-weight:700;font-size:0.7rem;border-radius:3px;">✎ Edit</button>' +
+      '</div>' +
+      '<div style="font-size:0.8rem;color:#888;margin-bottom:10px;">' + mod.description + '</div>' +
+      '<div style="height:6px;background:rgba(107,33,168,0.2);border-radius:3px;overflow:hidden;">' +
+      '<div style="height:100%;width:' + (completed * 100 / 6) + '%;background:var(--gold);transition:width 0.3s;"></div></div>';
+    container.appendChild(card);
+  });
+}
+
+function editHybridModule(moduleNum) {
+  var curriculum = JSON.parse(localStorage.getItem('hybridCurriculum') || 'null');
+  if (!curriculum) return;
+  
+  var module = curriculum.modules.find(function(m) { return m.num === moduleNum; });
+  if (!module) return;
+  
+  document.getElementById('editorModuleNum').value = module.num;
+  document.getElementById('editorModuleTitle').value = module.title;
+  document.getElementById('editorModuleDesc').value = module.description;
+  
+  var lessonsContainer = document.getElementById('lessonsEditorList');
+  lessonsContainer.innerHTML = '';
+  module.lessons.forEach(function(lesson, idx) {
+    var lessonDiv = document.createElement('div');
+    lessonDiv.style.cssText = 'background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.2);padding:12px;border-radius:4px;';
+    lessonDiv.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+      '<strong style="color:var(--gold);">Lesson ' + lesson.num + ': ' + lesson.title + '</strong>' +
+      '<button onclick="window.editLesson(' + moduleNum + ', ' + idx + ')" style="padding:4px 10px;background:var(--gold);color:#000;border:none;cursor:pointer;font-weight:700;font-size:0.65rem;border-radius:2px;">Edit</button>' +
+      '</div>' +
+      '<div style="font-size:0.75rem;color:#888;margin-bottom:6px;">Video: ' + lesson.videoDuration + ' mins | Questions: ' + lesson.questions.length + '</div>';
+    lessonsContainer.appendChild(lessonDiv);
+  });
+  
+  document.getElementById('moduleEditorSection').style.display = 'block';
+  document.getElementById('moduleEditorSection').scrollIntoView({ behavior: 'smooth' });
+  updateModulePreview();
+}
+
+function editLesson(moduleNum, lessonIdx) {
+  var curriculum = JSON.parse(localStorage.getItem('hybridCurriculum') || 'null');
+  var module = curriculum.modules.find(function(m) { return m.num === moduleNum; });
+  var lesson = module.lessons[lessonIdx];
+  
+  window.editingLessonModule = moduleNum;
+  window.editingLessonIdx = lessonIdx;
+  window.editingLessonVideoUrl = lesson.videoUrl || '';
+  
+  var modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;';
+  
+  var content = '<div style="background:#0a0806;border:2px solid var(--border);border-radius:8px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;padding:30px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
+    '<h2 style="color:var(--white);margin:0;">Edit Lesson ' + lesson.num + '</h2>' +
+    '<button onclick="this.closest(\'div\').parentElement.remove()" style="background:none;border:none;color:var(--gold);font-size:2rem;cursor:pointer;">✕</button>' +
+    '</div>' +
+    '<div class="form-group"><label class="form-label">Lesson Title</label>' +
+    '<input type="text" class="form-input" id="lessonTitle" value="' + lesson.title + '" style="width:100%;padding:8px;background:#0f0d0a;border:1px solid var(--border-sub);color:var(--white);border-radius:3px;font-size:0.9rem;"></div>' +
+    '<div class="form-group"><label class="form-label">Video File</label>' +
+    '<input type="file" class="form-input" accept="video/*" onchange="window.handleLessonVideoSelect(this)" style="width:100%;padding:8px;background:#0f0d0a;border:1px solid var(--border-sub);color:var(--white);border-radius:3px;font-size:0.9rem;"><div id="lessonVideoPreview" style="margin-top:8px;color:#e5c97a;font-size:12px;"></div>' +
+    (window.editingLessonVideoUrl ? '<div style="margin-top:8px;color:#e5c97a;font-size:12px;">Video loaded: ' + (window.editingLessonVideoUrl.substring(0, 30) + '...') + '</div>' : '') +
+    '</div>' +
+    '<div class="form-group"><label class="form-label">Video Duration (minutes)</label>' +
+    '<input type="number" class="form-input" id="lessonVideoDuration" value="' + lesson.videoDuration + '" style="width:100%;padding:8px;background:#0f0d0a;border:1px solid var(--border-sub);color:var(--white);border-radius:3px;font-size:0.9rem;"></div>' +
+    '<div class="form-group"><label class="form-label">Questions to Unlock Next Lesson</label>' +
+    '<div id="questionsContainer" style="margin-bottom:12px;"></div>' +
+    '<button onclick="addQuestionField()" style="padding:6px 12px;background:rgba(201,168,76,0.2);border:1px solid rgba(201,168,76,0.4);color:var(--gold);cursor:pointer;font-weight:700;font-size:0.75rem;border-radius:3px;margin-bottom:12px;">+ Add Question</button>' +
+    '</div>' +
+    '<button onclick="window.saveLessonChanges(' + moduleNum + ', ' + lessonIdx + ', this.closest(\'div\').parentElement)" style="width:100%;padding:12px;background:var(--gold);color:#000;border:none;cursor:pointer;font-weight:700;border-radius:3px;">✓ Save Lesson</button>' +
+    '</div>';
+  
+  modal.innerHTML = content;
+  document.body.appendChild(modal);
+  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+  
+  var qContainer = modal.querySelector('#questionsContainer');
+  lesson.questions.forEach(function(q, qIdx) {
+    var qDiv = document.createElement('div');
+    qDiv.style.cssText = 'background:#0f0d0a;border:1px solid var(--border-sub);padding:10px;border-radius:3px;margin-bottom:8px;';
+    qDiv.innerHTML = '<input type="text" value="' + q.text + '" placeholder="Question" style="width:100%;padding:6px;background:#0a0806;border:1px solid var(--border-sub);color:var(--white);border-radius:2px;font-size:0.8rem;margin-bottom:6px;" />' +
+      '<div style="display:grid;gap:4px;">' +
+      q.answers.map(function(ans, aIdx) { return '<input type="text" value="' + ans + '" placeholder="Answer ' + String.fromCharCode(65 + aIdx) + '" style="padding:4px;background:#0a0806;border:1px solid var(--border-sub);color:var(--white);border-radius:2px;font-size:0.75rem;" />'; }).join('') +
+      '</div>';
+    qContainer.appendChild(qDiv);
+  });
+}
+
+window.handleLessonVideoSelect = function(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      window.editingLessonVideoUrl = e.target.result;
+      var preview = document.getElementById('lessonVideoPreview');
+      preview.innerHTML = '<div style="color:#e5c97a;font-size:12px;">✓ Video loaded: ' + input.files[0].name + '</div>';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+  input.value = '';
+};
+
+window.saveLessonChanges = function(moduleNum, lessonIdx, modal) {
+  var curriculum = JSON.parse(localStorage.getItem('hybridCurriculum') || 'null');
+  var module = curriculum.modules.find(function(m) { return m.num === moduleNum; });
+  var lesson = module.lessons[lessonIdx];
+  
+  lesson.title = document.getElementById('lessonTitle').value || 'Untitled';
+  lesson.videoUrl = window.editingLessonVideoUrl || '';
+  lesson.videoDuration = parseInt(document.getElementById('lessonVideoDuration').value) || 0;
+  
+  localStorage.setItem('hybridCurriculum', JSON.stringify(curriculum));
+  syncToFirebase('hybridCurriculum', curriculum);
+  console.log('✅ Lesson saved:', lesson.title);
+  alert('✓ Lesson saved!');
+  modal.remove();
+};
+
+function updateModulePreview() {
+  var num = document.getElementById('editorModuleNum').value || '?';
+  var title = document.getElementById('editorModuleTitle').value || 'Untitled Module';
+  var desc = document.getElementById('editorModuleDesc').value || 'No description';
+  
+  var preview = '<div style="color:var(--white);"><strong style="color:var(--gold);">Module ' + num + '</strong><br/>' + title + '<br/><br/>' +
+    '<div style="font-size:0.8rem;color:#888;line-height:1.6;">' + desc + '</div><br/>' +
+    '<div style="background:rgba(107,33,168,0.2);padding:8px;border-radius:3px;font-size:0.75rem;color:#aaa;">' +
+    '6 Lessons | 10 hrs total<br/>120 theory hours ÷ 12 modules = 10 hrs/module' +
+    '</div></div>';
+  document.getElementById('modulePreview').innerHTML = preview;
+}
+
+function saveModuleChanges() {
+  alert('✓ Module saved!');
+  closeModuleEditor();
+  renderHybridCurriculum();
+}
+
+function closeModuleEditor() {
+  document.getElementById('moduleEditorSection').style.display = 'none';
+  document.getElementById('editorModuleNum').value = '';
+  document.getElementById('editorModuleTitle').value = '';
+  document.getElementById('editorModuleDesc').value = '';
+}
+
+// Expose functions to global scope
+window.generateDefaultHybridCurriculum = generateDefaultHybridCurriculum;
+window.renderHybridCurriculum = renderHybridCurriculum;
+window.editHybridModule = editHybridModule;
+window.editLesson = editLesson;
+window.addQuestionField = addQuestionField;
+window.saveLessonChanges = saveLessonChanges;
+window.updateModulePreview = updateModulePreview;
+window.saveModuleChanges = saveModuleChanges;
+window.closeModuleEditor = closeModuleEditor;
+window.addEventFormField = addEventFormField;
+window.removeEventFormField = removeEventFormField;
+window.renderEventFormPreview = renderEventFormPreview;
+window.updateEventPreview = updateEventPreview;
+window.testEventDates = testEventDates;
+window.launchEvent = launchEvent;
+window.displayActiveEvent = displayActiveEvent;
+window.disableEvent = disableEvent;
+window.renderSubmissions = renderSubmissions;
+window.deleteSubmission = deleteSubmission;
+window.exportSubmissions = exportSubmissions;
+window.addCatalogItem = addCatalogItem;
+window.renderCatalog = renderCatalog;
+window.deleteCatalogItem = deleteCatalogItem;
+window.addMilestoneToTier = addMilestoneToTier;
+window.removeMilestoneFromTier = removeMilestoneFromTier;
+window.renderMilestonesList = renderMilestonesList;
+window.editModule = editModule;
+window.handleModulePictureSelect = handleModulePictureSelect;
+window.handleModuleVideoSelect = handleModuleVideoSelect;
+window.saveModule = saveModule;
+window.deleteModule = deleteModule;
+window.addStaffMember = addStaffMember;
+window.graduateStudent = graduateStudent;
+window.addModuleToTier = addModuleToTier;
+window.closeModuleModal = closeModuleModal;
+window.viewApplicationModal = viewApplicationModal;
+window.closeApplicationModal = closeApplicationModal;
+window.declineApplication = declineApplication;
+window.convertToStudent = convertToStudent;
+window.addLocationExemption = addLocationExemption;
+window.removeLocationExemption = removeLocationExemption;
+window.renderExemptions = renderExemptions;
+window.populateExemptionStudents = populateExemptionStudents;
+window.openEditAlumnus = openEditAlumnus;
+window.closeEditAlumnus = closeEditAlumnus;
+window.saveEditedAlumnus = saveEditedAlumnus;
+window.previewAlumnusPhoto = previewAlumnusPhoto;
+window.renderCoursesHierarchy = renderCoursesHierarchy;
+window.toggleTierCard = toggleTierCard;
+</script>
+
+<!-- APPLICATION VIEW MODAL -->
+<div id="applicationModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(135deg,rgba(107,33,168,0.15),rgba(107,33,168,0.05));border:2px solid rgba(107,33,168,0.4);max-width:500px;width:100%;max-height:88vh;overflow-y:auto;position:relative;border-radius:12px;backdrop-filter:blur(16px);">
+    
+    <!-- Close Button -->
+    <button onclick="window.closeApplicationModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--gold);font-size:2rem;cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;z-index:10;">×</button>
+    
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,var(--purple),rgba(107,33,168,0.5));padding:40px 32px;border-bottom:1px solid rgba(107,33,168,0.3);">
+      <div style="font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,0.8);margin-bottom:12px;font-weight:700;">Application</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--white);margin:0;" id="viewAppName">Loading...</h2>
+    </div>
+    
+    <!-- Content -->
+    <div style="padding:32px;">
+      
+      <!-- Info Cards Grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px;">
+        
+        <!-- Email Card -->
+        <div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.3);padding:20px;border-radius:8px;">
+          <div style="font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;">Email</div>
+          <div style="font-size:0.9rem;color:var(--white);word-break:break-all;" id="viewAppEmail">—</div>
+        </div>
+        
+        <!-- Phone Card -->
+        <div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.3);padding:20px;border-radius:8px;">
+          <div style="font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;">Phone</div>
+          <div style="font-size:0.9rem;color:var(--white);" id="viewAppPhone">—</div>
+        </div>
+        
+        <!-- Preferred Contact Card -->
+        <div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.3);padding:20px;border-radius:8px;">
+          <div style="font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;">Preferred Contact</div>
+          <div style="font-size:0.9rem;color:var(--white);" id="viewAppContact">—</div>
+        </div>
+        
+        <!-- Felony Card -->
+        <div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.3);padding:20px;border-radius:8px;">
+          <div style="font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;">Felony History</div>
+          <div style="font-size:0.9rem;color:var(--white);" id="viewAppFelony">—</div>
+        </div>
+        
+      </div>
+      
+      <!-- All Application Details -->
+      <div id="applicationDetailsContainer"></div>
+      
+      <!-- Action Buttons -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+        <button class="btn-submit" style="background:var(--border-sub);" onclick="window.closeApplicationModal()">Close</button>
+        <button class="btn-submit" style="background:var(--red);color:#fff;" onclick="window.declineApplication(document.getElementById('viewAppEmail').textContent)">✗ Decline</button>
+        <button class="btn-submit" style="background:var(--purple);color:#fff;" onclick="window.convertToStudent(document.getElementById('viewAppEmail').textContent)">✓ Accept</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- MODULE EDITOR MODAL -->
+<div id="moduleModal" class="modal-overlay">
+  <div class="modal-content">
+    <button class="modal-close" onclick="window.closeModuleModal()">×</button>
+    <h3 class="modal-title">Edit Module</h3>
+    
+    <label class="form-label">Module Name</label>
+    <input type="text" class="form-input" id="moduleModalName" placeholder="Module name">
+    
+    <label class="form-label">Description</label>
+    <textarea class="form-textarea" id="moduleModalDesc" placeholder="Module description and content..." style="min-height:80px;"></textarea>
+    
+    <label class="form-label">Module Picture</label>
+    <input type="file" class="form-input" accept="image/*" onchange="window.handleModulePictureSelect(this)">
+    <div id="moduleModalPicturePreview"></div>
+    
+    <label class="form-label">Module Video</label>
+    <input type="file" class="form-input" accept="video/*" onchange="window.handleModuleVideoSelect(this)">
+    <div id="moduleModalVideoPreview"></div>
+    
+    <div class="modal-actions">
+      <button class="btn-submit" onclick="window.closeModuleModal()" style="background:var(--border-sub);">Cancel</button>
+      <button class="btn-submit" id="moduleSaveBtn">Save Module</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+
