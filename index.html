@@ -1150,6 +1150,16 @@ loadTierDataFromStorage();
 
 // ─── RENDER PROGRAM TIERS ──────────────────────────────────────
 function renderProgramTiers() {
+  // Reset tierData if empty
+  if (!tierData || Object.keys(tierData).length === 0) {
+    tierData = {
+      tier1: { name: 'Beginner Barber Mastery', price: '$150', icon: '🥇', color: '#c9a84c', modules: [] },
+      tier2: { name: 'Advanced Barber Mastery', price: '$213', icon: '🏆', color: '#a855f7', modules: [] },
+      tier3: { name: 'Barber Business & Shop Ownership', price: '$263', icon: '💼', color: '#cf5f1f', modules: [] },
+      tier4: { name: 'Arkansas State Board Prep', price: '$117', icon: '✓', color: '#6fcf97', modules: [] }
+    };
+  }
+  
   ['tier1', 'tier2', 'tier3', 'tier4'].forEach(function(tier) {
     var data = tierData[tier];
     var grid = document.getElementById(tier + 'Grid');
@@ -1179,7 +1189,22 @@ function renderProgramTiers() {
 }
 
 function purchaseTier(tier) {
+  // Reset tierData if empty
+  if (!tierData || Object.keys(tierData).length === 0) {
+    tierData = {
+      tier1: { name: 'Beginner Barber Mastery', price: '$150', icon: '🥇', modules: [] },
+      tier2: { name: 'Advanced Barber Mastery', price: '$213', icon: '🏆', modules: [] },
+      tier3: { name: 'Barber Business & Shop Ownership', price: '$263', icon: '💼', modules: [] },
+      tier4: { name: 'Arkansas State Board Prep', price: '$117', icon: '✓', modules: [] }
+    };
+  }
+  
   var data = tierData[tier];
+  if (!data) {
+    alert('Course data not available. Please try again.');
+    return;
+  }
+  
   var price = tier === 'tier1' ? 150 : tier === 'tier2' ? 213 : tier === 'tier3' ? 263 : 117;
   
   window.selectedTier = tier;
