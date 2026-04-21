@@ -1,0 +1,251 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unlock Your Course — SBI School</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --purple: #6b21a8;
+  --gold: #c9a84c;
+  --gold-light: #e5c97a;
+  --black: #0a0806;
+  --card: #110f0c;
+  --white: #faf8f5;
+  --muted: #9a8f7e;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Raleway', sans-serif;
+  background: var(--black);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.container {
+  max-width: 500px;
+  width: 100%;
+  background: var(--card);
+  border: 1px solid rgba(201,168,76,0.2);
+  padding: 60px 40px;
+  border-radius: 8px;
+  text-align: center;
+}
+.logo { font-size: 3rem; margin-bottom: 20px; }
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+h1 em { font-style: italic; color: var(--gold); }
+p {
+  color: var(--muted);
+  margin-bottom: 32px;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+.form-group {
+  text-align: left;
+  margin-bottom: 24px;
+}
+label {
+  display: block;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+input {
+  width: 100%;
+  padding: 14px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--gold);
+  color: var(--white);
+  font-size: 1rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+}
+input::placeholder { color: var(--muted); }
+input:focus { outline: none; border-color: var(--gold-light); background: rgba(0,0,0,0.5); }
+.btn-unlock {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: #000;
+  border: none;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+.btn-unlock:hover { background: var(--gold-light); }
+.btn-back {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.btn-back:hover { background: rgba(201,168,76,0.1); }
+.success {
+  background: rgba(100,200,140,0.1);
+  border: 1px solid rgba(100,200,140,0.3);
+  padding: 24px;
+  border-radius: 4px;
+  margin: 24px 0;
+  display: none;
+}
+.success.show { display: block; }
+.success h2 {
+  font-family: 'Playfair Display', serif;
+  color: #6fcf97;
+  margin-bottom: 12px;
+}
+.success p { color: #aaa; font-size: 0.85rem; }
+.tier-info {
+  background: rgba(201,168,76,0.08);
+  padding: 16px;
+  border-radius: 4px;
+  margin: 20px 0;
+  border-left: 4px solid var(--gold);
+}
+.tier-info strong { color: var(--gold); }
+a {
+  color: var(--gold);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover { color: var(--gold-light); }
+.footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(201,168,76,0.1);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">🔓</div>
+  <h1>Unlock Your <em>Course</em></h1>
+  <p>Enter the unlock code from your Clover purchase confirmation email below.</p>
+
+  <div id="unlockForm">
+    <div class="form-group">
+      <label for="unlockCode">Unlock Code</label>
+      <input type="text" id="unlockCode" placeholder="Enter your 16-character code" maxlength="16" style="text-transform: uppercase;">
+    </div>
+    
+    <button class="btn-unlock" onclick="window.unlockCourse()">🎓 Unlock Access</button>
+    <button class="btn-back" onclick="window.goBack()">← Back</button>
+  </div>
+
+  <div class="success" id="successMessage">
+    <h2>✓ Access Granted!</h2>
+    <p id="successText"></p>
+    <div class="tier-info">
+      <strong id="tierName"></strong><br>
+      <span id="tierDetails"></span>
+    </div>
+    <a href="index.html" style="display: inline-block; margin-top: 16px; padding: 10px 24px; background: var(--gold); color: #000; border-radius: 4px; font-weight: 700;">← Back to Home</a>
+  </div>
+
+  <div class="footer">
+    <p>Unlock codes are one-time use and tied to your email address.</p>
+    <p>Your access will be saved to this browser.</p>
+  </div>
+</div>
+
+<script>
+var TIER_INFO = {
+  'TIER1': { name: 'Beginner Barber Course', price: '$150', desc: 'Foundation cuts & techniques' },
+  'TIER2': { name: 'Advanced Barber Course', price: '$200', desc: 'Expert techniques & competition prep' },
+  'TIER3': { name: 'Business Mastery Course', price: '$250', desc: 'Shop ownership & entrepreneurship' },
+  'TIER4': { name: 'State Board Exam Prep', price: '$100', desc: 'Licensing exam study materials' }
+};
+
+function generateUnlockCode(tier, email) {
+  // Generate a simple but unique code based on tier + email hash
+  var str = tier + email + new Date().toDateString();
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    var char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  // Convert to 16 character code
+  var code = Math.abs(hash).toString(36).toUpperCase();
+  return (tier.substring(0,4) + code).substring(0, 16).padEnd(16, '0');
+}
+
+function unlockCourse() {
+  var code = document.getElementById('unlockCode').value.trim().toUpperCase();
+  
+  if (!code || code.length < 10) {
+    alert('Please enter a valid unlock code');
+    return;
+  }
+  
+  // Determine tier from code prefix
+  var tier = null;
+  if (code.startsWith('TIER1')) tier = 'tier1';
+  else if (code.startsWith('TIER2')) tier = 'tier2';
+  else if (code.startsWith('TIER3')) tier = 'tier3';
+  else if (code.startsWith('TIER4')) tier = 'tier4';
+  
+  if (!tier) {
+    alert('Invalid unlock code. Check your email and try again.');
+    return;
+  }
+  
+  // Save to localStorage
+  var unlockedCourses = JSON.parse(localStorage.getItem('unlockedCourses') || '{}');
+  unlockedCourses[tier] = {
+    code: code,
+    unlockedAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 1 year
+  };
+  localStorage.setItem('unlockedCourses', JSON.stringify(unlockedCourses));
+  
+  // Show success
+  var tierInfo = TIER_INFO[tier.toUpperCase()];
+  document.getElementById('unlockForm').style.display = 'none';
+  document.getElementById('tierName').textContent = tierInfo.name + ' — ' + tierInfo.price;
+  document.getElementById('tierDetails').textContent = tierInfo.desc;
+  document.getElementById('successText').textContent = 'Your course access has been activated and saved to this browser. You can now access all materials.';
+  document.getElementById('successMessage').classList.add('show');
+}
+
+function goBack() {
+  window.history.back();
+}
+
+// Allow Enter key to unlock
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('unlockCode').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') window.unlockCourse();
+  });
+});
+</script>
+
+</body></html>

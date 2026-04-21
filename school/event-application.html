@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Application</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --purple: #6b21a8;
+      --gold: #c9a84c;
+      --black: #0a0806;
+      --white: #faf8f5;
+      --border-main: #2a2620;
+      --border-sub: #1a1815;
+      --muted: #888;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--border-main);
+      padding-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      color: var(--gold);
+    }
+
+    .header p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--white);
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-main);
+      background: var(--border-sub);
+      color: var(--white);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      background: rgba(201, 168, 76, 0.05);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--border-sub);
+      border-radius: 4px;
+      border: 1px solid var(--border-main);
+      cursor: pointer;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      cursor: pointer;
+      margin: 0;
+      flex: 1;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-submit {
+      background: var(--purple);
+      color: var(--white);
+    }
+
+    .btn-submit:hover {
+      background: #8b2fb5;
+    }
+
+    .btn-print {
+      background: var(--gold);
+      color: var(--black);
+    }
+
+    .btn-print:hover {
+      background: #d9b85f;
+    }
+
+    .btn-back {
+      background: var(--border-main);
+      color: var(--white);
+    }
+
+    .btn-back:hover {
+      background: var(--border-sub);
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    .success-message {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    .no-event {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .no-event h2 {
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .no-event p {
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    @media print {
+      .form-actions {
+        display: none;
+      }
+
+      body {
+        background: white;
+        color: black;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      .header {
+        border-bottom: 2px solid black;
+      }
+
+      .form-input,
+      .form-textarea,
+      .checkbox-group {
+        background: white;
+        border: 1px solid black;
+        color: black;
+      }
+
+      .form-label {
+        color: black;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      textarea {
+        border: 1px solid black;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="formContainer"></div>
+  </div>
+
+  <script>
+    function loadApplicationForm() {
+      var eventStr = localStorage.getItem('currentEvent');
+      var container = document.getElementById('formContainer');
+
+      if (!eventStr) {
+        container.innerHTML = '<div class="no-event">' +
+          '<h2>No Active Event</h2>' +
+          '<p>There is no active event application right now. Check back later!</p>' +
+          '<a href="index.html" class="btn btn-back" style="display:inline-block;">← Back to Home</a>' +
+          '</div>';
+        return;
+      }
+
+      var event = JSON.parse(eventStr);
+      var startDate = new Date(event.startDate);
+      var endDate = new Date(event.endDate);
+      var now = new Date();
+
+      if (now < startDate || now > endDate) {
+        container.innerHTML = '<div class="no-event">' +
+          '<h2>Event Ended</h2>' +
+          '<p>This event is no longer accepting applications.</p>' +
+          '<a href="index.html" class="btn btn-back" style="display:inline-block;">← Back to Home</a>' +
+          '</div>';
+        return;
+      }
+
+      var apps = JSON.parse(localStorage.getItem('eventApplications') || '{}');
+      var application = apps[event.applicationId];
+
+      if (!application || !application.fields) {
+        container.innerHTML = '<div class="no-event">' +
+          '<h2>Application Not Found</h2>' +
+          '<p>This application is no longer available.</p>' +
+          '<a href="index.html" class="btn btn-back" style="display:inline-block;">← Back to Home</a>' +
+          '</div>';
+        return;
+      }
+
+      var html = '<div class="header">' +
+        '<h1>' + event.name + '</h1>' +
+        '<p>' + event.subtitle + '</p>' +
+        '<p style="margin-top:12px;font-size:0.85rem;color:var(--muted);">' + event.description + '</p>' +
+        '</div>' +
+        '<form id="eventForm" onsubmit="window.submitEventApplication(event);">';
+
+      application.fields.forEach(function(field, idx) {
+        var fieldId = 'field_' + idx;
+        html += '<div class="form-group">';
+
+        if (field.type === 'checkbox') {
+          html += '<div class="checkbox-group">' +
+            '<input type="checkbox" id="' + fieldId + '" name="' + field.name + '">' +
+            '<label for="' + fieldId + '">' + field.name + '</label>' +
+            '</div>';
+        } else if (field.type === 'textarea') {
+          html += '<label class="form-label">' + field.name + '</label>' +
+            '<textarea class="form-textarea" id="' + fieldId + '" name="' + field.name + '" required></textarea>';
+        } else {
+          html += '<label class="form-label">' + field.name + '</label>' +
+            '<input type="' + field.type + '" class="form-input" id="' + fieldId + '" name="' + field.name + '" required>';
+        }
+
+        html += '</div>';
+      });
+
+      // Add liability waiver if enabled
+      if (application.waiverEnabled) {
+        html += '<div class="form-group">' +
+          '<div style="background:var(--border-sub);border:1px solid var(--border-main);padding:16px;border-radius:4px;margin-bottom:16px;">' +
+          '<label class="form-label" style="margin-bottom:12px;">⚖ Liability Waiver</label>' +
+          '<p style="font-size:0.85rem;color:var(--muted);line-height:1.6;margin-bottom:12px;">' + application.waiverText + '</p>' +
+          '<div class="checkbox-group">' +
+          '<input type="checkbox" id="waiverCheckbox" required>' +
+          '<label for="waiverCheckbox">I agree to the liability waiver</label>' +
+          '</div>' +
+          '</div>' +
+          '</div>';
+      }
+
+      html += '<div class="form-actions">' +
+        '<a href="index.html" class="btn btn-back">← Cancel</a>' +
+        '<button type="button" class="btn btn-print" onclick="window.printForm()">🖨 Print</button>' +
+        '<button type="submit" class="btn btn-submit">Submit →</button>' +
+        '</div>' +
+        '</form>';
+
+      container.innerHTML = html;
+    }
+
+    function printForm() {
+      window.print();
+    }
+
+    function submitEventApplication(e) {
+      e.preventDefault();
+
+      var form = document.getElementById('eventForm');
+      var formData = new FormData(form);
+      var submission = {
+        id: 'submission_' + Date.now(),
+        timestamp: new Date().toISOString(),
+        data: {}
+      };
+
+      for (var [key, value] of formData.entries()) {
+        submission.data[key] = value;
+      }
+
+      // Check if waiver was accepted if required
+      var eventStr = localStorage.getItem('currentEvent');
+      var event = JSON.parse(eventStr);
+      var apps = JSON.parse(localStorage.getItem('eventApplications') || '{}');
+      var application = apps[event.applicationId];
+
+      if (application.waiverEnabled) {
+        var waiverCheckbox = document.getElementById('waiverCheckbox');
+        if (!waiverCheckbox || !waiverCheckbox.checked) {
+          alert('You must agree to the liability waiver to submit this application');
+          return;
+        }
+        submission.data['Waiver Accepted'] = 'Yes';
+      }
+
+      var submissions = JSON.parse(localStorage.getItem('eventApplicationSubmissions') || '[]');
+      submissions.push(submission);
+      localStorage.setItem('eventApplicationSubmissions', JSON.stringify(submissions));
+
+      var container = document.getElementById('formContainer');
+
+      container.innerHTML = '<div class="success-message" style="text-align:center;margin-top:60px;padding:40px;">' +
+        '<h2 style="color:var(--gold);margin-bottom:12px;">✓ Application Submitted</h2>' +
+        '<p>Thank you for applying to ' + event.name + '!</p>' +
+        '<p style="margin-top:12px;font-size:0.9rem;">We will review your application and contact you soon.</p>' +
+        '<a href="index.html" class="btn btn-back" style="display:inline-block;margin-top:20px;">← Back to Home</a>' +
+        '</div>';
+    }
+
+    // Load form on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadApplicationForm();
+    });
+  </script>
+</body>
+</html>

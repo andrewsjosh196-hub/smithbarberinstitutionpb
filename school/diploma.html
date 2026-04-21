@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graduation Certificate - SBI School</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#6b21a8;
+  --gold:#c9a84c;
+  --black:#0a0806;
+  --white:#faf8f5;
+  --muted:#9a8f7e;
+}
+html,body{
+  width:100%;
+  height:100%;
+  background:#0a0806;
+  font-family:'Raleway',sans-serif;
+  color:var(--white);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.container{
+  width:100%;
+  max-width:900px;
+}
+.controls{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  margin-bottom:24px;
+  flex-wrap:wrap;
+}
+.btn{
+  background:var(--purple);
+  color:var(--white);
+  border:none;
+  padding:12px 24px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:700;
+  font-size:0.9rem;
+  transition:all 0.2s;
+  font-family:'Raleway',sans-serif;
+}
+.btn:hover{
+  background:#7c3aed;
+  transform:translateY(-2px);
+}
+.btn-download{background:var(--gold);color:#000;}
+.btn-download:hover{background:#e5c97a;color:#000;}
+.diploma{
+  background:linear-gradient(135deg,rgba(107,33,168,0.08),rgba(201,168,76,0.06));
+  border:3px solid var(--gold);
+  padding:60px 40px;
+  text-align:center;
+  border-radius:8px;
+  position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  min-height:600px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-around;
+}
+.diploma::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:radial-gradient(circle at 50% 0%,rgba(201,168,76,0.1),transparent 70%);
+  pointer-events:none;
+  border-radius:8px;
+}
+.diploma-content{
+  position:relative;
+  z-index:2;
+}
+.logo{
+  font-size:80px;
+  margin-bottom:20px;
+}
+.school-name{
+  font-family:'Playfair Display',serif;
+  font-size:48px;
+  font-weight:900;
+  color:var(--gold);
+  margin-bottom:8px;
+  letter-spacing:2px;
+}
+.school-sub{
+  font-size:14px;
+  color:var(--muted);
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:40px;
+  font-weight:700;
+}
+.certificate-title{
+  font-family:'Playfair Display',serif;
+  font-size:42px;
+  font-weight:700;
+  color:var(--white);
+  margin-bottom:12px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+}
+.certificate-subtitle{
+  font-size:16px;
+  color:var(--gold);
+  margin-bottom:40px;
+  letter-spacing:1px;
+}
+.divider{
+  width:120px;
+  height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:30px auto;
+}
+.recipient{
+  margin:40px 0;
+}
+.recipient-label{
+  font-size:12px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:2px;
+  margin-bottom:12px;
+}
+.recipient-name{
+  font-family:'Playfair Display',serif;
+  font-size:36px;
+  font-weight:700;
+  color:var(--gold);
+  margin-bottom:20px;
+}
+.achievement{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+  margin:40px 0;
+  font-size:13px;
+}
+.achievement-item p{
+  color:var(--muted);
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.achievement-item strong{
+  font-size:18px;
+  color:var(--gold);
+  display:block;
+  margin-bottom:8px;
+}
+.signature-section{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+  margin:60px 0 20px;
+}
+.signature-line{
+  border-top:2px solid var(--gold);
+  padding-top:12px;
+  margin-top:40px;
+}
+.signature-line p{
+  font-size:12px;
+  color:var(--muted);
+  margin:4px 0;
+}
+.footer-text{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:40px;
+  letter-spacing:1px;
+}
+.seal{
+  position:absolute;
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  border:3px solid var(--gold);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:48px;
+  top:40px;
+  right:40px;
+  background:rgba(201,168,76,0.05);
+}
+@media print{
+  .controls{display:none;}
+  body{background:white;}
+  .diploma{box-shadow:none;border-color:#333;}
+}
+@media(max-width:768px){
+  .diploma{padding:40px 24px;min-height:auto;}
+  .school-name{font-size:36px;}
+  .certificate-title{font-size:28px;}
+  .recipient-name{font-size:28px;}
+  .achievement{grid-template-columns:1fr;gap:24px;}
+  .signature-section{grid-template-columns:1fr;gap:20px;}
+  .seal{width:80px;height:80px;font-size:36px;top:24px;right:24px;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="controls">
+    <button class="btn" onclick="window.print()">📄 Print</button>
+    <button class="btn btn-download" onclick="downloadPDF()">⬇️ Download PDF</button>
+    <button class="btn" onclick="shareOnSocial()">📤 Share</button>
+  </div>
+
+  <div class="diploma" id="diploma">
+    <div class="seal">🎓</div>
+    
+    <div class="diploma-content">
+      <div class="logo">✨</div>
+      
+      <div class="school-name">SBI School</div>
+      <div class="school-sub">Excellence in Barbering Education</div>
+      
+      <div class="divider"></div>
+      
+      <div class="certificate-title">Certificate of Graduation</div>
+      <div class="certificate-subtitle">This is to certify that</div>
+      
+      <div class="recipient">
+        <div class="recipient-label">Awarded to</div>
+        <div class="recipient-name" id="studentName">
+          [Student Name will appear here]
+        </div>
+      </div>
+      
+      <p style="font-size:15px;line-height:1.8;color:var(--muted);margin:20px 0;">
+        has successfully completed all requirements and demonstrated proficiency in the art and science of professional barbering.
+      </p>
+      
+      <div class="achievement">
+        <div class="achievement-item">
+          <p>Total Hours Completed</p>
+          <strong id="hoursCompleted">0</strong>
+        </div>
+        <div class="achievement-item">
+          <p>Program of Study</p>
+          <strong id="programType">Barber/Stylist</strong>
+        </div>
+      </div>
+      
+      <p style="font-size:14px;color:var(--muted);margin:20px 0;">
+        <strong style="color:var(--gold);">Graduation Date:</strong> <span id="gradDate">Today</span>
+      </p>
+      
+      <div class="divider"></div>
+      
+      <div class="signature-section">
+        <div class="signature-line">
+          <p>Director Signature</p>
+          <p style="margin-top:8px;">___________________________</p>
+        </div>
+        <div class="signature-line">
+          <p>School Seal</p>
+          <p style="margin-top:8px;font-size:20px;">🎓</p>
+        </div>
+      </div>
+      
+      <div class="footer-text">
+        This certificate is awarded in recognition of academic achievement and completion of all graduation requirements.
+        <br><br>© 2026 SBI School. All rights reserved.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Get parameters from URL
+function getQueryParam(name) {
+  var url = window.location.href;
+  name = name.replace(/[\[\]]/g, '\\$&');
+  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+  var results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+// Populate data from URL or localStorage
+var studentName = getQueryParam('name') || localStorage.getItem('diplomaStudentName') || '[Student Name]';
+var hoursCompleted = getQueryParam('hours') || localStorage.getItem('diplomaHours') || '0';
+var programType = getQueryParam('program') || localStorage.getItem('diplomaProgram') || 'Barber/Stylist';
+var gradDate = getQueryParam('date') || localStorage.getItem('diplomaDate') || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+document.getElementById('studentName').textContent = studentName;
+document.getElementById('hoursCompleted').textContent = hoursCompleted;
+document.getElementById('programType').textContent = programType;
+document.getElementById('gradDate').textContent = gradDate;
+
+function downloadPDF() {
+  var element = document.getElementById('diploma');
+  var opt = {
+    margin: 10,
+    filename: 'SBI_School_Graduation_Certificate_' + studentName.replace(/\s+/g, '_') + '.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
+  };
+  
+  if (typeof html2pdf !== 'undefined') {
+    html2pdf().set(opt).from(element).save();
+  } else {
+    alert('PDF library not available. Please use Print → Save as PDF instead.');
+    window.print();
+  }
+}
+
+function shareOnSocial() {
+  var text = 'I just graduated from SBI School! 🎓 ' + studentName + ' - ' + hoursCompleted + ' hours of professional barbering training completed!';
+  var url = 'https://yourschool.com/diploma?name=' + encodeURIComponent(studentName) + '&hours=' + hoursCompleted + '&program=' + encodeURIComponent(programType) + '&date=' + encodeURIComponent(gradDate);
+  
+  alert('Share this link:\n' + url + '\n\nOr copy this text to social media:\n\n' + text);
+}
+</script>
+
+<!-- html2pdf library for PDF download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+</body>
+</html>

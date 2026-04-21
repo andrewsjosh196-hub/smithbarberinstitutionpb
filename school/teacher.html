@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Portal — SBI School</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#6b21a8;--purple-mid:#7c3aed;--purple-light:#a855f7;
+  --gold:#c9a84c;--gold-light:#e5c97a;
+  --black:#0a0806;--card:#110f0c;
+  --border:rgba(201,168,76,0.2);--border-sub:#1c1a16;
+  --white:#faf8f5;--muted:#9a8f7e;
+  --green:#6fcf97;--red:#e87b7b;
+}
+body{font-family:'Raleway',sans-serif;background:var(--black);color:var(--white);min-height:100vh;}
+
+/* LOGIN */
+#teacherLogin{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(107,33,168,0.14),transparent 70%);}
+.login-card{background:var(--card);border:1px solid var(--border);padding:48px 40px;width:100%;max-width:400px;text-align:center;position:relative;}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));}
+.login-logo{width:80px;height:80px;object-fit:contain;margin:0 auto 16px;display:block;}
+.login-eyebrow{font-size:0.58rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;font-weight:700;}
+.login-title{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;font-style:italic;margin-bottom:4px;}
+.login-sub{color:#555;font-size:0.72rem;letter-spacing:1px;margin-bottom:28px;}
+.login-rule{width:40px;height:1px;background:var(--gold);margin:0 auto 28px;}
+.form-label{display:block;font-size:0.6rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:7px;margin-top:18px;font-weight:700;text-align:left;}
+.form-label:first-of-type{margin-top:0;}
+.form-input{width:100%;padding:13px 16px;border:1px solid var(--border-sub);background:#0a0806;color:var(--white);font-family:'Raleway',sans-serif;font-size:0.88rem;transition:border-color 0.2s;-webkit-appearance:none;}
+.form-input:focus{outline:none;border-color:var(--gold);}
+.login-btn{width:100%;background:var(--gold);color:#000;border:none;padding:15px;font-family:'Raleway',sans-serif;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.72rem;cursor:pointer;margin-top:22px;transition:background 0.2s;}
+.login-btn:hover{background:var(--gold-light);}
+.login-err{color:var(--red);font-size:0.75rem;margin-top:10px;display:none;}
+
+/* NAV */
+#teacherDash{display:none;}
+nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);}
+.nav-logo{height:40px;width:40px;object-fit:contain;}
+.nav-brand{margin-left:10px;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:0.9rem;font-weight:700;display:block;line-height:1.2;}
+.nav-brand-sub{font-size:0.52rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;display:block;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:14px;}
+.teacher-badge{font-size:0.62rem;color:var(--gold);letter-spacing:1px;text-transform:uppercase;font-weight:700;}
+.logout-btn{background:transparent;border:1px solid #222;color:#555;padding:7px 14px;cursor:pointer;font-family:'Raleway',sans-serif;font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;transition:all 0.2s;}
+.logout-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* TABS */
+.tab-bar{background:#0d0b09;border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:0;overflow-x:auto;}
+.tab{padding:16px 20px;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#555;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s;font-family:'Raleway',sans-serif;background:none;border-left:none;border-right:none;border-top:none;}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tab:hover:not(.active){color:#bbb;}
+
+.main{max-width:1000px;margin:0 auto;padding:32px 20px 80px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* CARDS */
+.panel-card{background:var(--card);border:1px solid var(--border-sub);padding:28px;margin-bottom:20px;position:relative;}
+.panel-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
+.panel-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:20px;}
+.panel-title em{font-style:italic;color:var(--gold);}
+
+/* COURSE FILTER TABS */
+.course-filter-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.course-tab{padding:8px 16px;border:1px solid var(--border-sub);background:transparent;color:#555;cursor:pointer;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;font-weight:600;transition:all 0.2s;font-family:'Raleway',sans-serif;}
+.course-tab.active{background:var(--gold);color:#000;border-color:var(--gold);}
+
+/* ASSIGNMENTS/NEWS LIST */
+.item-list{display:flex;flex-direction:column;gap:12px;}
+.item-card{background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;transition:border-color 0.2s;}
+.item-card:hover{border-color:var(--gold);}
+.item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.item-type{font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;background:rgba(107,33,168,0.2);color:var(--purple-light);font-weight:700;}
+.item-type.news{background:rgba(201,168,76,0.15);color:var(--gold);}
+.item-title{font-weight:700;font-size:0.9rem;margin-bottom:6px;}
+.item-desc{font-size:0.78rem;color:var(--muted);line-height:1.6;}
+.item-date{font-size:0.65rem;color:#555;margin-top:10px;}
+
+/* FORM */
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:0.6rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:7px;font-weight:700;}
+.form-input,.form-textarea{width:100%;padding:12px 14px;border:1px solid var(--border-sub);background:#0a0806;color:var(--white);font-family:'Raleway',sans-serif;font-size:0.85rem;transition:border-color 0.2s;}
+.form-input:focus,.form-textarea:focus{outline:none;border-color:var(--gold);}
+.form-textarea{min-height:100px;resize:vertical;font-family:'Raleway',sans-serif;}
+
+.select-input{width:100%;padding:12px 14px;border:1px solid var(--border-sub);background:#0a0806;color:var(--white);font-family:'Raleway',sans-serif;font-size:0.85rem;-webkit-appearance:none;}
+.select-input:focus{outline:none;border-color:var(--gold);}
+
+.btn-submit{background:var(--gold);color:#000;border:none;padding:12px 28px;font-family:'Raleway',sans-serif;font-weight:800;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background 0.2s;}
+.btn-submit:hover{background:var(--gold-light);}
+
+/* STATUS DISPLAY */
+.status-box{background:#0a0806;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-left:3px solid var(--gold);}
+.status-label{font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px;}
+.status-value{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;}
+
+@media(max-width:600px){
+  nav{flex-wrap:wrap;}
+  .course-filter-tabs{width:100%;}
+  .tab-bar{overflow-x:scroll;}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+</head>
+<body>
+
+<!-- TEACHER LOGIN -->
+<div id="teacherLogin">
+  <div class="login-card">
+    <img src="school_logo.png" alt="SBI School" class="login-logo" onerror="this.style.display='none'">
+    <p class="login-eyebrow">Instructor Portal</p>
+    <h1 class="login-title">SBI <em>School</em></h1>
+    <p class="login-sub">Teacher Access</p>
+    <div class="login-rule"></div>
+    <label class="form-label">Email</label>
+    <input type="email" id="teacherEmail" class="form-input" placeholder="your@email.com">
+    <label class="form-label">Password</label>
+    <input type="password" id="teacherPass" class="form-input" placeholder="••••••••">
+    <button class="login-btn" onclick="teacherLogin()">Sign In</button>
+    <div id="teacherErr" class="login-err"></div>
+  </div>
+</div>
+
+<!-- TEACHER DASHBOARD -->
+<div id="teacherDash">
+  <nav>
+    <img src="school_logo.png" alt="SBI School" class="nav-logo" onerror="this.style.display='none'">
+    <div class="nav-brand">
+      <span class="nav-brand-name">SBI School</span>
+      <span class="nav-brand-sub">Instructor Portal</span>
+    </div>
+    <div class="nav-right">
+      <div class="teacher-badge" id="teacherNameDisplay">Instructor</div>
+      <button class="logout-btn" onclick="teacherLogout()">Log Out</button>
+    </div>
+  </nav>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTeacherTab('feed', this)">All Updates</button>
+    <button class="tab" onclick="switchTeacherTab('assignments', this)">My Assignments</button>
+    <button class="tab" onclick="switchTeacherTab('grade', this)">Grade Submissions</button>
+    <button class="tab" onclick="switchTeacherTab('tests', this)">Create Tests</button>
+    <button class="tab" onclick="switchTeacherTab('clockin', this)">Clocked In Students</button>
+  </div>
+
+  <div class="main">
+    <!-- ALL UPDATES / NEWS FEED -->
+    <div id="tab-feed" class="tab-panel active">
+      <div class="panel-card">
+        <h3 class="panel-title">School <em>Updates</em></h3>
+        <div class="item-list" id="newsFeedList">
+          <div style="color:#333;text-align:center;padding:32px;font-style:italic;">No updates yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSIGNMENTS TAB -->
+    <div id="tab-assignments" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Post <em>Assignment</em></h3>
+        <div class="form-group">
+          <label class="form-label">Course Type</label>
+          <select class="select-input" id="assignCourse">
+            <option value="">— Select Course —</option>
+            <option value="531">Barber / Stylist</option>
+            <option value="532">Teacher / Manager / Instructor</option>
+            <option value="533">Crossover (Cosmetology to Barber)</option>
+            <option value="all">All Students</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Question Type</label>
+          <select class="select-input" id="assignType">
+            <option value="theory">Theory Question</option>
+            <option value="practice">Practice Test Question</option>
+            <option value="announcement">Announcement</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Question / Content</label>
+          <textarea class="form-textarea" id="assignContent" placeholder="Enter your question or content..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Due Date (Optional)</label>
+          <input type="date" class="form-input" id="assignDue">
+        </div>
+        <button class="btn-submit" onclick="postAssignment()">Post Assignment</button>
+      </div>
+    </div>
+
+    <!-- COURSE FILTER FOR ASSIGNMENTS -->
+    <div id="assignmentsContainer" style="display:none;">
+      <div class="course-filter-tabs">
+        <button class="course-tab active" onclick="filterTeacherAssignments('all', this)">All</button>
+        <button class="course-tab" onclick="filterTeacherAssignments('531', this)">Barber / Stylist</button>
+        <button class="course-tab" onclick="filterTeacherAssignments('532', this)">Teacher / Manager</button>
+        <button class="course-tab" onclick="filterTeacherAssignments('533', this)">Crossover</button>
+      </div>
+      <div id="teacherAssignmentsList" class="item-list"></div>
+    </div>
+
+    <!-- CREATE TESTS -->
+    <div id="tab-tests" class="tab-panel">
+      <!-- SCAN TEST SECTION -->
+      <div class="panel-card">
+        <h3 class="panel-title">Scan Paper <em>Test</em></h3>
+        <div style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);padding:16px;margin-bottom:20px;border-radius:4px;font-size:0.8rem;color:var(--muted);line-height:1.6;">
+          📸 <strong>OCR Scanner</strong> — Photograph your paper test with a smartphone or scanner. AI will extract the text automatically. You can edit before posting to students.
+        </div>
+        
+        <div id="ocrSection" style="display:flex;flex-direction:column;gap:16px;">
+          <div class="form-group">
+            <label class="form-label">Upload Test Photo</label>
+            <input type="file" id="testPhotoInput" accept="image/*" class="form-input" style="padding:8px;">
+            <small style="color:#555;font-size:0.7rem;margin-top:6px;display:block;">📱 Take a photo with your phone or upload a scanned image (JPG, PNG)</small>
+          </div>
+          
+          <div id="ocrPreview" style="display:none;">
+            <img id="ocrImage" style="max-width:100%;max-height:300px;border:1px solid var(--border-sub);border-radius:4px;margin-bottom:12px;">
+            <button class="btn-submit" onclick="scanTestPhoto()" style="width:100%;background:var(--purple);color:#fff;">🔍 Extract Text with OCR</button>
+            <div id="ocrStatus" style="font-size:0.75rem;color:var(--gold);margin-top:8px;text-align:center;display:none;">Scanning...</div>
+          </div>
+          
+          <div id="ocrResult" style="display:none;">
+            <label class="form-label">Extracted Text (edit as needed)</label>
+            <textarea id="ocrText" class="form-textarea" style="min-height:200px;font-family:monospace;font-size:0.8rem;"></textarea>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <button class="btn-submit" onclick="convertOcrToTest()" style="flex:1;background:var(--green);">✓ Use This Text</button>
+              <button class="btn-submit" onclick="resetOcr()" style="flex:1;background:#555;">✕ Try Again</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- MANUAL TEST SECTION -->
+      <div class="panel-card">
+        <h3 class="panel-title">Create <em>Test</em></h3>
+        <div style="background:rgba(107,33,168,0.08);border:1px solid rgba(107,33,168,0.2);padding:16px;margin-bottom:20px;border-radius:4px;font-size:0.8rem;color:var(--muted);line-height:1.6;">
+          📋 <strong>Google Forms-style Test Creator</strong> — Build assessments for your students. Each test is customizable with multiple question types. Share with students and track responses.
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Test Title</label>
+          <input type="text" class="form-input" id="testTitle" placeholder="e.g., Fundamentals Quiz - Chapter 3">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Test Description</label>
+          <textarea class="form-textarea" id="testDesc" placeholder="Instructions for students, passing score, time limit, etc..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Course Type</label>
+          <select class="select-input" id="testCourse">
+            <option value="">— Select Course —</option>
+            <option value="531">Barber / Stylist</option>
+            <option value="532">Teacher / Manager / Instructor</option>
+            <option value="533">Crossover (Cosmetology to Barber)</option>
+            <option value="all">All Students</option>
+          </select>
+        </div>
+
+        <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;border-radius:4px;margin-bottom:20px;">
+          <div style="font-weight:700;margin-bottom:16px;font-size:0.85rem;">Questions</div>
+          <div id="questionsContainer" style="max-height:400px;overflow-y:auto;">
+            <!-- Questions will be added here -->
+          </div>
+          <button class="btn-submit" onclick="addQuestionField()" style="width:100%;margin-top:12px;background:var(--purple);color:#fff;">+ Add Question</button>
+        </div>
+
+        <div style="display:flex;gap:12px;">
+          <button class="btn-submit" onclick="createTest()" style="flex:1;">Create & Post Test</button>
+          <button class="btn-submit" style="flex:1;background:#555;cursor:pointer;" onclick="document.getElementById('testTitle').value=''; document.getElementById('testDesc').value=''; document.getElementById('questionsContainer').innerHTML='';">Clear</button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Published <em>Tests</em></h3>
+        <div id="publishedTestsList"></div>
+      </div>
+    </div>
+
+    <!-- GRADE SUBMISSIONS -->
+    <div id="tab-grade" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Grade <em>Submissions</em></h3>
+        <div class="course-filter-tabs">
+          <button class="course-tab active" onclick="filterGradingAssignments('all', this)">All Assignments</button>
+          <button class="course-tab" onclick="filterGradingAssignments('531', this)">Barber / Stylist</button>
+          <button class="course-tab" onclick="filterGradingAssignments('532', this)">Teacher / Manager</button>
+          <button class="course-tab" onclick="filterGradingAssignments('533', this)">Crossover</button>
+        </div>
+        <div id="gradingAssignmentsList" style="margin-top:16px;" class="item-list">
+          <div style="color:#333;text-align:center;padding:32px;font-style:italic;">No assignments with submissions yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLOCKED IN STUDENTS -->
+    <div id="tab-clockin" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Clocked In <em>Students</em></h3>
+        <div class="course-filter-tabs">
+          <button class="course-tab active" onclick="filterClockedIn('all', this)">All</button>
+          <button class="course-tab" onclick="filterClockedIn('531', this)">Barber / Stylist</button>
+          <button class="course-tab" onclick="filterClockedIn('532', this)">Teacher / Manager</button>
+          <button class="course-tab" onclick="filterClockedIn('533', this)">Crossover</button>
+        </div>
+        <div id="clockedInList" style="margin-top:16px;">
+          <div style="color:#333;text-align:center;padding:32px;font-style:italic;">No students clocked in.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── AUTH ──────────────────────────────────────────────────────
+var TEACHER_CREDS = { email: 'teacher@sbi.com', pass: localStorage.getItem('teacherPassword') || 'teachersbi2025' };
+var currentTeacherId = null;
+
+function teacherLogin() {
+  var email = document.getElementById('teacherEmail').value.trim();
+  var pass = document.getElementById('teacherPass').value;
+  TEACHER_CREDS.pass = localStorage.getItem('teacherPassword') || 'teachersbi2025';
+  var err = document.getElementById('teacherErr');
+  
+  if (email === TEACHER_CREDS.email && pass === TEACHER_CREDS.pass) {
+    currentTeacherId = 'teacher_' + Date.now();
+    localStorage.setItem('currentTeacherId', currentTeacherId);
+    document.getElementById('teacherLogin').style.display = 'none';
+    document.getElementById('teacherDash').style.display = 'block';
+    document.getElementById('teacherNameDisplay').textContent = 'Instructor';
+    renderTeacherDashboard();
+  } else {
+    err.textContent = 'Invalid credentials';
+    err.style.display = 'block';
+  }
+}
+
+document.getElementById('teacherPass').addEventListener('keydown', function(e){ if(e.key==='Enter') teacherLogin(); });
+
+function teacherLogout() {
+  localStorage.removeItem('currentTeacherId');
+  document.getElementById('teacherLogin').style.display = 'flex';
+  document.getElementById('teacherDash').style.display = 'none';
+  document.getElementById('teacherEmail').value = '';
+  document.getElementById('teacherPass').value = '';
+}
+
+// ─── TABS ──────────────────────────────────────────────────────
+function switchTeacherTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  
+  if(id==='assignments') renderTeacherAssignments();
+  if(id==='grade') renderGradingAssignments();
+  if(id==='clockin') renderClockedInStudents();
+  if(id==='feed') renderNewsFeed();
+  if(id==='tests') renderPublishedTests();
+}
+
+// ─── ASSIGNMENTS ───────────────────────────────────────────────
+function postAssignment() {
+  var course = document.getElementById('assignCourse').value;
+  var type = document.getElementById('assignType').value;
+  var content = document.getElementById('assignContent').value.trim();
+  var due = document.getElementById('assignDue').value;
+  
+  if (!course || !content) { alert('Please select course and enter content.'); return; }
+  
+  var assignments = JSON.parse(localStorage.getItem('teacherAssignments') || '[]');
+  assignments.push({
+    id: 'teach_' + Date.now(),
+    course: course,
+    type: type,
+    content: content,
+    dueDate: due || null,
+    postedAt: new Date().toISOString()
+  });
+  localStorage.setItem('teacherAssignments', JSON.stringify(assignments));
+  
+  document.getElementById('assignContent').value = '';
+  document.getElementById('assignDue').value = '';
+  alert('Assignment posted!');
+  renderTeacherAssignments();
+}
+
+function renderTeacherAssignments() {
+  var assignments = JSON.parse(localStorage.getItem('teacherAssignments') || '[]');
+  document.getElementById('assignmentsContainer').style.display = 'block';
+  filterTeacherAssignments('all', document.querySelector('.course-tab'));
+}
+
+function filterTeacherAssignments(courseId, btn) {
+  var assignments = JSON.parse(localStorage.getItem('teacherAssignments') || '[]');
+  var filtered = courseId === 'all' ? assignments : assignments.filter(function(a){ return a.course == courseId; });
+  
+  var list = document.getElementById('teacherAssignmentsList');
+  if (!filtered.length) { list.innerHTML = '<div style="color:#333;text-align:center;padding:24px;font-style:italic;">No assignments for this course.</div>'; return; }
+  
+  list.innerHTML = '';
+  filtered.forEach(function(a) {
+    var div = document.createElement('div');
+    div.className = 'item-card';
+    div.innerHTML = '<div class="item-header"><span class="item-type ' + (a.type === 'announcement' ? 'news' : '') + '">' + a.type + '</span></div>' +
+      '<div class="item-title">' + a.content.substring(0, 60) + (a.content.length > 60 ? '...' : '') + '</div>' +
+      '<div class="item-desc">' + a.content + '</div>' +
+      (a.dueDate ? '<div class="item-date">Due: ' + a.dueDate + '</div>' : '') +
+      '<button onclick="deleteAssignment(\'' + a.id + '\')" style="margin-top:10px;padding:8px 12px;background:rgba(200,50,50,0.2);color:#ff6b6b;border:1px solid #ff6b6b;cursor:pointer;font-size:0.7rem;font-weight:700;border-radius:3px;transition:all 0.2s;" onmouseover="this.style.background=\'rgba(200,50,50,0.4)\'" onmouseout="this.style.background=\'rgba(200,50,50,0.2)\'">🗑️ Delete</button>';
+    list.appendChild(div);
+  });
+  
+  document.querySelectorAll('.course-tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+// ─── GRADING SYSTEM ────────────────────────────────────────────
+function renderGradingAssignments() {
+  var assignments = JSON.parse(localStorage.getItem('teacherAssignments') || '[]');
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  
+  var assignmentsWithSubmissions = assignments.filter(function(a) {
+    return students.some(function(s) { 
+      return (s.answers || []).some(function(ans) { return ans.id === a.id; });
+    });
+  });
+  
+  filterGradingAssignments('all', document.querySelector('#tab-grade .course-tab'));
+}
+
+function filterGradingAssignments(courseId, btn) {
+  var assignments = JSON.parse(localStorage.getItem('teacherAssignments') || '[]');
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var filtered = courseId === 'all' ? assignments : assignments.filter(function(a){ return a.course == courseId; });
+  
+  var list = document.getElementById('gradingAssignmentsList');
+  
+  if (!filtered.length) { 
+    list.innerHTML = '<div style="color:#333;text-align:center;padding:32px;font-style:italic;">No assignments for this course.</div>'; 
+    return; 
+  }
+  
+  list.innerHTML = '';
+  filtered.forEach(function(a) {
+    var submissions = [];
+    students.forEach(function(s) {
+      var ans = (s.answers || []).find(function(x) { return x.id === a.id; });
+      if (ans && ans.submitted) {
+        submissions.push({ student: s, answer: ans });
+      }
+    });
+    
+    if (submissions.length > 0) {
+      var div = document.createElement('div');
+      div.className = 'item-card';
+      var pendingCount = submissions.filter(function(s) { return !s.answer.grade; }).length;
+      div.innerHTML = '<div class="item-header"><span class="item-type">' + submissions.length + ' Submissions</span><span style="color:var(--gold);font-weight:700;">' + pendingCount + ' pending</span></div>' +
+        '<div class="item-title">' + a.content.substring(0, 60) + (a.content.length > 60 ? '...' : '') + '</div>' +
+        '<button onclick="viewAssignmentSubmissions(\'' + a.id + '\')" style="margin-top:12px;padding:10px 16px;background:var(--gold);color:#000;border:none;cursor:pointer;font-size:0.8rem;font-weight:700;border-radius:3px;transition:background 0.2s;" onmouseover="this.style.background=\'var(--gold-light)\'" onmouseout="this.style.background=\'var(--gold)\'">👁️ Review Submissions</button>';
+      list.appendChild(div);
+    }
+  });
+  
+  document.querySelectorAll('#tab-grade .course-tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+function viewAssignmentSubmissions(assignmentId) {
+  var assignments = JSON.parse(localStorage.getItem('teacherAssignments') || '[]');
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var assignment = assignments.find(function(a) { return a.id === assignmentId; });
+  
+  if (!assignment) return;
+  
+  var submissions = [];
+  students.forEach(function(s) {
+    var ans = (s.answers || []).find(function(x) { return x.id === assignmentId; });
+    if (ans && ans.submitted) {
+      submissions.push({ student: s, answer: ans });
+    }
+  });
+  
+  var modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;';
+  
+  var content = '<div style="background:#0a0806;border:1px solid var(--border);border-radius:6px;width:100%;max-width:800px;max-height:90vh;overflow-y:auto;padding:30px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><h2 style="color:var(--white);margin:0;">' + assignment.content.substring(0, 50) + '...</h2><button onclick="this.closest(\'div\').parentElement.remove()" style="background:none;border:none;color:var(--gold);font-size:1.5rem;cursor:pointer;">✕</button></div>';
+  
+  submissions.forEach(function(sub) {
+    var isGraded = sub.answer.grade ? true : false;
+    content += '<div style="background:rgba(107,33,168,0.1);border:1px solid var(--border-purple);padding:16px;margin-bottom:16px;border-radius:4px;">' +
+      '<div style="font-weight:700;color:var(--white);margin-bottom:8px;">' + sub.student.name + ' <span style="color:#888;font-weight:400;">(ID: ' + sub.student.studentId + ')</span></div>' +
+      '<div style="background:#000;padding:12px;border-radius:3px;margin-bottom:12px;color:var(--muted);font-size:0.9rem;line-height:1.5;min-height:40px;max-height:150px;overflow-y:auto;">' + sub.answer.text + '</div>';
+    
+    if (!isGraded) {
+      content += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
+        '<input type="text" id="grade_' + sub.student.studentId + '_' + assignmentId + '" placeholder="Grade (e.g., A, 90/100)" style="padding:8px;background:#0a0806;border:1px solid var(--border);color:var(--white);border-radius:3px;font-size:0.9rem;">' +
+        '</div>' +
+        '<textarea id="feedback_' + sub.student.studentId + '_' + assignmentId + '" placeholder="Feedback for student..." style="width:100%;padding:8px;background:#0a0806;border:1px solid var(--border);color:var(--white);border-radius:3px;font-size:0.9rem;min-height:60px;resize:vertical;margin-bottom:10px;"></textarea>' +
+        '<button onclick="gradeSubmission(\'' + sub.student.studentId + '\', \'' + assignmentId + '\')" style="padding:10px;background:var(--gold);color:#000;border:none;cursor:pointer;font-weight:700;border-radius:3px;transition:background 0.2s;" onmouseover="this.style.background=\'var(--gold-light)\'" onmouseout="this.style.background=\'var(--gold)\'">Submit Grade</button>';
+    } else {
+      content += '<div style="background:rgba(100,200,140,0.2);border:1px solid rgba(100,200,140,0.4);padding:10px;border-radius:3px;">' +
+        '<div style="color:#6fcf97;font-weight:700;margin-bottom:4px;">✓ Graded: ' + sub.answer.grade + '</div>' +
+        (sub.answer.feedback ? '<div style="color:var(--muted);font-size:0.85rem;margin-top:6px;">' + sub.answer.feedback + '</div>' : '') +
+        '</div>';
+    }
+    
+    content += '</div>';
+  });
+  
+  content += '</div>';
+  modal.innerHTML = content;
+  document.body.appendChild(modal);
+  modal.onclick = function(e) {
+    if (e.target === modal) modal.remove();
+  };
+}
+
+function gradeSubmission(studentId, assignmentId) {
+  var grade = document.getElementById('grade_' + studentId + '_' + assignmentId).value.trim();
+  var feedback = document.getElementById('feedback_' + studentId + '_' + assignmentId).value.trim();
+  
+  if (!grade) {
+    alert('Please enter a grade');
+    return;
+  }
+  
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var student = students.find(function(s) { return s.studentId === studentId; });
+  
+  if (!student) return;
+  
+  var answerIdx = (student.answers || []).findIndex(function(a) { return a.id === assignmentId; });
+  if (answerIdx >= 0) {
+    student.answers[answerIdx].grade = grade;
+    student.answers[answerIdx].feedback = feedback;
+    student.answers[answerIdx].gradedAt = new Date().toISOString();
+    
+    localStorage.setItem('students', JSON.stringify(students));
+    alert('✓ Grade submitted!');
+    
+    document.querySelector('div[style*="position:fixed"]').remove();
+    filterGradingAssignments('all', document.querySelector('#tab-grade .course-tab'));
+  }
+}
+
+function deleteAssignment(assignmentId) {
+  if (!confirm('Are you sure you want to delete this assignment? All student submissions will remain in their records.')) {
+    return;
+  }
+  
+  var assignments = JSON.parse(localStorage.getItem('teacherAssignments') || '[]');
+  assignments = assignments.filter(function(a) { return a.id !== assignmentId; });
+  localStorage.setItem('teacherAssignments', JSON.stringify(assignments));
+  
+  alert('✓ Assignment deleted!');
+  renderTeacherAssignments();
+}
+
+// ─── CLOCKED IN STUDENTS ───────────────────────────────────────
+function renderClockedInStudents() {
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var clockedIn = students.filter(function(s){ return s.clockedIn; });
+  filterClockedIn('all', document.querySelector('#tab-clockin .course-tab'));
+}
+
+function filterClockedIn(courseId, btn) {
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var clockedIn = students.filter(function(s){ return s.clockedIn; });
+  
+  if (courseId !== 'all') {
+    clockedIn = clockedIn.filter(function(s){
+      var idPart = s.studentId.substring(3, 6);
+      return idPart === courseId;
+    });
+  }
+  
+  var list = document.getElementById('clockedInList');
+  if (!clockedIn.length) { list.innerHTML = '<div style="color:#333;text-align:center;padding:32px;font-style:italic;">No students clocked in.</div>'; return; }
+  
+  list.innerHTML = '';
+  clockedIn.forEach(function(s) {
+    var courseType = {531: 'Barber/Stylist', 532: 'Teacher/Manager', 533: 'Crossover'}[s.studentId.substring(3,6)] || 'Unknown';
+    var div = document.createElement('div');
+    div.className = 'item-card';
+    div.innerHTML = '<div class="item-header"><span class="item-type">' + courseType + '</span></div>' +
+      '<div class="item-title">' + s.name + '</div>' +
+      '<div class="item-desc">ID: ' + s.studentId + '</div>' +
+      '<div class="item-date">🕐 Clocked in at ' + (s.clockInTime ? new Date(s.clockInTime).toLocaleTimeString() : 'Unknown') + '</div>';
+    list.appendChild(div);
+  });
+  
+  document.querySelectorAll('#tab-clockin .course-tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+// ─── NEWS FEED ─────────────────────────────────────────────────
+function renderNewsFeed() {
+  var newsFeed = JSON.parse(localStorage.getItem('schoolNewsFeed') || '[]');
+  var list = document.getElementById('newsFeedList');
+  
+  if (!newsFeed.length) { list.innerHTML = '<div style="color:#333;text-align:center;padding:32px;font-style:italic;">No updates yet.</div>'; return; }
+  
+  list.innerHTML = '';
+  newsFeed.slice().reverse().forEach(function(item) {
+    var div = document.createElement('div');
+    div.className = 'item-card';
+    div.innerHTML = '<div class="item-type news">UPDATE</div>' +
+      '<div class="item-title">' + item.title + '</div>' +
+      '<div class="item-desc">' + item.message + '</div>' +
+      '<div class="item-date">' + new Date(item.date).toLocaleString() + '</div>';
+    list.appendChild(div);
+  });
+}
+// ─── TEST CREATION ─────────────────────────────────────────────
+var questionCount = 0;
+
+function addQuestionField() {
+  questionCount++;
+  var container = document.getElementById('questionsContainer');
+  var qDiv = document.createElement('div');
+  qDiv.id = 'question-' + questionCount;
+  qDiv.style.cssText = 'background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:12px;border-radius:4px;position:relative;';
+  
+  qDiv.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+    '<div style="font-weight:700;font-size:0.8rem;">Question ' + questionCount + '</div>' +
+    '<button onclick="removeQuestion(this)" style="background:var(--red);color:#fff;border:none;padding:4px 8px;font-size:0.65rem;cursor:pointer;border-radius:2px;">Delete</button>' +
+    '</div>' +
+    '<input type="text" class="form-input" placeholder="Question text..." style="margin-bottom:10px;">' +
+    '<select class="select-input" onchange="updateQuestionType(this)" style="margin-bottom:10px;">' +
+      '<option value="multiple">Multiple Choice</option><option value="short">Short Answer</option><option value="essay">Essay</option>' +
+    '</select>' +
+    '<div class="question-options" style="margin-bottom:10px;"></div>' +
+    '<input type="number" class="form-input" placeholder="Points (default: 1)" style="margin-bottom:10px;" value="1">';
+  
+  container.appendChild(qDiv);
+  updateQuestionType(qDiv.querySelector('select'));
+}
+
+function updateQuestionType(select) {
+  var qDiv = select.closest('[id^="question-"]');
+  var optionsDiv = qDiv.querySelector('.question-options');
+  var type = select.value;
+  
+  if (type === 'multiple') {
+    optionsDiv.innerHTML = '<label style="display:block;font-size:0.7rem;color:var(--gold);margin-bottom:6px;font-weight:700;">Answer Options</label>' +
+      '<input type="text" class="form-input" placeholder="Option A" style="margin-bottom:6px;">' +
+      '<input type="text" class="form-input" placeholder="Option B" style="margin-bottom:6px;">' +
+      '<input type="text" class="form-input" placeholder="Option C" style="margin-bottom:6px;">' +
+      '<input type="text" class="form-input" placeholder="Option D" style="margin-bottom:6px;">' +
+      '<select class="select-input"><option>Correct Answer: A</option><option>Correct Answer: B</option><option>Correct Answer: C</option><option>Correct Answer: D</option></select>';
+  } else if (type === 'short') {
+    optionsDiv.innerHTML = '<label style="display:block;font-size:0.7rem;color:var(--gold);margin-bottom:6px;font-weight:700;">Expected Answer (for reference)</label>' +
+      '<textarea class="form-textarea" placeholder="Sample correct answer..." style="min-height:60px;"></textarea>';
+  } else {
+    optionsDiv.innerHTML = '<div style="font-size:0.7rem;color:var(--muted);">Students will write a short essay. No automated grading.</div>';
+  }
+}
+
+function removeQuestion(btn) {
+  btn.closest('[id^="question-"]').remove();
+}
+
+function createTest() {
+  var title = document.getElementById('testTitle').value.trim();
+  var desc = document.getElementById('testDesc').value.trim();
+  var course = document.getElementById('testCourse').value;
+  
+  if (!title || !course) { alert('Enter test title and select a course'); return; }
+  
+  var questions = [];
+  document.querySelectorAll('[id^="question-"]').forEach(function(qDiv) {
+    var inputs = qDiv.querySelectorAll('input[type="text"], input[type="number"]');
+    var select = qDiv.querySelector('select');
+    var type = select.value;
+    var text = inputs[0].value.trim();
+    var points = parseInt(inputs[inputs.length - 1].value) || 1;
+    
+    if (!text) return;
+    
+    questions.push({
+      text: text,
+      type: type,
+      points: points,
+      id: 'q_' + Date.now() + Math.random()
+    });
+  });
+  
+  if (!questions.length) { alert('Add at least one question'); return; }
+  
+  var tests = JSON.parse(localStorage.getItem('teacherTests') || '[]');
+  tests.push({
+    id: 'test_' + Date.now(),
+    title: title,
+    description: desc,
+    course: course,
+    questions: questions,
+    createdBy: 'Instructor',
+    createdAt: new Date().toISOString(),
+    responses: []
+  });
+  localStorage.setItem('teacherTests', JSON.stringify(tests));
+  
+  // Also post as assignment
+  var assignments = JSON.parse(localStorage.getItem('teacherAssignments') || '[]');
+  assignments.push({
+    id: 'teach_' + Date.now(),
+    course: course,
+    type: 'practice',
+    content: '[TEST] ' + title + ': ' + questions.length + ' questions',
+    dueDate: null,
+    postedAt: new Date().toISOString(),
+    testId: tests[tests.length - 1].id
+  });
+  localStorage.setItem('teacherAssignments', JSON.stringify(assignments));
+  
+  alert('Test created and posted! Students will see it in their assignments.');
+  document.getElementById('testTitle').value = '';
+  document.getElementById('testDesc').value = '';
+  document.getElementById('questionsContainer').innerHTML = '';
+  questionCount = 0;
+  renderPublishedTests();
+  renderTeacherAssignments();
+}
+
+function renderPublishedTests() {
+  var tests = JSON.parse(localStorage.getItem('teacherTests') || '[]');
+  var list = document.getElementById('publishedTestsList');
+  
+  if (!tests.length) { list.innerHTML = '<div style="color:#333;text-align:center;padding:24px;font-style:italic;">No tests created yet.</div>'; return; }
+  
+  list.innerHTML = '';
+  tests.forEach(function(test) {
+    var div = document.createElement('div');
+    div.className = 'item-card';
+    div.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px;">' +
+      '<div><span class="item-type" style="background:rgba(107,33,168,0.2);color:var(--purple-light);">TEST</span></div>' +
+      '<div style="font-size:0.7rem;color:#555;">' + test.questions.length + ' questions</div>' +
+      '</div>' +
+      '<div class="item-title">' + test.title + '</div>' +
+      '<div class="item-desc">' + test.description + '</div>' +
+      '<div style="margin-top:10px;font-size:0.7rem;color:var(--muted);">📊 ' + test.responses.length + ' responses · Created ' + new Date(test.createdAt).toLocaleDateString() + '</div>';
+    list.appendChild(div);
+  });
+}
+
+// ─── OCR SCANNER ──────────────────────────────────────────────
+document.getElementById('testPhotoInput').addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  
+  var reader = new FileReader();
+  reader.onload = function(event) {
+    var img = document.getElementById('ocrImage');
+    img.src = event.target.result;
+    document.getElementById('ocrPreview').style.display = 'block';
+    document.getElementById('ocrResult').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+function scanTestPhoto() {
+  var img = document.getElementById('ocrImage').src;
+  if (!img) { alert('Please upload a photo first'); return; }
+  
+  var status = document.getElementById('ocrStatus');
+  status.style.display = 'block';
+  
+  Tesseract.recognize(img, 'eng', {
+    logger: function(m) {
+      console.log('OCR progress:', m.progress);
+    }
+  }).then(function(result) {
+    var text = result.data.text;
+    document.getElementById('ocrText').value = text;
+    document.getElementById('ocrResult').style.display = 'block';
+    status.style.display = 'none';
+    console.log('OCR complete:', text);
+  }).catch(function(err) {
+    console.error('OCR error:', err);
+    alert('OCR failed: ' + err.message);
+    status.style.display = 'none';
+  });
+}
+
+function convertOcrToTest() {
+  var text = document.getElementById('ocrText').value.trim();
+  if (!text) { alert('No text to convert'); return; }
+  
+  // Parse text into lines and try to identify questions
+  var lines = text.split('\n').filter(function(l) { return l.trim().length > 0; });
+  
+  // Fill test title with first meaningful line
+  var title = prompt('Test Title:', 'Scanned Test - ' + new Date().toLocaleDateString());
+  if (!title) return;
+  
+  document.getElementById('testTitle').value = title;
+  document.getElementById('testDesc').value = 'Scanned from paper test on ' + new Date().toLocaleString();
+  
+  // Parse lines as questions (heuristic: lines with 5+ words are questions, else skip)
+  document.getElementById('questionsContainer').innerHTML = '';
+  questionCount = 0;
+  
+  lines.forEach(function(line) {
+    var trimmed = line.trim();
+    if (trimmed.length > 10) {
+      addQuestionField();
+      var qDiv = document.getElementById('question-' + questionCount);
+      if (qDiv) {
+        var input = qDiv.querySelector('input[type="text"]');
+        if (input) input.value = trimmed;
+      }
+    }
+  });
+  
+  if (questionCount === 0) {
+    alert('Could not parse questions from text. Please add them manually.');
+  } else {
+    alert('Created ' + questionCount + ' questions from scanned text. Review and edit before posting.');
+  }
+  
+  resetOcr();
+  // Scroll to questions
+  document.getElementById('tab-tests').scrollIntoView();
+}
+
+function resetOcr() {
+  document.getElementById('testPhotoInput').value = '';
+  document.getElementById('ocrImage').src = '';
+  document.getElementById('ocrText').value = '';
+  document.getElementById('ocrPreview').style.display = 'none';
+  document.getElementById('ocrResult').style.display = 'none';
+  document.getElementById('ocrStatus').style.display = 'none';
+}
+// ─── INIT ─────────────────────────────────────────────────────
+var currentTecherId = localStorage.getItem('currentTeacherId');
+if (currentTeacherId) {
+  document.getElementById('teacherLogin').style.display = 'none';
+  document.getElementById('teacherDash').style.display = 'block';
+  renderTeacherDashboard();
+}
+
+function renderTeacherDashboard() {
+  renderNewsFeed();
+  renderClockedInStudents();
+  renderPublishedTests();
+}
+</script>
+</body>
+</html>

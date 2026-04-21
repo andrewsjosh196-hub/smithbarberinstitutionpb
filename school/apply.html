@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply Now — SBI School</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#6b21a8;--purple-mid:#7c3aed;--purple-light:#a855f7;
+  --gold:#c9a84c;--gold-light:#e5c97a;
+  --black:#0a0806;--card:#110f0c;
+  --border:rgba(201,168,76,0.2);
+  --white:#faf8f5;--muted:#9a8f7e;
+  --green:#6fcf97;--red:#e87b7b;
+}
+body{font-family:'Raleway',sans-serif;background:var(--black);color:var(--white);min-height:100vh;}
+
+nav{display:flex;align-items:center;padding:14px 32px;background:rgba(10,8,6,0.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);}
+.nav-logo{height:40px;width:40px;object-fit:contain;}
+.nav-brand{margin-left:10px;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:0.9rem;font-weight:700;display:block;}
+.nav-brand-sub{font-size:0.52rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;display:block;}
+.nav-right{margin-left:auto;}
+.nav-right a{color:var(--gold);text-decoration:none;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+
+.main{max-width:700px;margin:0 auto;padding:60px 20px;}
+
+.form-card{background:var(--card);border:1px solid var(--border);padding:48px;position:relative;}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));}
+
+.form-header{text-align:center;margin-bottom:40px;}
+.form-eyebrow{font-size:0.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:700;}
+.form-title{font-family:'Playfair Display',serif;font-size:2rm;font-weight:700;margin-bottom:12px;}
+.form-title em{font-style:italic;color:var(--gold);}
+.form-desc{font-size:0.85rem;color:var(--muted);line-height:1.6;}
+
+.form-group{margin-bottom:20px;}
+.form-label{display:block;font-size:0.6rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;font-weight:700;}
+.form-input{width:100%;padding:13px 16px;border:1px solid #1c1a16;background:#0a0806;color:var(--white);font-family:'Raleway',sans-serif;font-size:0.88rem;transition:border-color 0.2s;-webkit-appearance:none;}
+.form-input:focus{outline:none;border-color:var(--gold);}
+select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23c9a84c' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;background-color:#0a0806;}
+select.form-input option{background:#0a0806;color:var(--white);}
+
+.checkbox-group{display:flex;flex-direction:column;gap:12px;margin-top:12px;}
+.checkbox-row{display:flex;align-items:center;gap:12px;}
+.custom-checkbox{width:20px;height:20px;border:2px solid #333;background:#0a0806;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+.custom-checkbox.checked{background:var(--gold);border-color:var(--gold);}
+.custom-checkbox.checked::after{content:'✓';color:#000;font-weight:bold;}
+.checkbox-label{font-size:0.82rem;cursor:pointer;color:var(--white);}
+
+.importance-note{background:rgba(232,123,123,0.1);border:1px solid rgba(232,123,123,0.2);padding:14px 16px;margin-bottom:16px;font-size:0.75rem;color:#bbb;line-height:1.7;border-left:3px solid var(--red);}
+
+.time-slot-note{background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);padding:14px 16px;font-size:0.75rem;color:var(--muted);line-height:1.6;margin-bottom:16px; border-left:3px solid var(--gold);}
+
+.btn-submit{width:100%;background:var(--gold);color:#000;border:none;padding:15px;font-family:'Raleway',sans-serif;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.72rem;cursor:pointer;margin-top:28px;transition:background 0.2s;}
+.btn-submit:hover{background:var(--gold-light);}
+
+.success-msg{color:var(--green);font-size:0.8rem;margin-top:10px;display:none;}
+.error-msg{color:var(--red);font-size:0.8rem;margin-top:10px;display:none;}
+
+footer{background:#000;border-top:1px solid var(--border);padding:32px 20px;text-align:center;font-size:0.65rem;color:#333;}
+
+@media(max-width:600px){
+  .main{padding:40px 16px;}
+  .form-card{padding:28px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <img src="school_logo.png" alt="SBI" class="nav-logo" onerror="this.style.display='none'">
+  <div class="nav-brand">
+    <span class="nav-brand-name">SBI School</span>
+    <span class="nav-brand-sub">Barber Education</span>
+  </div>
+  <div class="nav-right">
+    <a href="index.html">← Back to Home</a>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="form-card">
+    <div class="form-header">
+      <p class="form-eyebrow">Join Our Program</p>
+      <h1 class="form-title">Apply to SBI <em>School</em></h1>
+      <p class="form-desc">Complete this application to begin your journey in professional barbering.</p>
+    </div>
+
+    <form onsubmit="submitApplication(event)">
+      <!-- PERSONAL INFO -->
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input type="text" class="form-input" id="appName" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Date of Birth *</label>
+        <input type="date" class="form-input" id="appDOB" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phone Number *</label>
+        <input type="tel" class="form-input" id="appPhone" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address *</label>
+        <input type="email" class="form-input" id="appEmail" required>
+      </div>
+
+      <!-- PROGRAM SELECTION -->
+      <div class="form-group">
+        <label class="form-label">Program of Interest *</label>
+        <select class="form-input" id="appProgram" required style="cursor:pointer;">
+          <option value="">— Select a program —</option>
+          <option value="barber">Barber / Stylist (1500 hours)</option>
+          <option value="teacher">Teacher / Instructor / Owner (600 hours)</option>
+          <option value="crossover">Crossover - Cosmetology to Barber (600 hours)</option>
+          <option value="hybrid">Hybrid Program (120 online + 1380 practical hours)</option>
+          <option value="basic-refresher">Basic Refresher - Contact for pricing</option>
+          <option value="advanced-tune-up">Advanced Tune-Up - Contact for pricing</option>
+          <option value="masters-hands">Master's Hands Course - Contact for pricing</option>
+        </select>
+      </div>
+
+      <!-- BACKGROUND CHECK INFO -->
+      <div class="importance-note">
+        ⚠️ <strong>Background Check Required:</strong> Professional barbering requires a background check. Have you ever been convicted of a felony?
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Felony Conviction *</label>
+        <div class="checkbox-group">
+          <div class="checkbox-row">
+            <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-value="no"></div>
+            <label class="checkbox-label" onclick="toggleCheckbox(this.previousElementSibling)">No, I have never been convicted of a felony</label>
+          </div>
+          <div class="checkbox-row">
+            <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-value="yes"></div>
+            <label class="checkbox-label" onclick="toggleCheckbox(this.previousElementSibling)">Yes, I have a prior felony conviction</label>
+          </div>
+        </div>
+        <span id="felonyError" class="error-msg" style="display:none;">Please select one</span>
+      </div>
+
+      <!-- REQUIRED DOCUMENTS -->
+      <div class="form-group">
+        <label class="form-label">Required Documentation *</label>
+        <div class="checkbox-group">
+          <div class="checkbox-row">
+            <div class="custom-checkbox" onclick="toggleDocCheckbox(this)" data-doc="license"></div>
+            <label class="checkbox-label" onclick="toggleDocCheckbox(this.previousElementSibling)">I have access to my valid Driver's License</label>
+          </div>
+          <div class="checkbox-row">
+            <div class="custom-checkbox" onclick="toggleDocCheckbox(this)" data-doc="ssn"></div>
+            <label class="checkbox-label" onclick="toggleDocCheckbox(this.previousElementSibling)">I have access to my Social Security number</label>
+          </div>
+          <div class="checkbox-row">
+            <div class="custom-checkbox" onclick="toggleDocCheckbox(this)" data-doc="grade9"></div>
+            <label class="checkbox-label" onclick="toggleDocCheckbox(this.previousElementSibling)">I have proof of completing 9th grade (diploma, GED, etc.)</label>
+          </div>
+        </div>
+        <span id="docsError" class="error-msg" style="display:none;">All documents required</span>
+      </div>
+
+      <!-- APPOINTMENT AVAILABILITY -->
+      <div class="time-slot-note">
+        📅 <strong>In-Person Appointment Required:</strong> We'll schedule an in-person appointment to complete your application and discuss program options.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Available Times for In-Person Appointment *</label>
+        <div class="checkbox-group">
+          <div class="checkbox-row">
+            <div class="custom-checkbox" id="timeCheckbox" onclick="toggleCheckbox(this)" data-value="times"></div>
+            <label class="checkbox-label" onclick="toggleCheckbox(this.previousElementSibling)">I am available for appointments (we'll contact to schedule)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Preferred Contact Method</label>
+        <div class="checkbox-group">
+          <div class="checkbox-row">
+            <div class="custom-checkbox" onclick="toggleContactMethod(this)" data-method="phone"></div>
+            <label class="checkbox-label" onclick="toggleContactMethod(this.previousElementSibling)">Phone</label>
+          </div>
+          <div class="checkbox-row">
+            <div class="custom-checkbox" onclick="toggleContactMethod(this)" data-method="text"></div>
+            <label class="checkbox-label" onclick="toggleContactMethod(this.previousElementSibling)">Text Message</label>
+          </div>
+          <div class="checkbox-row">
+            <div class="custom-checkbox" onclick="toggleContactMethod(this)" data-method="email"></div>
+            <label class="checkbox-label" onclick="toggleContactMethod(this.previousElementSibling)">Email</label>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">Submit Application</button>
+      <span id="appSuccess" class="success-msg">✓ Application submitted! We'll contact you soon.</span>
+      <span id="appError" class="error-msg"></span>
+    </form>
+  </div>
+</div>
+
+<footer>
+  © 2025 SBI School. All rights reserved. | <a href="index.html" style="color:#555;text-decoration:none;">Home</a>
+</footer>
+
+<script>
+function toggleCheckbox(el) {
+  el.classList.toggle('checked');
+}
+
+function toggleDocCheckbox(el) {
+  el.classList.toggle('checked');
+}
+
+function toggleContactMethod(el) {
+  document.querySelectorAll('[data-method]').forEach(function(x){ x.classList.remove('checked'); });
+  el.classList.add('checked');
+}
+
+// Pre-fill program from URL query parameter
+window.addEventListener('DOMContentLoaded', function() {
+  var urlParams = new URLSearchParams(window.location.search);
+  var program = urlParams.get('program');
+  if (program) {
+    document.getElementById('appProgram').value = program;
+  }
+});
+
+
+function submitApplication(e) {
+  e.preventDefault();
+  
+  // Validation
+  var name = document.getElementById('appName').value.trim();
+  var dob = document.getElementById('appDOB').value;
+  var phone = document.getElementById('appPhone').value.trim();
+  var email = document.getElementById('appEmail').value.trim();
+  var program = document.getElementById('appProgram').value;
+  
+  var felonySelected = document.querySelector('[data-value="no"].checked') || document.querySelector('[data-value="yes"].checked');
+  var docsChecked = document.querySelectorAll('[data-doc].checked').length === 3;
+  var timeSelected = document.getElementById('timeCheckbox').classList.contains('checked');
+  
+  var errEl = document.getElementById('appError');
+  var successEl = document.getElementById('appSuccess');
+  errEl.style.display = 'none';
+  successEl.style.display = 'none';
+  
+  if (!name || !dob || !phone || !email) {
+    errEl.textContent = 'Please fill in all personal information fields.';
+    errEl.style.display = 'block';
+    return;
+  }
+  
+  if (!program) {
+    errEl.textContent = 'Please select a program of interest.';
+    errEl.style.display = 'block';
+    return;
+  }
+  
+  if (!felonySelected) {
+    errEl.textContent = 'Please answer the felony question.';
+    errEl.style.display = 'block';
+    return;
+  }
+  
+  if (!docsChecked) {
+    errEl.textContent = 'You must confirm you have all required documents.';
+    errEl.style.display = 'block';
+    return;
+  }
+  
+  if (!timeSelected) {
+    errEl.textContent = 'Please confirm your availability for an in-person appointment.';
+    errEl.style.display = 'block';
+    return;
+  }
+  
+  // Save application
+  var apps = JSON.parse(localStorage.getItem('studentApplications') || '[]');
+  var felonyStatus = document.querySelector('[data-value].checked').dataset.value;
+  apps.push({
+    id: 'app_' + Date.now(),
+    name: name,
+    dob: dob,
+    phone: phone,
+    email: email,
+    program: program,
+    felony: felonyStatus,
+    hasLicense: document.querySelector('[data-doc="license"].checked') ? true : false,
+    hasSSN: document.querySelector('[data-doc="ssn"].checked') ? true : false,
+    hasGrade9: document.querySelector('[data-doc="grade9"].checked') ? true : false,
+    preferredContact: document.querySelector('[data-method].checked').dataset.method,
+    submittedAt: new Date().toISOString(),
+    status: 'pending'
+  });
+  localStorage.setItem('studentApplications', JSON.stringify(apps));
+  
+  // Send email notification (in production, this would be real email)
+  console.log('Application submitted:', apps[apps.length-1]);
+  
+  // Show success
+  successEl.style.display = 'block';
+  document.querySelector('form').reset();
+  document.querySelectorAll('.custom-checkbox').forEach(function(cb){ cb.classList.remove('checked'); });
+  
+  setTimeout(function(){
+    window.location.href = 'index.html';
+  }, 3000);
+}
+</script>
+</body>
+</html>

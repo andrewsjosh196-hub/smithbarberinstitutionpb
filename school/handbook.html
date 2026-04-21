@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Handbook — SBI School</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#6b21a8;--purple-mid:#7c3aed;--purple-light:#a855f7;
+  --gold:#c9a84c;--gold-light:#e5c97a;--gold-dark:#a07c28;
+  --black:#0a0806;--card:#110f0c;
+  --border:rgba(201,168,76,0.2);--border-sub:#1c1a16;
+  --white:#faf8f5;--muted:#9a8f7e;
+  --green:#6fcf97;--red:#e87b7b;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Raleway',sans-serif;background:var(--black);color:var(--white);min-height:100vh;}
+
+nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);}
+.nav-logo{height:40px;width:40px;object-fit:contain;}
+.nav-brand{margin-left:10px;display:flex;flex-direction:column;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:0.9rem;font-weight:700;line-height:1.2;}
+.nav-brand-sub{font-size:0.52rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;}
+.nav-right{margin-left:auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.nav-search{display:flex;align-items:center;gap:8px;}
+.search-input{padding:8px 12px;background:#1a1714;border:1px solid var(--border);color:var(--white);font-family:'Raleway',sans-serif;font-size:0.8rem;border-radius:4px;width:200px;}
+.search-input:focus{outline:none;border-color:var(--gold);}
+.back-btn{background:transparent;border:1px solid #222;color:#555;padding:7px 14px;cursor:pointer;font-family:'Raleway',sans-serif;font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;transition:all 0.2s;}
+.back-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+.container{display:grid;grid-template-columns:280px 1fr;gap:0;min-height:calc(100vh - 60px);}
+
+.sidebar{background:linear-gradient(135deg,rgba(10,8,6,0.9),rgba(10,8,6,0.98));border-right:1px solid var(--border);overflow-y:auto;padding:24px 0;position:sticky;top:60px;max-height:calc(100vh - 60px);}
+.sidebar-title{padding:12px 24px;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:rgba(201,168,76,0.05);user-select:none;transition:background 0.2s;}
+.sidebar-title:hover{background:rgba(201,168,76,0.1);}
+.sidebar-title .toggle-icon{font-size:0.9rem;transition:transform 0.3s;display:inline-block;}
+.sidebar-title.collapsed .toggle-icon{transform:rotate(-90deg);}
+
+.sidebar-contents{max-height:none;overflow:visible;transition:max-height 0.3s ease;}
+.sidebar-contents.collapsed{max-height:0;overflow:hidden;}
+.sidebar-section{margin-bottom:4px;}
+.section-btn{width:100%;padding:12px 24px;background:transparent;border:none;text-align:left;color:#999;cursor:pointer;font-family:'Raleway',sans-serif;font-size:0.8rem;border-left:3px solid transparent;transition:all 0.2s;position:relative;}
+.section-btn:hover{background:rgba(201,168,76,0.08);color:var(--white);}
+.section-btn.active{background:rgba(201,168,76,0.12);border-left-color:var(--gold);color:var(--gold);}
+.submenu{display:none;background:#0d0b09;padding:0;}
+.submenu.show{display:block;}
+.submenu-btn{width:100%;padding:10px 24px;padding-left:40px;background:transparent;border:none;text-align:left;color:#666;cursor:pointer;font-family:'Raleway',sans-serif;font-size:0.75rem;transition:all 0.2s;}
+.submenu-btn:hover{color:#999;background:rgba(201,168,76,0.06);}
+.submenu-btn.active{color:var(--gold);}
+
+.content{padding:40px;overflow-y:auto;max-height:calc(100vh - 60px);}
+.page{display:none;}
+.page.active{display:block;animation:fadeIn 0.3s;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.page-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;margin-bottom:8px;color:var(--white);}
+.page-subtitle{font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:24px;font-weight:700;}
+.page-content{font-size:0.95rem;line-height:1.8;color:var(--muted);}
+.page-content h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--white);margin-top:28px;margin-bottom:12px;font-weight:700;}
+.page-content h3{font-size:1rem;color:var(--gold);margin-top:20px;margin-bottom:10px;font-weight:700;}
+.page-content p{margin-bottom:14px;}
+.page-content ul,.page-content ol{margin-left:20px;margin-bottom:14px;}
+.page-content li{margin-bottom:8px;}
+.page-content strong{color:var(--white);}
+.page-content em{color:var(--gold);font-style:italic;}
+
+.table-container{overflow-x:auto;margin:20px 0;}
+.page-content table{width:100%;border-collapse:collapse;background:#0f0d0a;border:1px solid var(--border-sub);}
+.page-content table th{background:rgba(201,168,76,0.1);border:1px solid var(--border-sub);padding:12px;text-align:left;color:var(--gold);font-weight:700;font-size:0.9rem;}
+.page-content table td{border:1px solid var(--border-sub);padding:12px;font-size:0.9rem;}
+.page-content table tr:hover{background:rgba(201,168,76,0.05);}
+
+.highlight-box{background:rgba(201,168,76,0.08);border-left:4px solid var(--gold);padding:16px;margin:20px 0;border-radius:4px;}
+.highlight-box strong{color:var(--gold);}
+
+.signature-line{border-top:1px solid var(--muted);margin-top:24px;padding-top:12px;font-size:0.85rem;color:#666;}
+
+.nav-controls{display:flex;gap:12px;margin-top:20px;padding:20px;border-top:1px solid var(--border-sub);background:rgba(10,8,6,0.5);}
+.nav-btn{flex:1;padding:10px;background:var(--gold);color:#000;border:none;cursor:pointer;font-weight:700;font-size:0.75rem;letter-spacing:1px;text-transform:uppercase;transition:background 0.2s;}
+.nav-btn:hover{background:var(--gold-light);}
+.nav-btn:disabled{background:#333;color:#555;cursor:default;}
+
+.search-results{position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--border);border-top:none;max-height:300px;overflow-y:auto;z-index:50;display:none;}
+.search-results.show{display:block;}
+.result-item{padding:12px 16px;border-bottom:1px solid var(--border-sub);cursor:pointer;font-size:0.85rem;transition:background 0.2s;}
+.result-item:hover{background:rgba(201,168,76,0.1);}
+.result-item strong{color:var(--gold);}
+
+.print-btn{background:var(--purple);color:#fff;padding:8px 16px;border:none;cursor:pointer;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;transition:background 0.2s;}
+.print-btn:hover{background:var(--purple-light);}
+
+.hamburger-btn{display:none;background:none;border:none;color:var(--gold);font-size:1.5rem;cursor:pointer;padding:0;width:40px;height:40px;align-items:center;justify-content:center;}
+.hamburger-btn.open span:nth-child(1){transform:rotate(45deg) translate(8px,8px);}
+.hamburger-btn.open span:nth-child(2){opacity:0;}
+.hamburger-btn.open span:nth-child(3){transform:rotate(-45deg) translate(7px,-7px);}
+.hamburger-btn span{display:block;width:24px;height:2px;background:var(--gold);margin:5px 0;transition:all 0.3s;}
+
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:49;}
+.sidebar-overlay.show{display:block;}
+
+@media(max-width:900px){
+  .hamburger-btn{display:flex;}
+  .container{grid-template-columns:1fr;}
+  .sidebar{position:fixed;left:-280px;top:60px;width:280px;height:calc(100vh - 60px);z-index:51;box-shadow:2px 0 8px rgba(0,0,0,0.5);transition:left 0.3s ease;}
+  .sidebar.show{left:0;}
+  .content{grid-column:1;}
+  .search-input{width:140px;}
+  .page-content table{font-size:0.85rem;}
+  .page-content table th,.page-content table td{padding:8px;}
+}
+
+@media(max-width:600px){
+  nav{padding:10px 12px;gap:8px;}
+  .nav-brand{margin-left:8px;}
+  .nav-brand-name{font-size:0.8rem;}
+  .nav-brand-sub{font-size:0.48rem;}
+  .nav-right{gap:8px;flex-wrap:wrap;}
+  .search-input{width:100px;font-size:0.7rem;}
+  .print-btn{padding:6px 12px;font-size:0.65rem;}
+  .back-btn{padding:6px 10px;font-size:0.55rem;}
+  .content{padding:16px;grid-column:1;}
+  .page-title{font-size:1.3rem;margin-bottom:6px;}
+  .page-subtitle{font-size:0.65rem;margin-bottom:16px;}
+  .page-content{font-size:0.85rem;line-height:1.6;}
+  .page-content h2{font-size:1.1rem;margin-top:20px;margin-bottom:10px;}
+  .page-content h3{font-size:0.9rem;margin-top:14px;margin-bottom:8px;}
+  .page-content p{margin-bottom:10px;}
+  .page-content ul,.page-content ol{margin-left:16px;margin-bottom:10px;}
+  .page-content li{margin-bottom:6px;}
+  .section-btn{padding:10px 12px;font-size:0.75rem;}
+  .submenu-btn{padding:8px 12px;padding-left:28px;font-size:0.7rem;}
+  .highlight-box{padding:12px;margin:14px 0;}
+  .table-container{margin:14px 0;}
+  .page-content table{font-size:0.8rem;}
+  .page-content table th,.page-content table td{padding:6px;font-size:0.75rem;}
+}
+
+@media(max-width:400px){
+  .nav-brand-name{font-size:0.7rem;}
+  .nav-brand-sub{font-size:0.45rem;}
+  .search-input{display:none;}
+  .print-btn{padding:4px 8px;font-size:0.6rem;}
+  .back-btn{padding:4px 8px;font-size:0.5rem;}
+  .content{padding:12px;}
+  .page-title{font-size:1.1rem;}
+  .page-content{font-size:0.8rem;}
+}
+
+@media print{
+  nav,.sidebar,.nav-controls{display:none;}
+  .container{grid-template-columns:1fr;}
+  .content{max-height:none;overflow:visible;padding:20px;}
+  .page{display:block !important;}
+  .print-header{display:flex !important;align-items:center;justify-content:center;margin-bottom:40px;padding-bottom:20px;border-bottom:2px solid var(--gold);}
+  .print-logo{height:80px;width:80px;margin-right:20px;}
+  .print-header-text h1{font-size:1.8rem;margin:0 0 8px 0;}
+  .print-header-text p{margin:0;font-size:0.9rem;}
+}
+
+.print-header{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:20px;
+  padding:20px 0;
+}
+
+.print-logo{
+  height:60px;
+  width:60px;
+  object-fit:contain;
+  margin-right:16px;
+}
+
+.print-header-text{
+  text-align:center;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <button class="hamburger-btn" id="hamburger" onclick="window.toggleSidebar()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <img src="school_logo.png" alt="SBI School" class="nav-logo" onerror="this.style.display='none'">
+  <div class="nav-brand">
+    <span class="nav-brand-name">SBI School</span>
+    <span class="nav-brand-sub">Student Handbook</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-search" style="position:relative;">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search handbook...">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <button class="print-btn" onclick="window.print()">📋 Print</button>
+    <button class="back-btn" onclick="history.back()">← Back</button>
+  </div>
+</nav>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="window.toggleSidebar()"></div>
+
+<div class="container">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-title" onclick="window.toggleContents()" id="contentsTitle">
+      <span>📖 Contents</span>
+      <span class="toggle-icon">▼</span>
+    </div>
+    
+    <div class="sidebar-contents" id="sidebarContents">
+      <div class="sidebar-section">
+        <button class="section-btn" onclick="switchPage('intro')">Welcome & Introduction</button>
+      </div>
+      
+      <div class="sidebar-section">
+        <button class="section-btn" onclick="switchPage('orientation')">Orientation</button>
+      </div>
+    
+    <div class="sidebar-section">
+      <button class="section-btn" onclick="switchPage('policies')">Rules & Policies</button>
+      <div class="submenu" id="policies-submenu">
+        <button class="submenu-btn" onclick="switchPage('rules-overview')">Rules Overview</button>
+        <button class="submenu-btn" onclick="switchPage('code-of-conduct')">Code of Conduct</button>
+        <button class="submenu-btn" onclick="switchPage('six-nos')">The 6 NO's</button>
+        <button class="submenu-btn" onclick="switchPage('dress-code')">Dress Code & Uniform</button>
+        <button class="submenu-btn" onclick="switchPage('attendance')">Attendance Policy</button>
+      </div>
+    </div>
+    
+    <div class="sidebar-section">
+      <button class="section-btn" onclick="switchPage('academics')">Academics</button>
+      <div class="submenu" id="academics-submenu">
+        <button class="submenu-btn" onclick="switchPage('sap')">Satisfactory Academic Progress</button>
+        <button class="submenu-btn" onclick="switchPage('grading')">Grading System</button>
+        <button class="submenu-btn" onclick="switchPage('graduation')">Graduation Requirements</button>
+      </div>
+    </div>
+    
+    <div class="sidebar-section">
+      <button class="section-btn" onclick="switchPage('programs')">Programs</button>
+      <div class="submenu" id="programs-submenu">
+        <button class="submenu-btn" onclick="switchPage('barber-program')">Barber/Stylist Program</button>
+        <button class="submenu-btn" onclick="switchPage('tmi-program')">TMI Program</button>
+        <button class="submenu-btn" onclick="switchPage('crossover-program')">Crossover Program</button>
+      </div>
+    </div>
+    
+    <div class="sidebar-section">
+      <button class="section-btn" onclick="switchPage('tuition')">Tuition & Costs</button>
+    </div>
+    
+    <div class="sidebar-section">
+      <button class="section-btn" onclick="switchPage('student-expectations')">Student Expectations</button>
+    </div>
+    
+    <div class="sidebar-section">
+      <button class="section-btn" onclick="switchPage('resources')">Resources & Support</button>
+    </div>
+    
+    <div class="sidebar-section">
+      <button class="section-btn" onclick="switchPage('contact')">Contact Information</button>
+    </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PRINT HEADER WITH LOGO -->
+    <div class="print-header">
+      <img src="school_logo.png" alt="SBI School" class="print-logo" onerror="this.style.display='none'">
+      <div class="print-header-text">
+        <h1>SBI School</h1>
+        <p>Student Handbook & Guide</p>
+      </div>
+    </div>
+
+    <!-- INTRODUCTION -->
+    <div id="intro" class="page active">
+      <div class="page-subtitle">Welcome</div>
+      <h1 class="page-title">Welcome to SBI</h1>
+      <div class="page-content">
+        <p><strong>Congratulations!</strong> You have just taken the first step towards the success of your personal and academic accomplishments as a professional barber. At Smith Barber Institution, we have chosen a school that has your best interest in mind around the clock.</p>
+        <p>We want to empower you in and out of the classroom to make a positive impact in the lives of others while reaching your highest potential.</p>
+        
+        <h2>What Orientation Will Cover</h2>
+        <p>Student orientation will introduce you to Smith Barber Institution by:</p>
+        <ul>
+          <li>Preparing you for Freshman classes and schedule</li>
+          <li>Walking you through the campus facilities and operations</li>
+          <li>Introducing you to school personnel and students</li>
+          <li>Reviewing school policies and procedures</li>
+        </ul>
+        
+        <p style="margin-top:32px;text-align:center;font-style:italic;color:var(--gold);">Welcome, and congratulations again!</p>
+      </div>
+    </div>
+
+    <!-- ORIENTATION -->
+    <div id="orientation" class="page">
+      <div class="page-subtitle">Getting Started</div>
+      <h1 class="page-title">Orientation</h1>
+      <div class="page-content">
+        <p>Orientation is a mandatory program designed to help you succeed at Smith Barber Institution. You will learn about:</p>
+        
+        <h2>Orientation Authorization</h2>
+        <p>By attending orientation, you acknowledge that you:</p>
+        <ul>
+          <li>Understand the rules and regulations of the school</li>
+          <li>Understand that these rules may be added to at any time</li>
+          <li>Acknowledge that failure to adhere to rules may result in dismissal from 1 to 90 days or indefinitely</li>
+        </ul>
+        
+        <h2>New Student Orientation Checklist</h2>
+        <p>During your orientation, ensure you:</p>
+        <ul>
+          <li>Meet with your advisor</li>
+          <li>Review the student handbook</li>
+          <li>Sign necessary documentation</li>
+          <li>Receive your student ID</li>
+          <li>Tour the campus facilities</li>
+          <li>Understand clock-in/out procedures</li>
+          <li>Review sanitation protocols</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- POLICIES OVERVIEW -->
+    <div id="policies" class="page">
+      <div class="page-subtitle">School Operations</div>
+      <h1 class="page-title">Rules & Policies</h1>
+      <div class="page-content">
+        <p>These rules and regulations are designed to help students and instructors carry out our training program. Failure to adhere to these rules may result in dismissal from 1 to 90 days or indefinitely.</p>
+        
+        <h2>Key Policy Areas</h2>
+        <ul>
+          <li><strong>Drug-Free Policy:</strong> Zero tolerance for controlled substances on campus</li>
+          <li><strong>Smoking Policy:</strong> Only outside in designated areas</li>
+          <li><strong>Campus Security:</strong> 24-hour camera monitoring and alarm system</li>
+          <li><strong>Resource Center:</strong> Available during school hours for research and testing</li>
+          <li><strong>Professional Ethics:</strong> Expected at all times</li>
+          <li><strong>Sanitation:</strong> Strict protocols for health and safety</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RULES OVERVIEW -->
+    <div id="rules-overview" class="page">
+      <div class="page-subtitle">Core Rules</div>
+      <h1 class="page-title">Rules & Regulations</h1>
+      <div class="page-content">
+        <h2>Drug-Free Policy</h2>
+        <p>Students shall NOT engage in the unlawful distribution, possession, or use of a controlled substance during enrollment. The use or distribution of drugs or alcohol on school premises will result in <strong>immediate suspension and/or termination</strong> of enrollment.</p>
+        
+        <h2>Smoking Policy</h2>
+        <p>No smoking is allowed inside the building. Smoking is only permitted outside in designated areas.</p>
+        
+        <h2>Campus Security</h2>
+        <p>Smith Barber Institution is monitored 24/7 by camera and connected to local authorities. The school reserves the right to search personal belongings including backpacks, purses, and toolkits.</p>
+        
+        <h2>Resource Center</h2>
+        <p>The school resource center is available during regular hours for:</p>
+        <ul>
+          <li>Researching information</li>
+          <li>Making up tests</li>
+          <li>Viewing educational DVDs</li>
+          <li>Filling out paperwork</li>
+        </ul>
+        <p><strong>Important:</strong> Do NOT surf the internet or download anything not required for your education. No Facebook, email checking, or personal use.</p>
+        
+        <h2>Professional Ethics</h2>
+        <p><strong>Violations may result in expulsion.</strong> Prohibited behaviors include:</p>
+        <ul>
+          <li>Use of profanity, alcohol, or drugs during school hours (including lunch)</li>
+          <li>Refusing customers (grounds for suspension)</li>
+          <li>Cheating, stealing, or willful destruction of property</li>
+          <li>Inappropriate phone use while servicing clients</li>
+          <li>Loud conversations disrupting learning</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CODE OF CONDUCT -->
+    <div id="code-of-conduct" class="page">
+      <div class="page-subtitle">Professional Behavior</div>
+      <h1 class="page-title">Code of Conduct</h1>
+      <div class="page-content">
+        <p>All students are expected to represent Smith Barber Institution respectfully and professionally.</p>
+        
+        <h2>Professional Standards</h2>
+        <p>You are expected to:</p>
+        <ul>
+          <li>Wear proper school uniforms during school hours</li>
+          <li>Have appropriate conversations with fellow students, staff, and clients</li>
+          <li>Avoid sexually explicit language or profanity</li>
+          <li>Conduct yourself as a professional at all times</li>
+          <li>Respect each other, clients, and staff members</li>
+        </ul>
+        
+        <h2>Anti-Harassment</h2>
+        <p>Students have the right to learn in an environment free of harassment. If you experience harassment from other students or staff, report it to your instructor or School Administration immediately. <strong>Students found engaging in harassment will be expelled.</strong></p>
+        
+        <h2>Anti-Violence</h2>
+        <p><strong>Zero tolerance for violence.</strong> Weapons (including knives and firearms) are not permitted on school premises. Students with firearm permits cannot carry on campus. Students making threats or carrying weapons will be expelled.</p>
+        
+        <h2>Visitor Policy</h2>
+        <p>All visitors must check in at the front desk. Visitors are not permitted past the front desk without approval.</p>
+      </div>
+    </div>
+
+    <!-- THE 6 NO'S -->
+    <div id="six-nos" class="page">
+      <div class="page-subtitle">Zero Tolerance</div>
+      <h1 class="page-title">The 6 NO's</h1>
+      <div class="page-content">
+        <div class="highlight-box">
+          <strong>SBI has zero tolerance policies on the following behaviors:</strong>
+        </div>
+        
+        <h2>1. Fighting</h2>
+        <p>Fighting is not allowed. Any involvement in a fight or act of aggression will result in <strong>suspension for a minimum of 5 days or expulsion</strong>. Students who witness a fight without notifying staff will also face consequences. Play fighting and roughhousing are unacceptable.</p>
+        
+        <h2>2. Threats, Harassment, and Bullying</h2>
+        <p>These behaviors are never tolerated. Consequences depend on severity and may escalate with repeated behavior.</p>
+        
+        <h2>3. Disrespect for Authority</h2>
+        <p>Respect is essential for our community. It is unacceptable to:</p>
+        <ul>
+          <li>Argue with staff</li>
+          <li>"Talk back" in a rude tone</li>
+          <li>Act as if rules don't apply to you</li>
+          <li>Refuse to comply with staff requests</li>
+        </ul>
+        <p>If you disagree with a staff decision, follow the chain of command. Consequences increase for repeated disrespect.</p>
+        
+        <h2>4. Leaving Designated Areas</h2>
+        <p>Students may leave campus for lunch breaks but must notify a teacher before leaving any designated area.</p>
+        
+        <h2>5. Stealing or Damaging Property</h2>
+        <p>This violates others' rights and is never acceptable. You will be required to replace, repair, or pay for damaged property, plus face additional consequences.</p>
+        
+        <h2>6. Inappropriate Language</h2>
+        <p>Profanity and vulgar language disrupt learning. Students using inappropriate language will receive appropriate consequences, which may include suspension.</p>
+      </div>
+    </div>
+
+    <!-- DRESS CODE -->
+    <div id="dress-code" class="page">
+      <div class="page-subtitle">Professional Appearance</div>
+      <h1 class="page-title">Dress Code & Uniform Policy</h1>
+      <div class="page-content">
+        <p>At Smith Barber Institution, we maintain high standards of professional appearance. The manner in which people first perceive you creates a lasting impression.</p>
+        
+        <h2>Required Uniform</h2>
+        <p>Barbering students MUST wear:</p>
+        <ul>
+          <li><strong>Black bottoms</strong> (no shorts, leggings, jeggings, or jogging pants)</li>
+          <li><strong>School-issued smock</strong></li>
+          <li><strong>Completely enclosed shoes</strong> (any color)</li>
+        </ul>
+        
+        <h2>What You Cannot Wear</h2>
+        <ul>
+          <li>Skin-tight clothing</li>
+          <li>Hats, headgear, rags, or bandanas</li>
+          <li>Shorts or skirts</li>
+          <li>High heels</li>
+          <li>T-shirts with pictures or writing</li>
+          <li>Sleeveless clothing</li>
+          <li>Flip-flops, open heels, or open-toed shoes</li>
+          <li>Jackets or coats</li>
+          <li>Open cleavage, sagging pants, leggings, or tight-fitting clothes</li>
+        </ul>
+        
+        <h2>Important Notes</h2>
+        <ul>
+          <li>SBI provides ONE smock. Additional smocks must be purchased from the school at additional cost.</li>
+          <li>Uniforms must be clean and neat at all times</li>
+          <li>Soiled uniforms will not be permitted in school</li>
+          <li>Students not properly dressed will be sent home for the day</li>
+          <li>Repeated violations may result in suspension</li>
+          <li>No student will be allowed to clock in without proper uniform</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE POLICY -->
+    <div id="attendance" class="page">
+      <div class="page-subtitle">Attendance Requirements</div>
+      <h1 class="page-title">Attendance Policy</h1>
+      <div class="page-content">
+        <h2>Basic Requirements</h2>
+        <ul>
+          <li>All students are required to attend Saturdays</li>
+          <li>No clock-ins after 10:00 AM Tuesday-Friday</li>
+          <li>No clock-ins after 9:00 AM on Saturdays without permission</li>
+          <li>Strive for 85% or above attendance each month</li>
+          <li>Missing 14 consecutive days without an approved Leave of Absence results in termination</li>
+        </ul>
+        
+        <h2>Clock In/Out Procedures</h2>
+        <p>You must:</p>
+        <ul>
+          <li>Clock in immediately upon arrival</li>
+          <li>Clock out for a 30-minute lunch break</li>
+          <li>Clock out upon departure</li>
+          <li>Never clock in or out for other students (grounds for suspension/expulsion)</li>
+        </ul>
+        
+        <h2>Absent Hours & Overtime Charges</h2>
+        <p><strong>Absent hours are accrued when you:</strong></p>
+        <ul>
+          <li>Come to school late</li>
+          <li>Leave school early</li>
+          <li>Take longer than allocated lunch break</li>
+        </ul>
+        <p><strong>Makeup hours remove absent hours.</strong> If you don't make up time, overtime charges result at $9.47 per hour, billed monthly. Payment is strictly enforced. If in overtime, disbursements may be held until graduation.</p>
+        
+        <h2>Saturday Charges</h2>
+        <p>Students who miss any Saturday in a 10-week cycle are charged <strong>$100.00 for each absence</strong>.</p>
+        
+        <h2>Planned Absences</h2>
+        <p>If you know you'll be absent or tardy, submit an "early departure/planned absence" form for approval. For unplanned absences:</p>
+        <ul>
+          <li>Call in and speak directly to an available instructor</li>
+          <li>Do NOT leave a message or use voicemail</li>
+          <li>Call at least 30 minutes before your scheduled start time</li>
+          <li>For tardiness, get permission from an instructor (no later than 10:00 AM)</li>
+        </ul>
+        
+        <h2>Impact on Financial Aid</h2>
+        <p>Attendance directly affects your financial aid eligibility. Excellent attendance supports your progress and funding.</p>
+      </div>
+    </div>
+
+    <!-- ACADEMICS -->
+    <div id="academics" class="page">
+      <div class="page-subtitle">Academic Standards</div>
+      <h1 class="page-title">Academics</h1>
+      <div class="page-content">
+        <h2>Written Exams</h2>
+        <ul>
+          <li>You must maintain a minimum of <strong>75% grade point average</strong> in both theory and practical</li>
+          <li><strong>BRING PAPER AND WRITING MATERIALS TO CLASS EVERY DAY</strong></li>
+        </ul>
+        
+        <h2>Theory Classes</h2>
+        <ul>
+          <li>Beginner theory classes are held 9:00 AM - 10:00 AM, Tuesday-Friday</li>
+          <li>You must be prepared with textbook, workbook, pen/pencil, and notebook</li>
+          <li>You must be in class by the assigned time or you cannot clock in</li>
+          <li>Missing 2+ theory classes in a 4-week period may result in suspension</li>
+          <li>You may be sent home or required to clock out for not having supplies</li>
+        </ul>
+        
+        <h2>Makeup Work</h2>
+        <ul>
+          <li>Tests may only be made up on the <strong>third Tuesday of each month</strong></li>
+          <li><strong>Only two exams allowed on makeup day</strong></li>
+          <li><strong>It is YOUR RESPONSIBILITY to make up missed tests</strong></li>
+          <li>Tests must be made up within the 4-week grading period</li>
+          <li>Failure to makeup tests may result in delayed graduation</li>
+        </ul>
+        
+        <h2>Practical Work</h2>
+        <ul>
+          <li>You must accept and finish assigned work</li>
+          <li>Instructors inspect all work before clients are released</li>
+          <li>Clients should not wait at stations</li>
+          <li>Place all school products in the student window upon completion</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SAP -->
+    <div id="sap" class="page">
+      <div class="page-subtitle">Academic Progress</div>
+      <h1 class="page-title">Satisfactory Academic Progress</h1>
+      <div class="page-content">
+        <p>All students receive an academic review monthly. Your satisfactory academic progress (SAP) is monitored to ensure you're succeeding in the program.</p>
+        
+        <h2>SAP Requirements</h2>
+        <p>To maintain satisfactory progress, you must meet these minimums:</p>
+        <ul>
+          <li><strong>67% attendance</strong></li>
+          <li><strong>75% GPA</strong> (both written and practical)</li>
+        </ul>
+        
+        <h2>Probation Periods</h2>
+        <p><strong>First Probation:</strong> If you're not making satisfactory progress, you're placed on probation. Financial aid continues during this period.</p>
+        <p><strong>Second Consecutive Probation:</strong> If you don't improve, financial aid is suspended. You must make cash payments until progress improves.</p>
+        <p><strong>Continued Probation:</strong> At your current progress rate, you won't graduate by your contract end date. You'll owe additional instructional charges.</p>
+        
+        <h2>Satisfactory Progress Status</h2>
+        <p>If you maintain the required standards, you'll be marked as maintaining satisfactory academic progress.</p>
+      </div>
+    </div>
+
+    <!-- GRADING -->
+    <div id="grading" class="page">
+      <div class="page-subtitle">Grade Scale</div>
+      <h1 class="page-title">Grading System</h1>
+      <div class="page-content">
+        <p>Students receive numerical grades in theory and practical phases.</p>
+        
+        <h2>Grade Scale</h2>
+        <div class="table-container">
+          <table>
+            <tr>
+              <th>Range</th>
+              <th>Grade</th>
+            </tr>
+            <tr>
+              <td>95-100</td>
+              <td>Excellent</td>
+            </tr>
+            <tr>
+              <td>84-94</td>
+              <td>Good</td>
+            </tr>
+            <tr>
+              <td>75-84</td>
+              <td>Satisfactory</td>
+            </tr>
+            <tr>
+              <td>65-74</td>
+              <td>Unsatisfactory</td>
+            </tr>
+            <tr>
+              <td>64 and below</td>
+              <td>Failing</td>
+            </tr>
+          </table>
+        </div>
+        
+        <h2>Probation</h2>
+        <p>If you fall below 75% overall average in theory or practical, you'll be placed on probation. If satisfactory progress isn't achieved by the end of the probationary period, you may be discontinued from the program.</p>
+      </div>
+    </div>
+
+    <!-- GRADUATION -->
+    <div id="graduation" class="page">
+      <div class="page-subtitle">Completion</div>
+      <h1 class="page-title">Graduation & Licensing Requirements</h1>
+      <div class="page-content">
+        <h2>To Receive a Diploma</h2>
+        <p>You must:</p>
+        <ul>
+          <li>Satisfactorily complete your program hours (1500 for Barber/Stylist, 600 for TMI or Crossover)</li>
+          <li>Satisfactorily complete all required practical performances</li>
+          <li>Complete program with minimum 75% GPA (theory and practical) and minimum 67% attendance</li>
+          <li>Pass the school's final written examination with at least 75%</li>
+          <li>Fulfill all contractual and financial obligations</li>
+        </ul>
+        
+        <h2>To Be Licensed in Arkansas</h2>
+        <p>After graduation, you must:</p>
+        <ul>
+          <li>Receive your diploma from SBI</li>
+          <li>File application for state examination 11 days prior to exam date</li>
+          <li>Pay examination and licensing fees</li>
+          <li>Pass the Arkansas State Board of Barber Examination (written and practical)</li>
+        </ul>
+        
+        <h2>Important Notes</h2>
+        <ul>
+          <li>Transcripts are withheld until all fees and charges are paid</li>
+          <li>Upon graduation, you receive a diploma certifying completion</li>
+          <li>You'll be eligible to apply for the Arkansas State Board Barber license</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PROGRAMS -->
+    <div id="programs" class="page">
+      <div class="page-subtitle">Curriculum</div>
+      <h1 class="page-title">Programs</h1>
+      <div class="page-content">
+        <p>Smith Barber Institution offers three comprehensive programs designed to prepare students for barbering careers.</p>
+        
+        <h2>Program Options</h2>
+        <ul>
+          <li><strong>1500 Hour Barber/Stylist Program</strong> - Traditional barbering training</li>
+          <li><strong>600 Hour Teacher/Manager/Instructor Program</strong> - For advancing to instructor roles</li>
+          <li><strong>600 Hour Crossover Program</strong> - For licensed cosmetologists transitioning to barbering</li>
+        </ul>
+        
+        <h2>Hours per Week Requirements</h2>
+        <ul>
+          <li><strong>Full-time students:</strong> Minimum 26 hours/week, maximum 40 hours/week</li>
+          <li><strong>Evening shift students:</strong> Minimum 23 hours/week, maximum 40 hours/week</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- BARBER PROGRAM -->
+    <div id="barber-program" class="page">
+      <div class="page-subtitle">Main Program</div>
+      <h1 class="page-title">Barber/Stylist Program</h1>
+      <div class="page-content">
+        <p>The 1500-hour Barber/Stylist Program prepares students for the Arkansas State Board Barber examination and professional barbering careers.</p>
+        
+        <h2>Program Structure</h2>
+        <ul>
+          <li><strong>Total Hours:</strong> 1500 clock hours</li>
+          <li><strong>Duration:</strong> Typically 12 months for full-time students (30 hrs/week)</li>
+          <li><strong>Fast Track Option:</strong> 9 months at 40 hours/week</li>
+          <li><strong>1 Clock Hour = 60 minutes</strong></li>
+        </ul>
+        
+        <h2>Curriculum Overview</h2>
+        <h3>Theory (120 hours)</h3>
+        <ul>
+          <li>History of barbering</li>
+          <li>Professional image and ethics</li>
+          <li>Hygiene and grooming</li>
+          <li>Bacteriology, sterilization, sanitation</li>
+          <li>Barbering implements and techniques</li>
+          <li>Hair cutting (male and female)</li>
+          <li>Shaving and facial treatments</li>
+          <li>Scalp and hair treatments</li>
+          <li>Anatomy and physiology</li>
+          <li>Disorders of skin, scalp, and hair</li>
+          <li>Chemistry</li>
+          <li>Barber shop management</li>
+          <li>Arkansas State Barber Board Laws</li>
+          <li>And more...</li>
+        </ul>
+        
+        <h3>Practical Work (1378 hours)</h3>
+        <p>Hands-on training includes:</p>
+        <ul>
+          <li>Hair cutting, tapering, trimming, and dressing (800 hours)</li>
+          <li>Shaving (80 hours)</li>
+          <li>Shampooing and rinsing (45 hours)</li>
+          <li>Hair treatments and tonics</li>
+          <li>Bleaching and dyeing</li>
+          <li>Hair styling</li>
+          <li>Facial and massage treatments</li>
+          <li>Professional ethics and shop management</li>
+          <li>Sanitation procedures</li>
+          <li>And more...</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TMI PROGRAM -->
+    <div id="tmi-program" class="page">
+      <div class="page-subtitle">Instructor Program</div>
+      <h1 class="page-title">Teacher/Manager/Instructor Program</h1>
+      <div class="page-content">
+        <p>The Teacher/Manager/Instructor (TMI) 600-hour program is designed for licensed barbers seeking instructor roles.</p>
+        
+        <h2>Program Structure</h2>
+        <ul>
+          <li><strong>Total Hours:</strong> 600 clock hours</li>
+          <li><strong>Duration:</strong> Not to exceed 6 continuous months</li>
+          <li><strong>1 Clock Hour = 60 minutes</strong></li>
+        </ul>
+        
+        <h2>Core Curriculum</h2>
+        <p>The TMI course covers:</p>
+        <ul>
+          <li><strong>Teaching Techniques & Principles:</strong> Methods of instruction, demonstration techniques, lesson planning</li>
+          <li><strong>Classroom Management:</strong> Student management, performance evaluation, examination administration</li>
+          <li><strong>Curriculum Development:</strong> Subject selection, lecture preparation, learning materials design</li>
+          <li><strong>Advanced Practical Skills Review:</strong> Hair cutting, shaving, shampooing, chemical services</li>
+          <li><strong>Preparatory Training:</strong> Approximately 50 hours of foundational teaching techniques</li>
+        </ul>
+        
+        <h2>Upon Completion</h2>
+        <p>You will receive a diploma certifying completion of the TMI program and qualification for instructor positions.</p>
+      </div>
+    </div>
+
+    <!-- CROSSOVER PROGRAM -->
+    <div id="crossover-program" class="page">
+      <div class="page-subtitle">For Cosmetologists</div>
+      <h1 class="page-title">Crossover Program</h1>
+      <div class="page-content">
+        <p>The 600-hour Crossover Program is designed for licensed cosmetologists to gain technical barbering skills without repeating shared knowledge.</p>
+        
+        <h2>Program Structure</h2>
+        <ul>
+          <li><strong>Total Hours:</strong> 600 clock hours</li>
+          <li><strong>Requirements:</strong> Arkansas requires 600 hours for license</li>
+          <li><strong>Focus:</strong> Barbering-specific skills not emphasized in cosmetology</li>
+        </ul>
+        
+        <h2>Core Curriculum Focus</h2>
+        <h3>Shaving & Facial Massage</h3>
+        <ul>
+          <li>Straight razor techniques and safety</li>
+          <li>Face and neck shaves using 14-stroke sequence</li>
+          <li>Hot towel application</li>
+          <li>Facial treatments and massage</li>
+          <li>After-shave antiseptic application</li>
+        </ul>
+        
+        <h3>Men's Haircutting & Styling</h3>
+        <ul>
+          <li>Tapering and fading techniques</li>
+          <li>Precision clipper work and blending</li>
+          <li>Beard and mustache design</li>
+          <li>Tool mastery for specialized barbering</li>
+        </ul>
+        
+        <h3>Theory & Law</h3>
+        <ul>
+          <li>History of barbering</li>
+          <li>Arkansas State Barber Board Laws</li>
+          <li>Honing and stropping straight razors</li>
+          <li>Professional ethics for barbers</li>
+        </ul>
+        
+        <h2>Upon Completion</h2>
+        <p>You will receive a diploma certifying completion and be eligible to apply for the Arkansas State Board Barber license.</p>
+      </div>
+    </div>
+
+    <!-- TUITION -->
+    <div id="tuition" class="page">
+      <div class="page-subtitle">Financial Information</div>
+      <h1 class="page-title">Tuition & Costs</h1>
+      <div class="page-content">
+        <h2>1500 Hour Barber/Stylist Program</h2>
+        <div class="table-container">
+          <table>
+            <tr>
+              <th>Item</th>
+              <th>Cost</th>
+            </tr>
+            <tr>
+              <td>Tuition</td>
+              <td>$15,000.00</td>
+            </tr>
+            <tr>
+              <td>Tool Kit</td>
+              <td>$900.00</td>
+            </tr>
+            <tr>
+              <td>Books, Supplies, Uniform</td>
+              <td>$400.00</td>
+            </tr>
+            <tr>
+              <td>Arkansas State Board Testing</td>
+              <td>$75.00</td>
+            </tr>
+            <tr>
+              <td>Barber License</td>
+              <td>$40.00</td>
+            </tr>
+            <tr>
+              <td>Enrollment Fee</td>
+              <td>$150.00</td>
+            </tr>
+            <tr>
+              <td>Graduation Fee</td>
+              <td>$300.00</td>
+            </tr>
+            <tr style="font-weight:700;background:rgba(201,168,76,0.1);">
+              <td>Total Tuition Cost</td>
+              <td>$16,865.00</td>
+            </tr>
+          </table>
+        </div>
+        
+        <h2>600 Hour Teacher/Manager/Instructor Program</h2>
+        <div class="table-container">
+          <table>
+            <tr>
+              <th>Item</th>
+              <th>Cost</th>
+            </tr>
+            <tr>
+              <td>Tuition</td>
+              <td>$10,000.00</td>
+            </tr>
+            <tr>
+              <td>Tool Kit</td>
+              <td>$900.00</td>
+            </tr>
+            <tr>
+              <td>Books, Learning Material, Uniform</td>
+              <td>$400.00</td>
+            </tr>
+            <tr>
+              <td>Arkansas State Board Exam</td>
+              <td>$75.00</td>
+            </tr>
+            <tr>
+              <td>Barber License</td>
+              <td>$40.00</td>
+            </tr>
+            <tr>
+              <td>Enrollment Fee</td>
+              <td>$150.00</td>
+            </tr>
+            <tr>
+              <td>Graduation Fee</td>
+              <td>$300.00</td>
+            </tr>
+            <tr style="font-weight:700;background:rgba(201,168,76,0.1);">
+              <td>Total</td>
+              <td>$11,865.00</td>
+            </tr>
+          </table>
+        </div>
+        
+        <h2>600 Hour Crossover Program</h2>
+        <p>Same tuition structure as TMI Program: <strong>$11,865.00 total</strong></p>
+        
+        <h2>Financial Aid & Student Loans</h2>
+        <ul>
+          <li>All theory hours and tests must be completed and passed prior to 901 hours</li>
+          <li>If not completed by 1201 hours, disbursements may be held until graduation</li>
+          <li>Overtime charges accumulate when you don't make up missed time</li>
+          <li>If in overtime charges, disbursements may be held until graduation</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STUDENT EXPECTATIONS -->
+    <div id="student-expectations" class="page">
+      <div class="page-subtitle">What We Expect</div>
+      <h1 class="page-title">New Student Expectations</h1>
+      <div class="page-content">
+        <p>These expectations are designed to help you succeed. Your first 8 weeks are a probationary period during which you must maintain:</p>
+        <ul>
+          <li>85% or higher attendance</li>
+          <li>85% or higher written average</li>
+          <li>85% or higher practical average</li>
+        </ul>
+        <p>Only students maintaining these averages will continue in the program.</p>
+        
+        <h2>1. Come to Class on Time</h2>
+        <ul>
+          <li>Unless ill, you should be in class every day</li>
+          <li>Arrive before scheduled time to get organized</li>
+          <li>Do not be late</li>
+          <li>All absences require proper documentation for approval</li>
+        </ul>
+        
+        <h2>2. Be Prepared for School</h2>
+        <ul>
+          <li>Get enough rest</li>
+          <li>Eat a good breakfast</li>
+          <li>Arrange for lunch</li>
+          <li>Bring all necessary materials</li>
+        </ul>
+        
+        <h2>3. Do the Assigned Work</h2>
+        <ul>
+          <li>Plan ahead for sufficient time</li>
+          <li>Establish a routine time and quiet place for assignments</li>
+          <li>Make good use of every moment in class</li>
+          <li><strong>Work hard—your effort directly impacts your learning, grades, confidence, and future!</strong></li>
+        </ul>
+        
+        <h2>4. Respect Yourself and Others</h2>
+        <ul>
+          <li>Treat others as you want to be treated</li>
+          <li>Understand how your actions affect others' feelings</li>
+          <li><strong>SBI has NO TOLERANCE for bullying, harassment, threats, or violence</strong></li>
+        </ul>
+        
+        <h2>5. Stewardship: Respect Property and Environment</h2>
+        <ul>
+          <li>Do not take, touch, or damage others' property without permission</li>
+          <li>Do not litter, mark up, or break property</li>
+          <li>Be responsible for our building, parking lot, community, and earth</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RESOURCES -->
+    <div id="resources" class="page">
+      <div class="page-subtitle">Support Services</div>
+      <h1 class="page-title">Resources & Support</h1>
+      <div class="page-content">
+        <h2>Student Services</h2>
+        <p>We are here to help you reach your full potential. Services available include:</p>
+        <ul>
+          <li>Academic advising</li>
+          <li>Tutoring services</li>
+          <li>Information on housing, childcare, or transportation</li>
+          <li>Food services</li>
+          <li>Graduate employment assistance</li>
+          <li>Student retention support</li>
+        </ul>
+        
+        <h2>Advising</h2>
+        <ul>
+          <li>Schedule appointments in advance or receive assistance during office hours</li>
+          <li>Individual advising available for personal or academic problems</li>
+          <li>Emergency assistance available</li>
+          <li>Check the office for posted advising hours</li>
+        </ul>
+        
+        <h2>Resource Center</h2>
+        <p>Available during regular school hours for:</p>
+        <ul>
+          <li>Researching information</li>
+          <li>Making up tests (third Tuesday of each month)</li>
+          <li>Filling out paperwork</li>
+          <li>Viewing educational DVDs</li>
+        </ul>
+        <p>Notify an instructor when needing access.</p>
+        
+        <h2>Breaks & Lunch</h2>
+        <ul>
+          <li><strong>Lunch:</strong> 30 minutes daily, between 12:00 PM and 2:00 PM</li>
+          <li><strong>Break Room:</strong> Available with microwave, refrigerator, and vending machines</li>
+          <li><strong>"Energizers":</strong> Scheduled daily during freshman phase</li>
+        </ul>
+        
+        <h2>Hair Discounts for Students</h2>
+        <p>With instructor authorization, students may receive discounted personal hair services:</p>
+        <ul>
+          <li>75% discount on chemical services</li>
+          <li>$2.00 for shampooing and conditioning</li>
+          <li>Requirements: 80%+ attendance, practical, and written averages</li>
+          <li>No more than once weekly per student</li>
+          <li>Services not allowed on Saturdays</li>
+          <li>Cannot miss Saturday or theory class the previous week</li>
+          <li>Ticket and payment required before service</li>
+        </ul>
+        
+        <h2>Students with Disabilities</h2>
+        <p>If you have disabilities, contact the institution to discuss accommodations for classroom, practical, salon activities, job placement, and licensure.</p>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div id="contact" class="page">
+      <div class="page-subtitle">Get in Touch</div>
+      <h1 class="page-title">Contact Information</h1>
+      <div class="page-content">
+        <h2>Smith Barber Institution</h2>
+        <p><strong>Address:</strong> 1218 S. Main St. Pine Bluff, AR 71601</p>
+        <p><strong>Website:</strong> www.smithbarberinstitution.com</p>
+        
+        <h2>Student Support Chain of Command</h2>
+        <p>If you have questions or concerns, follow this order:</p>
+        <ol>
+          <li>Your Instructor</li>
+          <li>Student Service Coordinator</li>
+          <li>Administrative Coordinator</li>
+          <li>School Director</li>
+        </ol>
+        
+        <h2>School Hours</h2>
+        <h3>Full-Time Student Hours:</h3>
+        <ul>
+          <li>Tuesday-Friday: 9:00 AM - 5:00 PM</li>
+          <li>Saturday: 9:00 AM - 4:00 PM</li>
+        </ul>
+        
+        <h3>Evening Shift Student Hours:</h3>
+        <ul>
+          <li>Tuesday-Friday: 1:00 PM - 9:00 PM</li>
+        </ul>
+        
+        <h3>Public Hours:</h3>
+        <ul>
+          <li>Tuesday-Friday: 10:00 AM - 7:00 PM</li>
+          <li>Saturday: 9:00 AM - 2:00 PM</li>
+        </ul>
+        
+        <h2>Policy Acknowledgment</h2>
+        <p>By attending orientation and enrolling, you acknowledge that you:</p>
+        <ul>
+          <li>Have received the School Catalog</li>
+          <li>Have reviewed Campus Security Information</li>
+          <li>Have reviewed the Consumer Brochure Packet</li>
+          <li>Understand the school's website for additional information</li>
+          <li>Have received and reviewed:</li>
+          <ul>
+            <li>School Rules and Regulations</li>
+            <li>Satisfactory Progress Policy</li>
+            <li>Graduate Placement Rates</li>
+            <li>Physical Demands of the Profession</li>
+            <li>Completion Rates</li>
+            <li>Pass/Fail Rates on State Board Exams</li>
+            <li>Drug and Alcohol Abuse Prevention</li>
+            <li>Entrance Counseling</li>
+            <li>Median Loan Debt Data</li>
+          </ul>
+        </ul>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <button class="nav-btn" id="prevBtn" onclick="previousPage()" disabled>← Previous</button>
+      <span style="text-align:center;color:#666;font-size:0.8rem;padding:10px;flex:1;"><span id="pageNum">1</span> / <span id="totalPages">1</span></span>
+      <button class="nav-btn" id="nextBtn" onclick="nextPage()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const pages = [
+  'intro','orientation','policies','rules-overview','code-of-conduct','six-nos','dress-code','attendance',
+  'academics','sap','grading','graduation','programs','barber-program','tmi-program','crossover-program',
+  'tuition','student-expectations','resources','contact'
+];
+
+let currentPageIndex = 0;
+
+// Toggle sidebar on mobile
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const hamburger = document.getElementById('hamburger');
+  
+  sidebar.classList.toggle('show');
+  overlay.classList.toggle('show');
+  hamburger.classList.toggle('open');
+}
+
+// Close sidebar when clicking a link or on medium screens
+function closeSidebarOnMobile() {
+  if (window.innerWidth <= 900) {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const hamburger = document.getElementById('hamburger');
+    
+    sidebar.classList.remove('show');
+    overlay.classList.remove('show');
+    hamburger.classList.remove('open');
+  }
+}
+
+// Toggle contents collapsible
+function toggleContents() {
+  const sidebarContents = document.getElementById('sidebarContents');
+  const contentsTitle = document.getElementById('contentsTitle');
+  
+  sidebarContents.classList.toggle('collapsed');
+  contentsTitle.classList.toggle('collapsed');
+}
+
+function switchPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  
+  currentPageIndex = pages.indexOf(pageId);
+  updateNavigation();
+  updateActiveButtons();
+  closeSidebarOnMobile();
+  window.scrollTo(0, 0);
+}
+
+function nextPage() {
+  if (currentPageIndex < pages.length - 1) {
+    switchPage(pages[currentPageIndex + 1]);
+  }
+}
+
+function previousPage() {
+  if (currentPageIndex > 0) {
+    switchPage(pages[currentPageIndex - 1]);
+  }
+}
+
+function updateNavigation() {
+  document.getElementById('pageNum').textContent = currentPageIndex + 1;
+  document.getElementById('totalPages').textContent = pages.length;
+  document.getElementById('prevBtn').disabled = currentPageIndex === 0;
+  document.getElementById('nextBtn').disabled = currentPageIndex === pages.length - 1;
+}
+
+function updateActiveButtons() {
+  document.querySelectorAll('.section-btn, .submenu-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  const currentPage = pages[currentPageIndex];
+  const btn = document.querySelector(`[onclick="switchPage('${currentPage}')"]`);
+  if (btn) btn.classList.add('active');
+}
+
+// Submenu toggle
+document.querySelectorAll('.section-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const submenuId = this.textContent.toLowerCase().replace(/[^a-z0-9]/g, '') + '-submenu';
+    const submenu = document.getElementById(submenuId);
+    if (submenu) {
+      submenu.classList.toggle('show');
+    }
+  });
+});
+
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  const query = e.target.value.toLowerCase();
+  const results = document.getElementById('searchResults');
+  
+  if (query.length < 2) {
+    results.classList.remove('show');
+    return;
+  }
+  
+  const contentElements = document.querySelectorAll('.page-content');
+  const matches = [];
+  
+  pages.forEach((pageId, index) => {
+    const pageEl = document.getElementById(pageId);
+    const text = pageEl.textContent.toLowerCase();
+    if (text.includes(query)) {
+      matches.push({ id: pageId, title: pageEl.querySelector('.page-title')?.textContent || pageId });
+    }
+  });
+  
+  if (matches.length === 0) {
+    results.innerHTML = '<div class="result-item">No results found</div>';
+  } else {
+    results.innerHTML = matches.map(m => 
+      `<div class="result-item" onclick="switchPage('${m.id}')">${m.title}</div>`
+    ).join('');
+  }
+  
+  results.classList.add('show');
+});
+
+// Close search on blur
+document.getElementById('searchInput').addEventListener('blur', function() {
+  setTimeout(() => {
+    document.getElementById('searchResults').classList.remove('show');
+  }, 200);
+});
+
+// Expose to window for onclick handlers
+window.toggleSidebar = toggleSidebar;
+window.toggleContents = toggleContents;
+window.switchPage = switchPage;
+window.nextPage = nextPage;
+window.previousPage = previousPage;
+
+updateNavigation();
+</script>
+</body>
+</html>
