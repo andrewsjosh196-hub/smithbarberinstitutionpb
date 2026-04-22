@@ -146,6 +146,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
     <button class="tab" onclick="switchTeacherTab('grade', this)">Grade Submissions</button>
     <button class="tab" onclick="switchTeacherTab('tests', this)">Create Tests</button>
     <button class="tab" onclick="switchTeacherTab('clockin', this)">Clocked In Students</button>
+    <button class="tab" onclick="switchTeacherTab('monthlyhours', this)">Monthly Hours</button>
     <button class="tab" onclick="switchTeacherTab('satisfaction', this)">Satisfaction Reports</button>
   </div>
 
@@ -316,6 +317,21 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
       </div>
     </div>
 
+    <!-- MONTHLY HOURS -->
+    <div id="tab-monthlyhours" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Monthly Hours <em>Tracking</em></h3>
+        <div style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);padding:16px;margin-bottom:20px;border-radius:4px;font-size:0.8rem;color:var(--muted);line-height:1.6;">
+          ⏱️ <strong>Student Clock Hours</strong> — View all students' clock-in hours for the current month. This shows a summary of their attendance and hours worked.
+        </div>
+        <div style="background:#0a0806;border:1px solid var(--border-sub);padding:16px;margin-bottom:20px;border-radius:4px;">
+          <div style="font-size:0.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:8px;" id="monthlyHoursTitle">Monthly Hours</div>
+          <div id="monthlyHoursSubtitle" style="font-size:0.9rem;color:var(--white);">Loading...</div>
+        </div>
+        <div id="monthlyHoursList" style="display:grid;gap:12px;"></div>
+      </div>
+    </div>
+
     <!-- SATISFACTION REPORTS -->
     <div id="tab-satisfaction" class="tab-panel">
       <div class="panel-card">
@@ -459,11 +475,9 @@ function switchTeacherTab(id, btn) {
   document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
   
-  if(id==='assignments') renderTeacherAssignments();
-  if(id==='grade') renderGradingAssignments();
-  if(id==='clockin') renderClockedInStudents();
   if(id==='feed') renderNewsFeed();
   if(id==='tests') renderPublishedTests();
+  if(id==='monthlyhours') renderMonthlyHours();
   if(id==='satisfaction') renderSatisfactionReports();
 }
 
@@ -959,6 +973,66 @@ function renderTeacherDashboard() {
   renderClockedInStudents();
   renderPublishedTests();
   checkAndPromptSatisfactionReport();
+}
+
+// ─── MONTHLY HOURS TRACKING ────────────────────────────────────
+function getMonthlyHours(student, year, month) {
+  if (!student.clockLog || student.clockLog.length === 0) return 0;
+  
+  var total = 0;
+  student.clockLog.forEach(function(log) {
+    if (!log.clockInTime) return;
+    var logDate = new Date(log.clockInTime);
+    if (logDate.getFullYear() === year && logDate.getMonth() === month) {
+      var clockIn = new Date(log.clockInTime);
+      var clockOut = log.clockOutTime ? new Date(log.clockOutTime) : new Date();
+      var hours = (clockOut - clockIn) / (1000 * 60 * 60);
+      total += Math.max(0, hours);
+    }
+  });
+  return total;
+}
+
+function renderMonthlyHours() {
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var monthName = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+  
+  document.getElementById('monthlyHoursSubtitle').textContent = 'Hours tracked for ' + monthName;
+  
+  var list = document.getElementById('monthlyHoursList');
+  
+  if (!students.length) {
+    list.innerHTML = '<div style="color:#333;text-align:center;padding:24px;font-style:italic;">No students available.</div>';
+    return;
+  }
+  
+  // Sort students by name for easier viewing
+  students.sort(function(a, b) { return a.name.localeCompare(b.name); });
+  
+  list.innerHTML = '';
+  students.forEach(function(student) {
+    var hours = getMonthlyHours(student, year, month);
+    var courseType = {531: 'Barber/Stylist', 532: 'Teacher/Manager', 533: 'Crossover', 534: 'Hybrid (Theory)', 535: 'Hybrid Program'}[student.courseType] || 'Unknown';
+    
+    var div = document.createElement('div');
+    div.style.cssText = 'background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;';
+    
+    var progressColor = hours >= 160 ? '#6fcf97' : hours >= 100 ? '#e5c97a' : '#e87b7b';
+    var progressWidth = Math.min((hours / 160) * 100, 100);
+    
+    div.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px;">' +
+      '<div><div style="font-weight:700;color:var(--white);font-size:0.95rem;">' + student.name + '</div>' +
+      '<div style="font-size:0.75rem;color:#555;margin-top:4px;">' + student.studentId + ' • ' + courseType + '</div></div>' +
+      '<div style="text-align:right;"><div style="font-weight:700;color:' + progressColor + ';font-size:1.1rem;">' + hours.toFixed(1) + ' hrs</div>' +
+      '<div style="font-size:0.7rem;color:#555;">target: 160</div></div></div>' +
+      '<div style="width:100%;height:8px;background:#1c1a16;border-radius:4px;overflow:hidden;border:1px solid var(--border-sub);">' +
+      '<div style="height:100%;background:' + progressColor + ';width:' + progressWidth + '%;transition:width 0.3s ease;"></div></div>';
+    
+    list.appendChild(div);
+  });
 }
 
 // ─── SATISFACTION REPORTS ─────────────────────────────────────

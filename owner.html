@@ -1141,6 +1141,30 @@ function saveStudents(arr) {
   syncToFirebase('students', arr);
 }
 
+// Calculate hours for a specific month
+function getMonthlyHours(student, year, month) {
+  if (!student.clockLog || student.clockLog.length === 0) return 0;
+  
+  var total = 0;
+  student.clockLog.forEach(function(log) {
+    if (!log.clockInTime) return;
+    var logDate = new Date(log.clockInTime);
+    if (logDate.getFullYear() === year && logDate.getMonth() === month) {
+      var clockIn = new Date(log.clockInTime);
+      var clockOut = log.clockOutTime ? new Date(log.clockOutTime) : new Date();
+      var hours = (clockOut - clockIn) / (1000 * 60 * 60);
+      total += Math.max(0, hours);
+    }
+  });
+  return total;
+}
+
+// Get current month info
+function getCurrentMonth() {
+  var now = new Date();
+  return { year: now.getFullYear(), month: now.getMonth(), monthName: now.toLocaleString('default', { month: 'long' }) };
+}
+
 function generateStudentId(courseType) {
   var students = getStudents();
   
@@ -1240,16 +1264,18 @@ function renderStudents() {
       var div = document.createElement('div');
       div.className = 'student-row';
       var courseName = group.label;
+      var monthlyInfo = getCurrentMonth();
+      var monthlyHours = getMonthlyHours(s, monthlyInfo.year, monthlyInfo.month);
       
       if (typeKey === '535') {
         var practical = s.practicalHours || 0;
         var theory = s.hybridProgress ? Object.keys(s.hybridProgress).length : 0;
         var status = practical >= 1380 && theory >= 12 ? '✓ Ready to Graduate' : 'In Progress';
-        div.innerHTML = '<div class="row-col-1"><div class="row-name">' + s.name + '</div><div class="row-meta">' + s.studentId + ' • ' + courseName + ' • Practical: ' + practical.toFixed(1) + '/1380h • Theory: ' + theory + '/12 • ' + status + '</div></div>' +
+        div.innerHTML = '<div class="row-col-1"><div class="row-name">' + s.name + '</div><div class="row-meta">' + s.studentId + ' • ' + courseName + ' • Practical: ' + practical.toFixed(1) + '/1380h • Theory: ' + theory + '/12 • ' + status + ' • ' + monthlyInfo.monthName + ': ' + monthlyHours.toFixed(1) + 'h</div></div>' +
           '<div class="row-actions"><button class="btn-sm" onclick="editHybridStudent(\'' + s.id + '\')">Edit Hours</button><button class="btn-sm" onclick="openEditStudent(\'' + s.id + '\')">View</button><button class="btn-sm danger" onclick="deleteStudent(\'' + s.id + '\')">Delete</button></div>';
       } else {
         var progressPct = (s.totalHours / 1500) * 100;
-        div.innerHTML = '<div class="row-col-1"><div class="row-name">' + s.name + '</div><div class="row-meta">' + s.studentId + ' • ' + courseName + ' • ' + s.totalHours.toFixed(1) + ' hours (' + progressPct.toFixed(0) + '%)</div></div>' +
+        div.innerHTML = '<div class="row-col-1"><div class="row-name">' + s.name + '</div><div class="row-meta">' + s.studentId + ' • ' + courseName + ' • ' + s.totalHours.toFixed(1) + ' hours (' + progressPct.toFixed(0) + '%) • ' + monthlyInfo.monthName + ': ' + monthlyHours.toFixed(1) + 'h</div></div>' +
           '<div class="row-actions"><button class="btn-sm" onclick="openEditStudent(\'' + s.id + '\')">Edit</button><button class="btn-sm danger" onclick="deleteStudent(\'' + s.id + '\')">Delete</button></div>';
       }
       section.appendChild(div);
