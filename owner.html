@@ -1023,6 +1023,15 @@ function setupFirebaseListeners() {
     console.warn('Firebase satisfaction reports listener error:', err);
   });
   
+  // Listen for hybrid curriculum
+  database.ref('hybridCurriculum').on('value', snapshot => {
+    const data = snapshot.val() || null;
+    localStorage.setItem('hybridCurriculum', JSON.stringify(data));
+    console.log('📥 Hybrid curriculum updated from Firebase');
+  }, err => {
+    console.warn('Firebase hybrid curriculum listener error:', err);
+  });
+  
   console.log('✓ Firebase real-time listeners active');
 }
 
