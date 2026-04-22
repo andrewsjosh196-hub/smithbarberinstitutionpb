@@ -1204,7 +1204,8 @@ function addStudent() {
     clockedIn: false,
     clockLog: [],
     answers: [],
-    milestoneChecks: {}
+    milestoneChecks: {},
+    haircutPhotos: []
   };
   
   if (course === '534') {
@@ -1870,7 +1871,8 @@ function convertToStudent(email) {
     daysAttended: 0,
     clockedIn: false,
     clockLog: [],
-    answers: []
+    answers: [],
+    haircutPhotos: []
   };
   
   // Initialize hybrid-specific fields
@@ -2140,8 +2142,9 @@ function openEditStudent(id) {
   
   // Show haircut photos preview
   var haircutsPreview = document.getElementById('haircutsPreview');
-  if (student.haircutPhotos && student.haircutPhotos.length > 0) {
-    haircutsPreview.innerHTML = student.haircutPhotos.map(function(photo, idx) {
+  var haircutPhotos = Array.isArray(student.haircutPhotos) ? student.haircutPhotos : [];
+  if (haircutPhotos && haircutPhotos.length > 0) {
+    haircutsPreview.innerHTML = haircutPhotos.map(function(photo, idx) {
       return '<div style="width:80px;height:80px;background-size:cover;border-radius:4px;border:1px solid var(--border-sub);background-image:url(' + photo + ');position:relative;" title="Haircut ' + (idx+1) + '"></div>';
     }).join('');
   } else {
