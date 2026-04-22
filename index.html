@@ -1090,6 +1090,18 @@ function setupPublicListeners() {
   
   console.log('⚙️  Setting up Firebase real-time listeners for public pages...');
   
+  // Listen for students data changes
+  database.ref('students').on('value', snapshot => {
+    const data = snapshot.val() || [];
+    localStorage.setItem('students', JSON.stringify(data));
+    console.log('📥 Students updated from Firebase in index.html');
+    if (typeof loadStudentProfiles === 'function') {
+      loadStudentProfiles();
+    }
+  }, err => {
+    console.warn('Firebase students listener error:', err);
+  });
+  
   // Listen for staff/teacher changes
   database.ref('schoolStaff').on('value', snapshot => {
     const data = snapshot.val() || [];
@@ -1150,6 +1162,7 @@ function showPaymentRequired(tier, tierName, price) {
 document.addEventListener('DOMContentLoaded', function() {
   setupPublicListeners();
   checkCoursesLaunched();
+  loadStudentProfiles();
 });
 
 // Check if courses are launched and display accordingly
