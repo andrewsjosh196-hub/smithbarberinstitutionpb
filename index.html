@@ -1734,7 +1734,7 @@ function checkActiveEvent() {
 // ─── STUDENT PROFILES ──────────────────────────────────────────
 function loadStudentProfiles() {
   var students = JSON.parse(localStorage.getItem('students') || '[]');
-  var activeStudents = students.filter(function(s){ return !s.graduated && s.bio; }).slice(0, 6);
+  var activeStudents = students.filter(function(s){ return !s.graduated; }).slice(0, 6);
   var grid = document.getElementById('studentProfilesGrid');
   
   if (!activeStudents.length) {

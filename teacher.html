@@ -146,6 +146,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
     <button class="tab" onclick="switchTeacherTab('grade', this)">Grade Submissions</button>
     <button class="tab" onclick="switchTeacherTab('tests', this)">Create Tests</button>
     <button class="tab" onclick="switchTeacherTab('clockin', this)">Clocked In Students</button>
+    <button class="tab" onclick="switchTeacherTab('satisfaction', this)">Satisfaction Reports</button>
   </div>
 
   <div class="main">
@@ -314,6 +315,39 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
         </div>
       </div>
     </div>
+
+    <!-- SATISFACTION REPORTS -->
+    <div id="tab-satisfaction" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Monthly Satisfaction <em>Reports</em></h3>
+        <div style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);padding:16px;margin-bottom:20px;border-radius:4px;font-size:0.8rem;color:var(--muted);line-height:1.6;">
+          📋 <strong>Student Satisfaction Evaluation</strong> — On the 1st of each month, you'll be asked to evaluate each student's performance based on attendance, grades, and cooperation. This report is sent to the school owner.
+        </div>
+        <div id="satisfactionStatus" style="background:#0a0806;border:1px solid var(--border-sub);padding:16px;margin-bottom:20px;border-radius:4px;">
+          <div style="font-size:0.75rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:8px;">Current Report Status</div>
+          <div id="satisfactionStatusText" style="font-size:1.1rem;color:var(--white);">Check back on the 1st of the month to submit satisfaction reports.</div>
+        </div>
+        <div id="satisfactionReportsHistory"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SATISFACTION REPORT MODAL -->
+<div id="satisfactionReportModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;overflow-y:auto;">
+  <div style="background:#0a0806;border:1px solid var(--border);border-radius:6px;width:100%;max-width:600px;padding:30px;margin:20px 0;">
+    <h2 style="color:var(--white);margin-bottom:10px;">📋 Monthly Satisfaction Report</h2>
+    <div style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;line-height:1.6;">
+      <p style="margin-bottom:12px;"><strong>Month:</strong> <span id="satisfactionMonth"></span></p>
+      <div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.3);padding:12px;border-radius:4px;margin-bottom:12px;font-size:0.8rem;">
+        <strong>⚠️ Disclaimer:</strong> This evaluation includes attendance, grades, and cooperation amongst all students and teachers. Please answer honestly for each student.
+      </div>
+    </div>
+    <div id="satisfactionStudentsList" style="max-height:400px;overflow-y:auto;margin-bottom:20px;"></div>
+    <div style="display:flex;gap:12px;">
+      <button class="btn-submit" onclick="submitSatisfactionReport()" style="flex:1;">Submit Report</button>
+      <button class="btn-submit" style="flex:1;background:#555;cursor:pointer;" onclick="document.getElementById('satisfactionReportModal').style.display='none';">Close</button>
+    </div>
   </div>
 </div>
 
@@ -430,6 +464,7 @@ function switchTeacherTab(id, btn) {
   if(id==='clockin') renderClockedInStudents();
   if(id==='feed') renderNewsFeed();
   if(id==='tests') renderPublishedTests();
+  if(id==='satisfaction') renderSatisfactionReports();
 }
 
 // ─── ASSIGNMENTS ───────────────────────────────────────────────
@@ -923,6 +958,206 @@ function renderTeacherDashboard() {
   renderNewsFeed();
   renderClockedInStudents();
   renderPublishedTests();
+  checkAndPromptSatisfactionReport();
+}
+
+// ─── SATISFACTION REPORTS ─────────────────────────────────────
+function checkAndPromptSatisfactionReport() {
+  var today = new Date();
+  var isFirstOfMonth = today.getDate() === 1;
+  var currentMonth = today.toLocaleString('default', { month: 'long', year: 'numeric' });
+  var lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+  
+  var reports = JSON.parse(localStorage.getItem('satisfactionReports') || '[]');
+  var reportedThisMonth = reports.some(function(r) { 
+    var reportDate = new Date(r.submittedAt);
+    return reportDate.getMonth() === today.getMonth() && reportDate.getFullYear() === today.getFullYear();
+  });
+  
+  if (isFirstOfMonth && !reportedThisMonth) {
+    setTimeout(function() {
+      showSatisfactionReportModal();
+    }, 500);
+  }
+}
+
+function showSatisfactionReportModal() {
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  if (!students.length) { alert('No students to evaluate'); return; }
+  
+  var today = new Date();
+  var lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+  
+  document.getElementById('satisfactionMonth').textContent = 'Evaluating: ' + lastMonth;
+  
+  var list = document.getElementById('satisfactionStudentsList');
+  list.innerHTML = '';
+  
+  window.satisfactionAnswers = {};
+  
+  students.forEach(function(student, idx) {
+    var div = document.createElement('div');
+    div.style.cssText = 'background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:12px;border-radius:4px;';
+    
+    var answerId = 'satisfaction_' + student.id;
+    window.satisfactionAnswers[student.id] = null;
+    
+    div.innerHTML = '<div style="font-weight:700;color:var(--white);margin-bottom:12px;">' + (idx+1) + '. ' + student.name + '</div>' +
+      '<div style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">ID: ' + student.studentId + ' • Course: ' + (student.courseType || 'N/A') + '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
+        '<button class="btn-submit" onclick="setSatisfactionAnswer(\'' + student.id + '\', true)" style="background:var(--green);color:#fff;font-weight:700;">✓ YES - Met Satisfaction</button>' +
+        '<button class="btn-submit" onclick="setSatisfactionAnswer(\'' + student.id + '\', false)" style="background:var(--red);color:#fff;font-weight:700;">✕ NO - Did Not Meet</button>' +
+      '</div>' +
+      '<div id="' + answerId + '" style="margin-top:10px;font-size:0.75rem;color:#555;">No answer selected</div>';
+    
+    list.appendChild(div);
+  });
+  
+  document.getElementById('satisfactionReportModal').style.display = 'flex';
+}
+
+function setSatisfactionAnswer(studentId, satisfied) {
+  window.satisfactionAnswers = window.satisfactionAnswers || {};
+  window.satisfactionAnswers[studentId] = satisfied;
+  
+  var answerId = 'satisfaction_' + studentId;
+  var el = document.getElementById(answerId);
+  if (satisfied) {
+    el.textContent = '✓ Selected: YES - Met Satisfaction';
+    el.style.color = '#6fcf97';
+  } else {
+    el.textContent = '✕ Selected: NO - Did Not Meet';
+    el.style.color = '#e87b7b';
+  }
+}
+
+function submitSatisfactionReport() {
+  window.satisfactionAnswers = window.satisfactionAnswers || {};
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  
+  // Check if all students have been answered
+  var unanswered = students.filter(function(s) { 
+    return window.satisfactionAnswers[s.id] === null || window.satisfactionAnswers[s.id] === undefined;
+  });
+  
+  if (unanswered.length > 0) {
+    alert('Please answer for all ' + students.length + ' students before submitting.');
+    return;
+  }
+  
+  // Create report
+  var report = {
+    id: 'report_' + Date.now(),
+    month: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' }),
+    submittedAt: new Date().toISOString(),
+    evaluations: []
+  };
+  
+  students.forEach(function(s) {
+    report.evaluations.push({
+      studentId: s.studentId,
+      studentName: s.name,
+      studentEmail: s.email,
+      satisfied: window.satisfactionAnswers[s.id]
+    });
+  });
+  
+  // Save to localStorage
+  var reports = JSON.parse(localStorage.getItem('satisfactionReports') || '[]');
+  reports.push(report);
+  localStorage.setItem('satisfactionReports', JSON.stringify(reports));
+  
+  // Sync to Firebase
+  if (database && firebaseReady) {
+    database.ref('satisfactionReports').set(reports).catch(err => 
+      console.error('Firebase sync error:', err)
+    );
+  }
+  
+  alert('✓ Satisfaction report submitted! Report sent to school owner.');
+  document.getElementById('satisfactionReportModal').style.display = 'none';
+  renderSatisfactionReports();
+}
+
+function renderSatisfactionReports() {
+  var reports = JSON.parse(localStorage.getItem('satisfactionReports') || '[]');
+  var history = document.getElementById('satisfactionReportsHistory');
+  
+  if (!reports.length) {
+    history.innerHTML = '<div style="color:#333;text-align:center;padding:24px;font-style:italic;">No reports submitted yet.</div>';
+    return;
+  }
+  
+  var today = new Date();
+  var isFirstOfMonth = today.getDate() === 1;
+  var currentMonth = today.toLocaleString('default', { month: 'long', year: 'numeric' });
+  
+  var reportedThisMonth = reports.some(function(r) { 
+    var reportDate = new Date(r.submittedAt);
+    return reportDate.getMonth() === today.getMonth() && reportDate.getFullYear() === today.getFullYear();
+  });
+  
+  if (isFirstOfMonth && !reportedThisMonth) {
+    document.getElementById('satisfactionStatusText').innerHTML = '<span style="color:var(--red);">🚨 PENDING: Monthly report for ' + currentMonth + ' needs to be submitted!</span>';
+  } else if (reportedThisMonth) {
+    document.getElementById('satisfactionStatusText').innerHTML = '<span style="color:var(--green);">✓ Submitted: Report for ' + currentMonth + ' completed.</span>';
+  } else {
+    document.getElementById('satisfactionStatusText').innerHTML = 'Check back on the 1st of the month to submit satisfaction reports.';
+  }
+  
+  history.innerHTML = '';
+  reports.slice().reverse().forEach(function(report, idx) {
+    var satisfied = report.evaluations.filter(function(e) { return e.satisfied; }).length;
+    var unsatisfied = report.evaluations.filter(function(e) { return !e.satisfied; }).length;
+    
+    var div = document.createElement('div');
+    div.className = 'item-card';
+    div.style.cssText = 'background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:12px;border-radius:4px;cursor:pointer;transition:border-color 0.2s;';
+    div.onmouseover = function() { this.style.borderColor = 'var(--gold)'; };
+    div.onmouseout = function() { this.style.borderColor = 'var(--border-sub)'; };
+    
+    div.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">' +
+      '<div><div style="font-weight:700;color:var(--white);font-size:0.95rem;">📋 ' + report.month + '</div></div>' +
+      '<div style="font-size:0.7rem;color:#555;">' + new Date(report.submittedAt).toLocaleDateString() + '</div>' +
+      '</div>' +
+      '<div style="font-size:0.85rem;color:var(--muted);margin-bottom:8px;">' +
+        '<span style="color:#6fcf97;font-weight:700;">✓ ' + satisfied + ' Satisfied</span> • ' +
+        '<span style="color:#e87b7b;font-weight:700;">✕ ' + unsatisfied + ' Unsatisfied</span>' +
+      '</div>' +
+      '<button onclick="expandSatisfactionReport(' + idx + ')" style="padding:6px 12px;background:rgba(201,168,76,0.2);border:1px solid rgba(201,168,76,0.4);color:var(--gold);cursor:pointer;font-size:0.7rem;border-radius:3px;font-weight:700;">View Details</button>';
+    
+    history.appendChild(div);
+  });
+}
+
+function expandSatisfactionReport(idx) {
+  var reports = JSON.parse(localStorage.getItem('satisfactionReports') || '[]').reverse();
+  var report = reports[idx];
+  if (!report) return;
+  
+  var modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:1001;padding:20px;overflow-y:auto;';
+  
+  var content = '<div style="background:#0a0806;border:1px solid var(--border);border-radius:6px;width:100%;max-width:700px;padding:30px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><h2 style="color:var(--white);margin:0;">📋 ' + report.month + ' Report</h2><button onclick="this.closest(\'div\').parentElement.remove()" style="background:none;border:none;color:var(--gold);font-size:1.5rem;cursor:pointer;">✕</button></div>';
+  
+  var satisfied = report.evaluations.filter(function(e) { return e.satisfied; }).length;
+  content += '<div style="background:rgba(107,33,168,0.1);border:1px solid rgba(107,33,168,0.2);padding:12px;margin-bottom:20px;border-radius:4px;font-size:0.85rem;">' +
+    '<strong>Summary:</strong> ' + satisfied + '/' + report.evaluations.length + ' students met satisfaction criteria.' +
+  '</div>';
+  
+  report.evaluations.forEach(function(e) {
+    var color = e.satisfied ? '#6fcf97' : '#e87b7b';
+    var status = e.satisfied ? '✓ YES' : '✕ NO';
+    content += '<div style="background:#0f0d0a;border-left:3px solid ' + color + ';padding:12px;margin-bottom:8px;border-radius:3px;">' +
+      '<div style="color:' + color + ';font-weight:700;font-size:0.9rem;">' + status + ' - ' + e.studentName + '</div>' +
+      '<div style="color:#555;font-size:0.75rem;">ID: ' + e.studentId + '</div>' +
+    '</div>';
+  });
+  
+  content += '</div>';
+  modal.innerHTML = content;
+  document.body.appendChild(modal);
+  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
 }
 </script>
 </body>

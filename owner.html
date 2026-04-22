@@ -796,6 +796,9 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
       <label class="form-label">Short Bio</label>
       <textarea class="form-textarea" id="editBio" placeholder="Brief description of the student (2-3 lines)" style="min-height:60px;"></textarea>
 
+      <label class="form-label" style="margin-top:24px;">Monthly Satisfaction <em>Reports</em></label>
+      <div id="studentSatisfactionReports" style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;max-height:200px;overflow-y:auto;"></div>
+
       <div style="display:flex;gap:12px;margin-top:20px;">
         <button class="btn-submit" onclick="saveEditedStudent()" style="flex:1;">Save Changes</button>
         <button class="btn-submit" style="background:var(--red);flex:1;cursor:pointer;" onclick="closeEditStudent()">Cancel</button>
@@ -996,6 +999,15 @@ function setupFirebaseListeners() {
     console.log('📥 Tier data updated from Firebase');
   }, err => {
     console.warn('Firebase tier data listener error:', err);
+  });
+  
+  // Listen for satisfaction reports
+  database.ref('satisfactionReports').on('value', snapshot => {
+    const data = snapshot.val() || [];
+    localStorage.setItem('satisfactionReports', JSON.stringify(data));
+    console.log('📥 Satisfaction reports updated from Firebase');
+  }, err => {
+    console.warn('Firebase satisfaction reports listener error:', err);
   });
   
   console.log('✓ Firebase real-time listeners active');
@@ -2058,19 +2070,24 @@ setInterval(function(){ updateStats(); }, 5000);
 var editingStudentId = null;
 
 function openEditStudent(id) {
-  var students = getStudents();
-  var student = students.find(function(s){ return s.id === id; });
-  if (!student) return;
-  
-  editingStudentId = id;
-  document.getElementById('editStudentName').textContent = student.name;
-  document.getElementById('editStudentId').textContent = student.studentId;
-  document.getElementById('editName').value = student.name;
-  document.getElementById('editEmail').value = student.email;
-  document.getElementById('editHours').value = student.totalHours;
-  document.getElementById('editDays').value = student.daysAttended;
-  document.getElementById('editNotes').value = student.notes || '';
-  document.getElementById('editBio').value = student.bio || '';
+  try {
+    var students = getStudents();
+    var student = students.find(function(s){ return s.id === id; });
+    if (!student) { 
+      console.error('❌ Student not found with ID:', id, 'Available IDs:', students.map(function(s) { return s.id; }));
+      alert('Error: Student not found. Please refresh and try again.');
+      return;
+    }
+    
+    editingStudentId = id;
+    document.getElementById('editStudentName').textContent = student.name;
+    document.getElementById('editStudentId').textContent = student.studentId;
+    document.getElementById('editName').value = student.name;
+    document.getElementById('editEmail').value = student.email;
+    document.getElementById('editHours').value = student.totalHours;
+    document.getElementById('editDays').value = student.daysAttended;
+    document.getElementById('editNotes').value = student.notes || '';
+    document.getElementById('editBio').value = student.bio || '';
   
   // Show profile photo preview
   if (student.profilePhoto) {
@@ -2097,14 +2114,25 @@ function openEditStudent(id) {
   document.getElementById('progressPercentDisplay').textContent = Math.round(pct) + '%';
   document.getElementById('progressHoursDisplay').textContent = Math.round(student.totalHours) + ' / 1500 hours';
   
-  // Milestone status
-  document.getElementById('test1Status').textContent = student.milestoneChecks && student.milestoneChecks[300] ? '✓ Passed' : 'Not Taken';
-  document.getElementById('test2Status').textContent = student.milestoneChecks && student.milestoneChecks[600] ? '✓ Passed' : 'Not Taken';
-  document.getElementById('test3Status').textContent = student.milestoneChecks && student.milestoneChecks[900] ? '✓ Passed' : 'Not Taken';
-  document.getElementById('test4Status').textContent = student.milestoneChecks && student.milestoneChecks[1500] ? '✓ Passed' : 'Not Taken';
-  
-  document.getElementById('editStudentModal').style.visibility = 'visible';
-  document.getElementById('editStudentModal').style.opacity = '1';
+    // Milestone status
+    document.getElementById('test1Status').textContent = student.milestoneChecks && student.milestoneChecks[300] ? '✓ Passed' : 'Not Taken';
+    document.getElementById('test2Status').textContent = student.milestoneChecks && student.milestoneChecks[600] ? '✓ Passed' : 'Not Taken';
+    document.getElementById('test3Status').textContent = student.milestoneChecks && student.milestoneChecks[900] ? '✓ Passed' : 'Not Taken';
+    document.getElementById('test4Status').textContent = student.milestoneChecks && student.milestoneChecks[1500] ? '✓ Passed' : 'Not Taken';
+    
+    // Load satisfaction reports for this student
+    var reportsEl = document.getElementById('studentSatisfactionReports');
+    if (reportsEl) {
+      loadStudentSatisfactionReports(student.id, student.studentId);
+    }
+    
+    document.getElementById('editStudentModal').style.visibility = 'visible';
+    document.getElementById('editStudentModal').style.opacity = '1';
+    console.log('✓ Student modal opened for:', student.name, '(ID:', student.id + ')');
+  } catch (e) {
+    console.error('❌ Error in openEditStudent:', e.message, e.stack);
+    alert('Error opening student: ' + e.message);
+  }
 }
 
 function closeEditStudent() {
@@ -2220,6 +2248,42 @@ function previewHaircutPhotos(e) {
       }
     };
     reader.readAsDataURL(file);
+  });
+}
+
+function loadStudentSatisfactionReports(studentId, studentIdDisplay) {
+  var reports = JSON.parse(localStorage.getItem('satisfactionReports') || '[]');
+  var container = document.getElementById('studentSatisfactionReports');
+  
+  // Find all reports containing this student
+  var studentReports = [];
+  reports.forEach(function(report) {
+    var evaluation = report.evaluations.find(function(e) { return e.studentId === studentIdDisplay; });
+    if (evaluation) {
+      studentReports.push({
+        month: report.month,
+        submittedAt: report.submittedAt,
+        satisfied: evaluation.satisfied
+      });
+    }
+  });
+  
+  if (!studentReports.length) {
+    container.innerHTML = '<div style="color:#555;font-size:0.85rem;text-align:center;padding:12px;font-style:italic;">No satisfaction reports on file yet.</div>';
+    return;
+  }
+  
+  container.innerHTML = '';
+  studentReports.slice().reverse().forEach(function(report) {
+    var color = report.satisfied ? '#6fcf97' : '#e87b7b';
+    var status = report.satisfied ? '✓ YES - Met Satisfaction' : '✕ NO - Did Not Meet';
+    
+    var div = document.createElement('div');
+    div.style.cssText = 'background:#0a0806;border-left:3px solid ' + color + ';padding:10px;margin-bottom:8px;border-radius:3px;';
+    div.innerHTML = '<div style="color:' + color + ';font-weight:700;font-size:0.9rem;">' + status + '</div>' +
+      '<div style="color:#555;font-size:0.75rem;margin-top:4px;">' + report.month + ' • ' + new Date(report.submittedAt).toLocaleDateString() + '</div>';
+    
+    container.appendChild(div);
   });
 }
 
