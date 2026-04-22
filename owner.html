@@ -553,7 +553,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
               <option value="textarea">Long Text</option>
               <option value="checkbox">Checkbox</option>
             </select>
-            <button class="btn-submit" onclick="try { window.addEventFormField(); } catch(e) { alert('Error: ' + e.message); console.error(e); }" style="flex:0.3;padding:8px;">Add</button>
+            <button class="btn-submit" onclick="try { window.addEventFormField(); } catch(e) { showNotification('❌ Error: ' + e.message); console.error(e); }" style="flex:0.3;padding:8px;">Add</button>
           </div>
 
           <label class="form-label" style="margin-top:16px;">Liability Waiver</label>
@@ -1082,7 +1082,7 @@ function resetInactivityTimer() {
   if (inactivityTimer) clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(function() {
     console.warn('⏱️ Session timeout - logging out due to inactivity');
-    alert('Session expired. Please log in again.');
+    showNotification('⏱️ Session expired. Please log in again.');
     ownerLogout();
   }, sessionTimeout);
 }
@@ -1121,7 +1121,7 @@ function ownerLogin() {
     }
   } catch(e) {
     console.error('Login error:', e);
-    alert('Login error: ' + e.message);
+    showNotification('❌ Login error: ' + e.message);
   }
 }
 
@@ -1144,7 +1144,7 @@ function forceLogoutAllSessions() {
   localStorage.clear();
   syncToFirebase('currentOwnerId', null);
   
-  alert('✓ All sessions cleared. Redirecting to login...');
+  showNotification('✓ All sessions cleared. Redirecting to login...');
   setTimeout(function() {
     location.reload();
   }, 500);
@@ -1221,7 +1221,7 @@ function addStudent() {
   var email = document.getElementById('newEmail').value.trim();
   var pass = document.getElementById('newPass').value;
   
-  if (!name || !course || !email || !pass) { alert('Please fill all fields'); return; }
+  if (!name || !course || !email || !pass) { showNotification('⚠️ Please fill all fields'); return; }
   
   var students = getStudents();
   var studentId = generateStudentId(course);
@@ -1260,7 +1260,7 @@ function addStudent() {
   document.getElementById('newEmail').value = '';
   document.getElementById('newPass').value = '';
   renderStudents();
-  alert('Student ' + studentId + ' added!');
+  showNotification('✓ Student ' + studentId + ' added!');
 }
 
 function renderStudents() {
@@ -1325,7 +1325,7 @@ function renderStudents() {
 function editHybridStudent(id) {
   var students = getStudents();
   var student = students.find(function(s) { return s.id === id; });
-  if (!student) { alert('Student not found'); return; }
+  if (!student) { showNotification('❌ Student not found'); return; }
   
   var currentHours = student.practicalHours || 0;
   var newHours = prompt('Edit practical hours for ' + student.name + ':\n\nCurrent: ' + currentHours.toFixed(1) + ' hours\nRequired: 1380 hours\n\nEnter new value:', currentHours.toFixed(1));
@@ -1333,12 +1333,12 @@ function editHybridStudent(id) {
   if (newHours === null) return;
   
   var parsed = parseFloat(newHours);
-  if (isNaN(parsed) || parsed < 0) { alert('Please enter a valid number'); return; }
+  if (isNaN(parsed) || parsed < 0) { showNotification('⚠️ Please enter a valid number'); return; }
   
   student.practicalHours = parsed;
   saveStudents(students);
   renderStudents();
-  alert('Hours updated to ' + parsed.toFixed(1));
+  showNotification('✓ Hours updated to ' + parsed.toFixed(1) + ' hrs');
 }
 
 function deleteStudent(id) {
@@ -1373,7 +1373,7 @@ function addScheduleItem() {
   var type = document.getElementById('classType').value;
   var notes = document.getElementById('classNotes').value.trim();
   
-  if (!date || !time || !notes) { alert('Fill all fields'); return; }
+  if (!date || !time || !notes) { showNotification('⚠️ Fill all fields'); return; }
   
   var schedule = JSON.parse(localStorage.getItem('dailySchedule_' + date) || '[]');
   schedule.push({ time: time, courseType: type, title: notes.split('\n')[0], notes: notes, addedAt: new Date().toISOString() });
@@ -1383,12 +1383,12 @@ function addScheduleItem() {
   document.getElementById('classTime').value = '';
   document.getElementById('classNotes').value = '';
   loadScheduleForDate();
-  alert('Class added!');
+  showNotification('✓ Class added!');
 }
 
 function postAnnouncement() {
   var text = document.getElementById('announcementText').value.trim();
-  if (!text) { alert('Enter announcement text'); return; }
+  if (!text) { showNotification('⚠️ Enter announcement text'); return; }
   
   var feed = JSON.parse(localStorage.getItem('schoolNewsFeed') || '[]');
   feed.push({ title: 'School Update', message: text, date: new Date().toISOString() });
@@ -1396,7 +1396,7 @@ function postAnnouncement() {
   syncToFirebase('schoolNewsFeed', feed);
   
   document.getElementById('announcementText').value = '';
-  alert('Announcement posted!');
+  showNotification('✓ Announcement posted!');
 }
 
 // ─── STAFF ─────────────────────────────────────────────────────
@@ -1406,7 +1406,7 @@ function addStaffMember() {
   var bio = document.getElementById('staffBio').value.trim();
   var photoFile = document.getElementById('staffPhoto').files[0];
   
-  if (!name || !role) { alert('Enter name and role'); return; }
+  if (!name || !role) { showNotification('⚠️ Enter name and role'); return; }
   
   var fileReader = new FileReader();
   fileReader.onload = function(e) {
@@ -1420,7 +1420,7 @@ function addStaffMember() {
     document.getElementById('staffBio').value = '';
     document.getElementById('staffPhoto').value = '';
     renderStaff();
-    alert('Staff member added!');
+    showNotification('✓ Staff member added!');
   };
   
   if (photoFile) {
@@ -1435,7 +1435,7 @@ function addStaffMember() {
     document.getElementById('staffRole').value = '';
     document.getElementById('staffBio').value = '';
     renderStaff();
-    alert('Staff member added!');
+    showNotification('✓ Staff member added!');
   }
 }
 
@@ -1468,7 +1468,7 @@ function deleteStaff(id) {
 function openEditStaff(id) {
   var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
   var member = staff.find(function(s) { return s.id === id; });
-  if (!member) { alert('Staff member not found'); return; }
+  if (!member) { showNotification('❌ Staff member not found'); return; }
   
   window.currentEditStaffId = id;
   document.getElementById('editStaffName').textContent = member.name;
@@ -1512,16 +1512,16 @@ function previewStaffPhoto(event) {
 
 function saveEditedStaff() {
   var id = window.currentEditStaffId;
-  if (!id) { alert('Error: Staff ID not found'); return; }
+  if (!id) { showNotification('❌ Error: Staff ID not found'); return; }
   
   var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
   var member = staff.find(function(s) { return s.id === id; });
-  if (!member) { alert('Staff member not found'); return; }
+  if (!member) { showNotification('❌ Staff member not found'); return; }
   
   var role = document.getElementById('staffEditRole').value.trim();
   var bio = document.getElementById('staffEditBio').value.trim();
   
-  if (!role) { alert('Enter role'); return; }
+  if (!role) { showNotification('⚠️ Enter role'); return; }
   
   member.role = role;
   member.bio = bio;
@@ -1540,7 +1540,7 @@ function saveEditedStaff() {
   syncToFirebase('schoolStaff', staff);
   renderStaff();
   closeEditStaff();
-  alert('Staff member updated!');
+  showNotification('✓ Staff member updated!');
 }
 
 // ─── ALUMNI & GRADUATION ───────────────────────────────────────
@@ -1681,7 +1681,7 @@ function graduateStudent(id) {
   renderStudents();
   updateStats();
   
-  alert('Student graduated! ✅\n\nGraduation certificate downloaded:\n"' + student.name + ' graduation form.html"\n\nThey can now share this file or print it!');
+  showNotification('✓ Student graduated! Graduation certificate downloaded: ' + student.name + ' graduation form.html');
 }
 
 function addAlumnus() {
@@ -1689,7 +1689,7 @@ function addAlumnus() {
   var status = document.getElementById('alumniStatus').value.trim();
   var photoFile = document.getElementById('alumniPhoto').files[0];
   
-  if (!name || !status) { alert('Enter name and status'); return; }
+  if (!name || !status) { showNotification('⚠️ Enter name and status'); return; }
   
   var fileReader = new FileReader();
   fileReader.onload = function(e) {
@@ -1702,7 +1702,7 @@ function addAlumnus() {
     document.getElementById('alumniStatus').value = '';
     document.getElementById('alumniPhoto').value = '';
     renderAlumni();
-    alert('Alumnus added!');
+    showNotification('✓ Alumnus added!');
   };
   
   if (photoFile) {
@@ -1716,7 +1716,7 @@ function addAlumnus() {
     document.getElementById('alumniName').value = '';
     document.getElementById('alumniStatus').value = '';
     renderAlumni();
-    alert('Alumnus added!');
+    showNotification('✓ Alumnus added!');
   }
 }
 
@@ -1752,7 +1752,7 @@ function addCatalogItem() {
   var color = document.getElementById('itemColor').value.trim();
   var imageFile = document.getElementById('itemImage').files[0];
   
-  if (!name) { alert('Enter item name'); return; }
+  if (!name) { showNotification('⚠️ Enter item name'); return; }
   
   var fileReader = new FileReader();
   fileReader.onload = function(e) {
@@ -1766,7 +1766,7 @@ function addCatalogItem() {
     document.getElementById('itemColor').value = '';
     document.getElementById('itemImage').value = '';
     renderCatalog();
-    alert('Item added!');
+    showNotification('✓ Item added!');
   };
   
   if (imageFile) {
@@ -1781,7 +1781,7 @@ function addCatalogItem() {
     document.getElementById('itemDesc').value = '';
     document.getElementById('itemColor').value = '';
     renderCatalog();
-    alert('Item added!');
+    showNotification('✓ Item added!');
   }
 }
 
@@ -1869,7 +1869,7 @@ function declineApplication(email) {
   syncToFirebase('studentApplications', apps);
   closeApplicationModal();
   renderApplications();
-  alert('Application declined');
+  showNotification('❌ Application declined');
 }
 
 function convertToStudent(email) {
@@ -1926,7 +1926,7 @@ function convertToStudent(email) {
   syncToFirebase('studentApplications', apps);
   
   closeApplicationModal();
-  alert('Student created with ID ' + studentId + ' and temp password: ' + pass);
+  showNotification('✓ Student created with ID ' + studentId + ' | Temp password: ' + pass);
   renderApplications();
   renderStudents();
 }
@@ -1938,39 +1938,39 @@ function changeOwnerPass() {
   
   // Password validation
   if (!np || np.length < 8) { 
-    alert('Password must be at least 8 characters'); 
+    showNotification('⚠️ Password must be at least 8 characters'); 
     return; 
   }
   if (!/[0-9]/.test(np)) {
-    alert('Password must contain at least one number');
+    showNotification('⚠️ Password must contain at least one number');
     return;
   }
   if (!/[!@#$%^&*]/.test(np)) {
-    alert('Password must contain at least one special character (!@#$%^&*)');
+    showNotification('⚠️ Password must contain at least one special character (!@#$%^&*)');
     return;
   }
   if (np !== confirm_p) {
-    alert('Passwords do not match');
+    showNotification('⚠️ Passwords do not match');
     return;
   }
   
   localStorage.setItem('ownerPassword', np);
   syncToFirebase('ownerPassword', np);
-  alert('✓ Password updated! You will need to log in again.');
+  showNotification('✓ Password updated! You will need to log in again.');
   setTimeout(ownerLogout, 1000);
 }
 
 function saveLocationSettings() {
   var lat = document.getElementById('schoolLat').value;
   var lng = document.getElementById('schoolLng').value;
-  if (!lat || !lng) { alert('Enter latitude and longitude'); return; }
+  if (!lat || !lng) { showNotification('⚠️ Enter latitude and longitude'); return; }
   localStorage.setItem('schoolLat', lat);
   localStorage.setItem('schoolLng', lng);
   localStorage.setItem('locationRequired', document.getElementById('locRequired').checked ? 'true' : 'false');
   syncToFirebase('schoolLat', lat);
   syncToFirebase('schoolLng', lng);
   syncToFirebase('locationRequired', document.getElementById('locRequired').checked ? 'true' : 'false');
-  alert('Location settings saved!');
+  showNotification('✓ Location settings saved!');
 }
 
 function saveSettings() {
@@ -1982,7 +1982,7 @@ function saveSettings() {
 function addLocationExemption() {
   var select = document.getElementById('exemptionStudent');
   var email = select.value;
-  if (!email) { alert('Select a student'); return; }
+  if (!email) { showNotification('⚠️ Select a student'); return; }
   
   var exemptions = JSON.parse(localStorage.getItem('locationExemptions') || '[]');
   if (!exemptions.includes(email)) {
@@ -1991,9 +1991,9 @@ function addLocationExemption() {
     syncToFirebase('locationExemptions', exemptions);
     select.value = '';
     renderExemptions();
-    alert('Student added to exemptions');
+    showNotification('✓ Student added to exemptions');
   } else {
-    alert('Student already exempt');
+    showNotification('⚠️ Student already exempt');
   }
 }
 
@@ -2045,7 +2045,7 @@ function setupDefaultMilestones() {
   ];
   localStorage.setItem('milestoneMilestones', JSON.stringify(milestones));
   syncToFirebase('milestoneMilestones', milestones);
-  alert('Default milestones set!');
+  showNotification('✓ Default milestones set!');
   renderMilestones();
 }
 
@@ -2094,7 +2094,7 @@ function initDash() {
     }
   } catch(e) {
     console.error('Dashboard init error:', e);
-    alert('Error loading dashboard: ' + e.message);
+    showNotification('❌ Error loading dashboard: ' + e.message);
   }
 }
 
@@ -2152,7 +2152,7 @@ function openEditStudent(id) {
     var student = students.find(function(s){ return s.id === id; });
     if (!student) { 
       console.error('❌ Student not found with ID:', id, 'Available IDs:', students.map(function(s) { return s.id; }));
-      alert('Error: Student not found. Please refresh and try again.');
+      showNotification('❌ Error: Student not found. Please refresh and try again.');
       return;
     }
     
@@ -2208,7 +2208,7 @@ function openEditStudent(id) {
     console.log('✓ Student modal opened for:', student.name, '(ID:', student.id + ')');
   } catch (e) {
     console.error('❌ Error in openEditStudent:', e.message, e.stack);
-    alert('Error opening student: ' + e.message);
+    showNotification('❌ Error opening student: ' + e.message);
   }
 }
 
@@ -2284,7 +2284,7 @@ function saveEditedAlumnus() {
   syncToFirebase('alumni', alumni);
   closeEditAlumnus();
   renderAlumni();
-  alert('Alumni profile saved!');
+  showNotification('✓ Alumni profile saved!');
 }
 
 var editingAlumnusIdx = null;
@@ -2397,7 +2397,7 @@ function deleteStudentProfilePhoto() {
   syncToFirebase('students', students);
   
   document.getElementById('photoPreviewContainer').style.display = 'none';
-  alert('Profile photo deleted');
+  showNotification('✓ Profile photo deleted');
 }
 
 function deleteStudentHaircutPhoto(idx) {
@@ -2433,7 +2433,7 @@ function deleteStaffPhoto() {
   syncToFirebase('schoolStaff', staff);
   
   document.getElementById('staffPhotoPreviewContainer').style.display = 'none';
-  alert('Staff photo deleted');
+  showNotification('✓ Staff photo deleted');
 }
 
 function deleteAlumniPhoto() {
@@ -2446,7 +2446,7 @@ function deleteAlumniPhoto() {
   syncToFirebase('alumni', alumni);
   
   document.getElementById('alumPhotoPreviewContainer').style.display = 'none';
-  alert('Alumni photo deleted');
+  showNotification('✓ Alumni photo deleted');
 }
 
 function loadStudentSatisfactionReports(studentId, studentIdDisplay) {
@@ -2656,7 +2656,7 @@ function toggleCoursesLaunch() {
   localStorage.setItem('coursesLaunched', isLaunched ? 'false' : 'true');
   updateCourseLaunchStatus();
   syncToFirebase('coursesLaunched', !isLaunched);
-  alert(isLaunched ? 'Courses hidden' : 'Courses launched! Live on the homepage.');
+  showNotification(isLaunched ? '✓ Courses hidden' : '✓ Courses launched! Live on the homepage.');
 }
 
 function updateCourseLaunchStatus() {
@@ -2807,7 +2807,7 @@ function saveCurrentLesson() {
           syncToFirebase('tierData', currentData);
           picturesInput.value = '';
           renderLessonEditor();
-          alert('Lesson saved!');
+          showNotification('✓ Lesson saved!');
         }
       };
       reader.readAsDataURL(file);
@@ -2816,7 +2816,7 @@ function saveCurrentLesson() {
     currentData[currentEditingTier] = tierData;
     localStorage.setItem('tierData', JSON.stringify(currentData));
     syncToFirebase('tierData', currentData);
-    alert('Lesson saved!');
+    showNotification('✓ Lesson saved!');
   }
 }
 
@@ -2860,7 +2860,7 @@ function saveTierData(tierName) {
   tierData = currentData;
   localStorage.setItem('tierData', JSON.stringify(currentData));
   syncToFirebase('tierData', currentData);
-  alert('Tier saved!');
+  showNotification('✓ Tier saved!');
 }
 
 function renderModulesList(tierName) {
@@ -3075,7 +3075,7 @@ function addMilestoneToTier(tierName) {
   var test = testInput.value.trim();
   
   if (!hours || isNaN(hours) || !test) {
-    alert('Please enter both hours and test name');
+    showNotification('⚠️ Please enter both hours and test name');
     return;
   }
   
@@ -3092,7 +3092,7 @@ function addMilestoneToTier(tierName) {
   hoursInput.value = '';
   testInput.value = '';
   renderMilestonesList(tierName);
-  alert('Milestone added!');
+  showNotification('✓ Milestone added!');
 }
 
 function removeMilestoneFromTier(tierName, idx) {
@@ -3209,15 +3209,15 @@ function addEventFormField() {
   var container = document.getElementById('eventApplicationFields');
   
   if (!nameInput) {
-    alert('ERROR: eventFieldName input not found');
+    showNotification('⚠️ ERROR: eventFieldName input not found');
     return;
   }
   if (!typeSelect) {
-    alert('ERROR: eventFieldType select not found');
+    showNotification('⚠️ ERROR: eventFieldType select not found');
     return;
   }
   if (!container) {
-    alert('ERROR: eventApplicationFields container not found');
+    showNotification('⚠️ ERROR: eventApplicationFields container not found');
     return;
   }
   
@@ -3227,7 +3227,7 @@ function addEventFormField() {
   console.log('Name:', name, 'Type:', type);
   
   if (!name) {
-    alert('Please enter a field name');
+    showNotification('⚠️ Please enter a field name');
     return;
   }
   
@@ -3314,7 +3314,7 @@ function updateEventPreview() {
 function testEventDates() {
   var eventStr = localStorage.getItem('currentEvent');
   if (!eventStr) {
-    alert('No event launched yet');
+    showNotification('⚠️ No event launched yet');
     return;
   }
   
@@ -3332,7 +3332,7 @@ function testEventDates() {
     (now < startDate ? 'Reason: Event hasn\'t started yet' : '') +
     (now > endDate ? 'Reason: Event has ended' : '');
   
-  alert(message);
+  showNotification(message);
   console.log('Event Debug Info:', { event, now, startDate, endDate, isActive });
 }
 
@@ -3347,12 +3347,12 @@ function launchEvent() {
   var waiverText = document.getElementById('eventWaiverText').value.trim();
 
   if (!name || !desc || !start || !end) {
-    alert('Please fill in all required fields');
+    showNotification('⚠️ Please fill in all required fields');
     return;
   }
   
   if (eventFormFields.length === 0) {
-    alert('Please add at least one form field');
+    showNotification('⚠️ Please add at least one form field');
     return;
   }
 
@@ -3383,7 +3383,7 @@ function launchEvent() {
 
   localStorage.setItem('currentEvent', JSON.stringify(event));
   syncToFirebase('currentEvent', event);
-  alert('Event launched! It will appear on the front page now.');
+  showNotification('✓ Event launched! It will appear on the front page now.');
   
   eventFormFields = [];
   window.renderEventFormPreview();
@@ -3434,7 +3434,7 @@ function disableEvent() {
   if (confirm('Remove this event from the front page?')) {
     localStorage.removeItem('currentEvent');
     window.displayActiveEvent();
-    alert('Event removed');
+    showNotification('❌ Event removed');
   }
 }
 
@@ -3493,7 +3493,7 @@ function exportSubmissions() {
   var submissions = JSON.parse(localStorage.getItem('eventApplicationSubmissions') || '[]');
   
   if (submissions.length === 0) {
-    alert('No submissions to export');
+    showNotification('⚠️ No submissions to export');
     return;
   }
   
@@ -3573,7 +3573,7 @@ function generateDefaultHybridCurriculum() {
   
   localStorage.setItem('hybridCurriculum', JSON.stringify(curriculum));
   syncToFirebase('hybridCurriculum', curriculum);
-  alert('✓ Default curriculum created with 12 modules!');
+  showNotification('✓ Default curriculum created with 12 modules!');
   renderHybridCurriculum();
 }
 
@@ -3707,7 +3707,7 @@ window.saveLessonChanges = function(moduleNum, lessonIdx, modal) {
   localStorage.setItem('hybridCurriculum', JSON.stringify(curriculum));
   syncToFirebase('hybridCurriculum', curriculum);
   console.log('✅ Lesson saved:', lesson.title);
-  alert('✓ Lesson saved!');
+  showNotification('✓ Lesson saved!');
   modal.remove();
 };
 
@@ -3725,7 +3725,7 @@ function updateModulePreview() {
 }
 
 function saveModuleChanges() {
-  alert('✓ Module saved!');
+  showNotification('✓ Module saved!');
   closeModuleEditor();
   renderHybridCurriculum();
 }
