@@ -2218,6 +2218,11 @@ function closeEditStudent() {
   document.getElementById('editStudentModal').style.opacity = '0';
   editingStudentId = null;
   window.currentEditingStudentId = null;
+  // Clear file inputs
+  document.getElementById('editProfilePhoto').value = '';
+  document.getElementById('editHaircutPhotos').value = '';
+  // Clear password input
+  document.getElementById('editPassword').value = '';
 }
 
 function openEditAlumnus(idx) {
@@ -2503,8 +2508,11 @@ function loadStudentSatisfactionReports(studentId, studentIdDisplay) {
 
 function saveEditedStudent() {
   var students = getStudents();
-  var student = students.find(function(s){ return s.id === editingStudentId; });
-  if (!student) return;
+  var student = students.find(function(s){ return s.id === window.currentEditingStudentId; });
+  if (!student) {
+    showNotification('❌ Student not found - please close and reopen the profile');
+    return;
+  }
   
   student.email = document.getElementById('editEmail').value;
   student.totalHours = parseFloat(document.getElementById('editHours').value) || 0;
