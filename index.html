@@ -1063,6 +1063,43 @@ function setupPublicListeners() {
   console.log('✓ Public Firebase listeners active');
 }
 
+// Check if user has paid for a tier
+async function hasAccessToTier(tier) {
+  try {
+    // Get user email from localStorage
+    const userEmail = localStorage.getItem('currentUserEmail');
+    if (!userEmail) {
+      console.log('❌ No user email found - access denied');
+      return false;
+    }
+
+    // Convert email to safe path (replace . and @ with _)
+    const safeName = userEmail.replace(/[.@#$/\[\]]/g, '_');
+    
+    // Check Firebase for payment record
+    const snapshot = await database.ref(`payments/${safeName}/${tier}`).once('value');
+    const paymentRecord = snapshot.val();
+    
+    if (paymentRecord && paymentRecord.status === 'verified') {
+      console.log(`✅ User has access to ${tier}`);
+      return true;
+    } else {
+      console.log(`❌ No valid payment found for ${tier}`);
+      return false;
+    }
+  } catch (error) {
+    console.error('Error checking access:', error);
+    return false;
+  }
+}
+
+// Show payment required modal
+function showPaymentRequired(tier, tierName, price) {
+  alert(`${tierName} ($${price}) - This content is locked. Please purchase access to unlock it.`);
+  // Optionally redirect to purchase button
+  document.querySelector(`[onclick*="purchaseTier('${tier}')"]`)?.scrollIntoView({ behavior: 'smooth' });
+}
+
 // Start listening when page loads
 document.addEventListener('DOMContentLoaded', function() {
   setupPublicListeners();
@@ -1505,7 +1542,22 @@ function loadStaff() {
 function toggleTierModels(tier) {
   var grid = document.getElementById(tier + 'Grid');
   var hidden = grid.style.display === 'none';
-  grid.style.display = hidden ? 'grid' : 'none';
+  
+  // If trying to show, check payment first
+  if (hidden) {
+    hasAccessToTier(tier).then(hasAccess => {
+      if (!hasAccess) {
+        // Save the tier info in localStorage before prompting
+        localStorage.setItem('desiredTier', tier);
+        localStorage.setItem('currentUserEmail', prompt('Please enter your email to verify access:') || '');
+        showPaymentRequired(tier, tierData[tier].name, tierData[tier].price);
+        return;
+      }
+      grid.style.display = 'grid';
+    });
+  } else {
+    grid.style.display = 'none';
+  }
 }
 
 function toggleModels() {
