@@ -344,106 +344,117 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
           <div style="font-size:0.85rem;color:#999;">Course content is now simplified. Edit above: Title, Description, Passage, Images, and Videos for each tier.</div>
         </div>
         
-        <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
-          <button class="course-tab active" onclick="switchCourseTab('tier1', this)">🥇 Tier 1</button>
-          <button class="course-tab" onclick="switchCourseTab('tier2', this)">🏆 Tier 2</button>
-          <button class="course-tab" onclick="switchCourseTab('tier3', this)">💼 Tier 3</button>
-          <button class="course-tab" onclick="switchCourseTab('tier4', this)">🎓 Tier 4</button>
-        </div>
+        <!-- TIER EDITOR - MODAL BASED -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:20px;">
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <span style="font-size:1.5rem;">🥇</span>
+              <div>
+                <input type="text" class="form-input" id="tier1Name" placeholder="Tier 1 Title" style="font-weight:700;font-size:1rem;padding:8px;border:1px solid var(--border-sub);">
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn-sm" onclick="openTierModal('tier1', 'description')" style="background:#6b21a8;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:var(--white);">📝 Description</button>
+              <button class="btn-sm" onclick="openTierModal('tier1', 'passage')" style="background:#c9a84c;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:#000;font-weight:700;">📖 Passage</button>
+              <button class="btn-sm" onclick="openTierModal('tier1', 'pictures')" style="background:#cf5f1f;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:var(--white);">🖼️ Pictures</button>
+              <button class="btn-sm" onclick="openTierModal('tier1', 'videos')" style="background:#7fe0a3;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:#000;font-weight:700;">🎥 Videos</button>
+            </div>
+            <button class="btn-submit" onclick="saveTierData('tier1')" style="width:100%;margin-top:12px;padding:8px;">Save Tier 1</button>
+          </div>
 
-        <!-- TIER 1 EDIT -->
-        <div id="tier1Content" style="display:block;">
-          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
-            <label class="form-label">Tier 1 Title</label>
-            <input type="text" class="form-input" id="tier1Name" placeholder="Beginner Barber Mastery" onchange="saveTierData('tier1')">
-            
-            <label class="form-label" style="margin-top:12px;">Description</label>
-            <textarea class="form-textarea" id="tier1Desc" placeholder="Short description of this tier" style="min-height:60px;" onchange="saveTierData('tier1')"></textarea>
-            
-            <label class="form-label" style="margin-top:12px;">Main Content / Passage</label>
-            <textarea class="form-textarea" id="tier1Passage" placeholder="Main learning content for this tier" style="min-height:100px;" onchange="saveTierData('tier1')"></textarea>
-            
-            <label class="form-label" style="margin-top:12px;">Course Images</label>
-            <input type="file" class="form-input" id="tier1Images" accept="image/*" multiple>
-            <div id="tier1ImagesPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin-top:12px;"></div>
-            
-            <label class="form-label" style="margin-top:12px;">Course Videos (URLs)</label>
-            <p style="font-size:0.75rem;color:#555;margin-bottom:8px;">Paste YouTube/Vimeo URLs, one per line</p>
-            <textarea class="form-textarea" id="tier1Videos" placeholder="https://youtube.com/watch?v=...\nhttps://youtube.com/watch?v=..." style="min-height:80px;" onchange="saveTierData('tier1')"></textarea>
-            
-            <button class="btn-submit" onclick="saveTierData('tier1')" style="margin-top:16px;">Save Tier 1</button>
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <span style="font-size:1.5rem;">🏆</span>
+              <div>
+                <input type="text" class="form-input" id="tier2Name" placeholder="Tier 2 Title" style="font-weight:700;font-size:1rem;padding:8px;border:1px solid var(--border-sub);">
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn-sm" onclick="openTierModal('tier2', 'description')" style="background:#6b21a8;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:var(--white);">📝 Description</button>
+              <button class="btn-sm" onclick="openTierModal('tier2', 'passage')" style="background:#c9a84c;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:#000;font-weight:700;">📖 Passage</button>
+              <button class="btn-sm" onclick="openTierModal('tier2', 'pictures')" style="background:#cf5f1f;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:var(--white);">🖼️ Pictures</button>
+              <button class="btn-sm" onclick="openTierModal('tier2', 'videos')" style="background:#7fe0a3;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:#000;font-weight:700;">🎥 Videos</button>
+            </div>
+            <button class="btn-submit" onclick="saveTierData('tier2')" style="width:100%;margin-top:12px;padding:8px;">Save Tier 2</button>
+          </div>
+
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <span style="font-size:1.5rem;">💼</span>
+              <div>
+                <input type="text" class="form-input" id="tier3Name" placeholder="Tier 3 Title" style="font-weight:700;font-size:1rem;padding:8px;border:1px solid var(--border-sub);">
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn-sm" onclick="openTierModal('tier3', 'description')" style="background:#6b21a8;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:var(--white);">📝 Description</button>
+              <button class="btn-sm" onclick="openTierModal('tier3', 'passage')" style="background:#c9a84c;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:#000;font-weight:700;">📖 Passage</button>
+              <button class="btn-sm" onclick="openTierModal('tier3', 'pictures')" style="background:#cf5f1f;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:var(--white);">🖼️ Pictures</button>
+              <button class="btn-sm" onclick="openTierModal('tier3', 'videos')" style="background:#7fe0a3;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:#000;font-weight:700;">🎥 Videos</button>
+            </div>
+            <button class="btn-submit" onclick="saveTierData('tier3')" style="width:100%;margin-top:12px;padding:8px;">Save Tier 3</button>
+          </div>
+
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <span style="font-size:1.5rem;">🎓</span>
+              <div>
+                <input type="text" class="form-input" id="tier4Name" placeholder="Tier 4 Title" style="font-weight:700;font-size:1rem;padding:8px;border:1px solid var(--border-sub);">
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn-sm" onclick="openTierModal('tier4', 'description')" style="background:#6b21a8;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:var(--white);">📝 Description</button>
+              <button class="btn-sm" onclick="openTierModal('tier4', 'passage')" style="background:#c9a84c;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:#000;font-weight:700;">📖 Passage</button>
+              <button class="btn-sm" onclick="openTierModal('tier4', 'pictures')" style="background:#cf5f1f;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:var(--white);">🖼️ Pictures</button>
+              <button class="btn-sm" onclick="openTierModal('tier4', 'videos')" style="background:#7fe0a3;border:none;padding:8px 12px;border-radius:3px;cursor:pointer;color:#000;font-weight:700;">🎥 Videos</button>
+            </div>
+            <button class="btn-submit" onclick="saveTierData('tier4')" style="width:100%;margin-top:12px;padding:8px;">Save Tier 4</button>
           </div>
         </div>
 
-        <!-- TIER 2 EDIT -->
-        <div id="tier2Content" style="display:none;">
-          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
-            <label class="form-label">Tier 2 Title</label>
-            <input type="text" class="form-input" id="tier2Name" placeholder="Advanced Barber Mastery" onchange="saveTierData('tier2')">
-            
-            <label class="form-label" style="margin-top:12px;">Description</label>
-            <textarea class="form-textarea" id="tier2Desc" placeholder="Short description of this tier" style="min-height:60px;" onchange="saveTierData('tier2')"></textarea>
-            
-            <label class="form-label" style="margin-top:12px;">Main Content / Passage</label>
-            <textarea class="form-textarea" id="tier2Passage" placeholder="Main learning content for this tier" style="min-height:100px;" onchange="saveTierData('tier2')"></textarea>
-            
-            <label class="form-label" style="margin-top:12px;">Course Images</label>
-            <input type="file" class="form-input" id="tier2Images" accept="image/*" multiple>
-            <div id="tier2ImagesPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin-top:12px;"></div>
-            
-            <label class="form-label" style="margin-top:12px;">Course Videos (URLs)</label>
-            <p style="font-size:0.75rem;color:#555;margin-bottom:8px;">Paste YouTube/Vimeo URLs, one per line</p>
-            <textarea class="form-textarea" id="tier2Videos" placeholder="https://youtube.com/watch?v=...\nhttps://youtube.com/watch?v=..." style="min-height:80px;" onchange="saveTierData('tier2')"></textarea>
-            
-            <button class="btn-submit" onclick="saveTierData('tier2')" style="margin-top:16px;">Save Tier 2</button>
+        <!-- TIER EDIT MODALS -->
+        <!-- Description Modal -->
+        <div id="tierDescriptionModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1000;padding:20px;overflow-y:auto;">
+          <div style="background:var(--card);border:1px solid var(--border);max-width:600px;margin:40px auto;padding:24px;border-radius:8px;position:relative;">
+            <button onclick="closeTierModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--gold);font-size:1.5rem;cursor:pointer;">✕</button>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:16px;color:var(--white);">Edit <span id="modalTierLabel"></span> Description</h3>
+            <label class="form-label">Description & Lessons</label>
+            <textarea class="form-textarea" id="tierDescInput" placeholder="Describe what students will learn in this tier. Include lesson overview." style="min-height:150px;"></textarea>
+            <button class="btn-submit" onclick="saveTierContent('description')" style="margin-top:16px;width:100%;">Save Description</button>
           </div>
         </div>
 
-        <!-- TIER 3 EDIT -->
-        <div id="tier3Content" style="display:none;">
-          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
-            <label class="form-label">Tier 3 Title</label>
-            <input type="text" class="form-input" id="tier3Name" placeholder="Barber Business & Shop Ownership" onchange="saveTierData('tier3')">
-            
-            <label class="form-label" style="margin-top:12px;">Description</label>
-            <textarea class="form-textarea" id="tier3Desc" placeholder="Short description of this tier" style="min-height:60px;" onchange="saveTierData('tier3')"></textarea>
-            
-            <label class="form-label" style="margin-top:12px;">Main Content / Passage</label>
-            <textarea class="form-textarea" id="tier3Passage" placeholder="Main learning content for this tier" style="min-height:100px;" onchange="saveTierData('tier3')"></textarea>
-            
-            <label class="form-label" style="margin-top:12px;">Course Images</label>
-            <input type="file" class="form-input" id="tier3Images" accept="image/*" multiple>
-            <div id="tier3ImagesPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin-top:12px;"></div>
-            
-            <label class="form-label" style="margin-top:12px;">Course Videos (URLs)</label>
-            <p style="font-size:0.75rem;color:#555;margin-bottom:8px;">Paste YouTube/Vimeo URLs, one per line</p>
-            <textarea class="form-textarea" id="tier3Videos" placeholder="https://youtube.com/watch?v=...\nhttps://youtube.com/watch?v=..." style="min-height:80px;" onchange="saveTierData('tier3')"></textarea>
-            
-            <button class="btn-submit" onclick="saveTierData('tier3')" style="margin-top:16px;">Save Tier 3</button>
+        <!-- Passage Modal -->
+        <div id="tierPassageModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1000;padding:20px;overflow-y:auto;">
+          <div style="background:var(--card);border:1px solid var(--border);max-width:600px;margin:40px auto;padding:24px;border-radius:8px;position:relative;">
+            <button onclick="closeTierModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--gold);font-size:1.5rem;cursor:pointer;">✕</button>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:16px;color:var(--white);">Edit <span id="modalTierLabel2"></span> Main Content</h3>
+            <label class="form-label">Main Content / Passage</label>
+            <textarea class="form-textarea" id="tierPassageInput" placeholder="Enter the main learning material or passage for this tier" style="min-height:200px;"></textarea>
+            <button class="btn-submit" onclick="saveTierContent('passage')" style="margin-top:16px;width:100%;">Save Content</button>
           </div>
         </div>
 
-        <!-- TIER 4 EDIT -->
-        <div id="tier4Content" style="display:none;">
-          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
-            <label class="form-label">Tier 4 Title</label>
-            <input type="text" class="form-input" id="tier4Name" placeholder="Arkansas State Board Prep" onchange="saveTierData('tier4')">
-            
-            <label class="form-label" style="margin-top:12px;">Description</label>
-            <textarea class="form-textarea" id="tier4Desc" placeholder="Short description of this tier" style="min-height:60px;" onchange="saveTierData('tier4')"></textarea>
-            
-            <label class="form-label" style="margin-top:12px;">Main Content / Passage</label>
-            <textarea class="form-textarea" id="tier4Passage" placeholder="Main learning content for this tier" style="min-height:100px;" onchange="saveTierData('tier4')"></textarea>
-            
-            <label class="form-label" style="margin-top:12px;">Course Images</label>
-            <input type="file" class="form-input" id="tier4Images" accept="image/*" multiple>
-            <div id="tier4ImagesPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin-top:12px;"></div>
-            
-            <label class="form-label" style="margin-top:12px;">Course Videos (URLs)</label>
-            <p style="font-size:0.75rem;color:#555;margin-bottom:8px;">Paste YouTube/Vimeo URLs, one per line</p>
-            <textarea class="form-textarea" id="tier4Videos" placeholder="https://youtube.com/watch?v=...\nhttps://youtube.com/watch?v=..." style="min-height:80px;" onchange="saveTierData('tier4')"></textarea>
-            
-            <button class="btn-submit" onclick="saveTierData('tier4')" style="margin-top:16px;">Save Tier 4</button>
+        <!-- Pictures Modal -->
+        <div id="tierPicturesModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1000;padding:20px;overflow-y:auto;">
+          <div style="background:var(--card);border:1px solid var(--border);max-width:600px;margin:40px auto;padding:24px;border-radius:8px;position:relative;">
+            <button onclick="closeTierModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--gold);font-size:1.5rem;cursor:pointer;">✕</button>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:16px;color:var(--white);">Edit <span id="modalTierLabel3"></span> Pictures</h3>
+            <label class="form-label">Upload Course Images</label>
+            <input type="file" class="form-input" id="tierPicturesInput" accept="image/*" multiple style="margin-bottom:16px;">
+            <div id="tierPicturesPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px;margin-bottom:16px;"></div>
+            <button class="btn-submit" onclick="saveTierContent('pictures')" style="width:100%;">Save Pictures</button>
+          </div>
+        </div>
+
+        <!-- Videos Modal -->
+        <div id="tierVideosModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1000;padding:20px;overflow-y:auto;">
+          <div style="background:var(--card);border:1px solid var(--border);max-width:600px;margin:40px auto;padding:24px;border-radius:8px;position:relative;">
+            <button onclick="closeTierModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--gold);font-size:1.5rem;cursor:pointer;">✕</button>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:16px;color:var(--white);">Edit <span id="modalTierLabel4"></span> Videos</h3>
+            <label class="form-label">Video URLs</label>
+            <p style="font-size:0.75rem;color:#555;margin-bottom:8px;">Paste YouTube or Vimeo URLs, one per line</p>
+            <textarea class="form-textarea" id="tierVideosInput" placeholder="https://youtube.com/watch?v=...\nhttps://vimeo.com/..." style="min-height:150px;"></textarea>
+            <button class="btn-submit" onclick="saveTierContent('videos')" style="margin-top:16px;width:100%;">Save Videos</button>
           </div>
         </div>
       </div>
@@ -2578,27 +2589,125 @@ function initCourseLaunchStatus() {
 }
 
 // ─── TIER DATA MANAGEMENT ─────────────────────────────────────
-function saveTierData(tierName) {
-  var nameInput = document.getElementById(tierName + 'Name');
-  var priceInput = document.getElementById(tierName + 'Price');
+// Current tier being edited in modals
+var currentEditingTier = null;
+var currentEditingSection = null;
+
+function openTierModal(tierName, section) {
+  currentEditingTier = tierName;
+  currentEditingSection = section;
   
-  if (!nameInput || !priceInput) return;
+  var tierData = getTierData()[tierName] || {};
+  var tierLabel = tierName.charAt(0).toUpperCase() + tierName.slice(1) + ' (' + tierData.name + ')';
+  
+  if (section === 'description') {
+    document.getElementById('tierDescInput').value = tierData.description || '';
+    document.getElementById('modalTierLabel').textContent = tierLabel;
+    document.getElementById('tierDescriptionModal').style.display = 'block';
+  } else if (section === 'passage') {
+    document.getElementById('tierPassageInput').value = tierData.passage || '';
+    document.getElementById('modalTierLabel2').textContent = tierLabel;
+    document.getElementById('tierPassageModal').style.display = 'block';
+  } else if (section === 'pictures') {
+    document.getElementById('modalTierLabel3').textContent = tierLabel;
+    renderTierPicturesPreview(tierName);
+    document.getElementById('tierPicturesModal').style.display = 'block';
+  } else if (section === 'videos') {
+    document.getElementById('tierVideosInput').value = tierData.videos || '';
+    document.getElementById('modalTierLabel4').textContent = tierLabel;
+    document.getElementById('tierVideosModal').style.display = 'block';
+  }
+}
+
+function closeTierModal() {
+  document.getElementById('tierDescriptionModal').style.display = 'none';
+  document.getElementById('tierPassageModal').style.display = 'none';
+  document.getElementById('tierPicturesModal').style.display = 'none';
+  document.getElementById('tierVideosModal').style.display = 'none';
+  currentEditingTier = null;
+  currentEditingSection = null;
+}
+
+function saveTierContent(section) {
+  if (!currentEditingTier) return;
   
   var currentData = getTierData();
-  var defaultData = DEFAULT_TIER_DATA[tierName] || { name: '', price: '', modules: [], milestones: [] };
-  var existingTier = currentData[tierName] || defaultData;
+  if (!currentData[currentEditingTier]) {
+    currentData[currentEditingTier] = {};
+  }
   
-  currentData[tierName] = {
-    name: nameInput.value || existingTier.name || defaultData.name || '',
-    price: priceInput.value || existingTier.price || defaultData.price || '',
-    modules: existingTier.modules || [],
-    milestones: existingTier.milestones || []
-  };
+  if (section === 'description') {
+    currentData[currentEditingTier].description = document.getElementById('tierDescInput').value;
+  } else if (section === 'passage') {
+    currentData[currentEditingTier].passage = document.getElementById('tierPassageInput').value;
+  } else if (section === 'pictures') {
+    var fileInput = document.getElementById('tierPicturesInput');
+    if (fileInput.files.length > 0) {
+      Array.from(fileInput.files).forEach(function(file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          if (!currentData[currentEditingTier].pictures) currentData[currentEditingTier].pictures = [];
+          currentData[currentEditingTier].pictures.push(e.target.result);
+          localStorage.setItem('tierData', JSON.stringify(currentData));
+          syncToFirebase('tierData', currentData);
+          renderTierPicturesPreview(currentEditingTier);
+        };
+        reader.readAsDataURL(file);
+      });
+      fileInput.value = '';
+    }
+    closeTierModal();
+    return;
+  } else if (section === 'videos') {
+    currentData[currentEditingTier].videos = document.getElementById('tierVideosInput').value;
+  }
   
   tierData = currentData;
   localStorage.setItem('tierData', JSON.stringify(currentData));
   syncToFirebase('tierData', currentData);
-  renderMilestonesList(tierName);
+  closeTierModal();
+  alert('Saved!');
+}
+
+function renderTierPicturesPreview(tierName) {
+  var tierData = getTierData()[tierName] || {};
+  var pictures = tierData.pictures || [];
+  var preview = document.getElementById('tierPicturesPreview');
+  
+  preview.innerHTML = '';
+  pictures.forEach(function(pic, idx) {
+    var div = document.createElement('div');
+    div.style.cssText = 'position:relative;border-radius:4px;overflow:hidden;';
+    div.innerHTML = '<img src="' + pic + '" style="width:100%;height:100px;object-fit:cover;display:block;"><button style="position:absolute;top:2px;right:2px;background:rgba(255,0,0,0.8);color:white;border:none;padding:4px 8px;border-radius:2px;cursor:pointer;font-size:0.8rem;" onclick="deleteTierPicture(\'' + tierName + '\',' + idx + ')">✕</button>';
+    preview.appendChild(div);
+  });
+}
+
+function deleteTierPicture(tierName, index) {
+  var currentData = getTierData();
+  if (currentData[tierName] && currentData[tierName].pictures) {
+    currentData[tierName].pictures.splice(index, 1);
+    tierData = currentData;
+    localStorage.setItem('tierData', JSON.stringify(currentData));
+    syncToFirebase('tierData', currentData);
+    renderTierPicturesPreview(tierName);
+  }
+}
+
+function saveTierData(tierName) {
+  var nameInput = document.getElementById(tierName + 'Name');
+  if (!nameInput) return;
+  
+  var currentData = getTierData();
+  if (!currentData[tierName]) {
+    currentData[tierName] = {};
+  }
+  
+  currentData[tierName].name = nameInput.value || currentData[tierName].name || '';
+  
+  tierData = currentData;
+  localStorage.setItem('tierData', JSON.stringify(currentData));
+  syncToFirebase('tierData', currentData);
   alert('Tier saved!');
 }
 
