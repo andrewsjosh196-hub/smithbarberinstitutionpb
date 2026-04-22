@@ -2101,7 +2101,6 @@ function openEditStudent(id) {
     document.getElementById('editEmail').value = student.email;
     document.getElementById('editHours').value = student.totalHours;
     document.getElementById('editDays').value = student.daysAttended;
-    document.getElementById('editNotes').value = student.notes || '';
     document.getElementById('editBio').value = student.bio || '';
   
   // Show profile photo preview
@@ -2369,7 +2368,6 @@ function saveEditedStudent() {
   student.email = document.getElementById('editEmail').value;
   student.totalHours = parseFloat(document.getElementById('editHours').value) || 0;
   student.daysAttended = parseInt(document.getElementById('editDays').value) || 0;
-  student.notes = document.getElementById('editNotes').value;
   student.bio = document.getElementById('editBio').value;
   
   // Update password if provided
