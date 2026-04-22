@@ -256,6 +256,34 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px 32px 28px
   <a href="#login" onclick="window.closeNav()" style="background:var(--gold);color:#000;font-weight:700;margin-top:16px;">Student Login</a>
 </nav>
 
+<!-- STAFF BIO OVERLAY MODAL -->
+<div id="staffBioModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:3000;align-items:center;justify-content:center;padding:20px;overflow-y:auto;">
+  <div style="background:linear-gradient(135deg,var(--card),rgba(10,8,6,0.8));border:1px solid var(--border);max-width:700px;width:100%;position:relative;border-radius:8px;overflow:hidden;">
+    <!-- Close Button -->
+    <button onclick="closeStaffBio()" style="position:absolute;top:20px;right:20px;background:rgba(0,0,0,0.5);border:1px solid rgba(201,168,76,0.3);color:var(--gold);width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;border-radius:50%;z-index:10;transition:all 0.2s;hover:background:rgba(201,168,76,0.2);">✕</button>
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;max-height:600px;overflow:hidden;">
+      <!-- Photo Section -->
+      <div style="background:linear-gradient(135deg,rgba(107,33,168,0.2),rgba(201,168,76,0.1));display:flex;align-items:center;justify-content:center;min-height:300px;overflow:hidden;">
+        <div id="staffBioPhoto" style="width:100%;height:100%;background-size:cover;background-position:center;"></div>
+      </div>
+      
+      <!-- Bio Section -->
+      <div style="padding:40px;overflow-y:auto;max-height:600px;">
+        <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;margin-bottom:4px;color:var(--white);" id="staffBioName"></div>
+        <div style="font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:20px;" id="staffBioRole"></div>
+        <div style="height:2px;background:linear-gradient(90deg,var(--gold),transparent);margin-bottom:20px;"></div>
+        <div style="font-size:0.95rem;line-height:1.8;color:var(--muted);margin-bottom:24px;" id="staffBioBio"></div>
+        
+        <div style="background:rgba(201,168,76,0.1);border-left:3px solid var(--gold);padding:16px;border-radius:4px;">
+          <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;">Specialties</div>
+          <div style="font-size:0.85rem;color:#bbb;line-height:1.6;">Professional instruction • Student mentorship • Industry expertise</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- HERO or EVENT AD -->
 <div id="heroSection" class="hero">
   <div class="hero-bg"></div>
@@ -1527,15 +1555,40 @@ function loadStaff() {
     card.onmouseover = function(){ this.style.transform='translateY(-4px)'; this.style.borderColor='var(--gold)'; };
     card.onmouseout = function(){ this.style.transform='translateY(0)'; this.style.borderColor='var(--border-sub)'; };
     
-    var photo = member.photo ? '<img src="'+member.photo+'" style="width:100%;height:180px;object-fit:cover;border-radius:4px;margin-bottom:16px;border:1px solid var(--border-sub);">' : '<div style="width:100%;height:180px;background:linear-gradient(135deg,rgba(107,33,168,0.3),rgba(201,168,76,0.1));border-radius:4px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-size:2rem;border:1px solid var(--border-sub);">👨</div>';
+    var photo = member.photo ? '<img src="'+member.photo+'" style="width:100%;height:180px;object-fit:cover;border-radius:4px;margin-bottom:16px;border:1px solid var(--border-sub);cursor:pointer;" onclick="openStaffBio(\''+member.id+'\')">' : '<div style="width:100%;height:180px;background:linear-gradient(135deg,rgba(107,33,168,0.3),rgba(201,168,76,0.1));border-radius:4px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-size:2rem;border:1px solid var(--border-sub);cursor:pointer;" onclick="openStaffBio(\''+member.id+'\')">👨</div>';
     
     card.innerHTML = photo +
       '<div style="font-family:Playfair Display,serif;font-size:1.1rem;font-weight:700;margin-bottom:6px;">'+member.name+'</div>' +
       '<div style="font-size:0.75rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;font-weight:700;">'+member.role+'</div>' +
-      '<div style="font-size:0.75rem;color:var(--muted);line-height:1.6;">Certified instructor with expertise in advanced techniques and student success.</div>';
+      '<div style="font-size:0.75rem;color:var(--muted);line-height:1.6;margin-bottom:16px;">Certified instructor with expertise in advanced techniques and student success.</div>' +
+      '<button onclick="openStaffBio(\''+member.id+'\')" style="background:var(--gold);color:#000;border:none;padding:10px 20px;font-weight:700;border-radius:4px;cursor:pointer;font-size:0.75rem;letter-spacing:1px;transition:all 0.2s;width:100%;" onmouseover="this.style.background=\'var(--gold-light)\'" onmouseout="this.style.background=\'var(--gold)\'">VIEW MORE</button>';
     
     grid.appendChild(card);
   });
+}
+
+function openStaffBio(staffId) {
+  var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+  var member = staff.find(function(s) { return s.id === staffId; });
+  if (!member) return;
+  
+  document.getElementById('staffBioName').textContent = member.name;
+  document.getElementById('staffBioRole').textContent = member.role;
+  document.getElementById('staffBioBio').textContent = member.bio || 'Professional instructor with expertise in barbering and student success.';
+  
+  var photoDiv = document.getElementById('staffBioPhoto');
+  if (member.photo) {
+    photoDiv.style.backgroundImage = 'url(' + member.photo + ')';
+  } else {
+    photoDiv.style.background = 'linear-gradient(135deg,rgba(107,33,168,0.3),rgba(201,168,76,0.1))';
+    photoDiv.innerHTML = '<div style="font-size:4rem;">👨</div>';
+  }
+  
+  document.getElementById('staffBioModal').style.display = 'flex';
+}
+
+function closeStaffBio() {
+  document.getElementById('staffBioModal').style.display = 'none';
 }
 
 // ─── TOGGLE MODELS ────────────────────────────────────────────
@@ -1775,6 +1828,8 @@ window.closePaymentModal = closePaymentModal;
 window.closePaymentConfirm = closePaymentConfirm;
 window.proceedToUnlock = proceedToUnlock;
 window.toggleTierModels = toggleTierModels;
+window.openStaffBio = openStaffBio;
+window.closeStaffBio = closeStaffBio;
 window.toggleNav = toggleNav;
 window.closeNav = closeNav;
 window.showStudentProfile = showStudentProfile;

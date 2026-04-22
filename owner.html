@@ -820,6 +820,38 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
   </div>
 </div>
 
+<!-- EDIT STAFF MODAL -->
+<div id="editStaffModal" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;align-items:center;justify-content:center;padding:20px;visibility:hidden;opacity:0;transition:opacity 0.2s;">
+  <div style="background:var(--card);border:1px solid var(--border);max-width:600px;width:100%;max-height:88vh;overflow-y:auto;position:relative;">
+    <div style="padding:28px 28px 20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;"><em id="editStaffName" style="font-style:italic;color:var(--gold);"></em></div>
+        <div style="font-size:0.7rem;color:#555;margin-top:4px;" id="editStaffRole"></div>
+      </div>
+      <button onclick="closeEditStaff()" style="background:transparent;border:1px solid #333;color:#666;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;flex-shrink:0;transition:all 0.2s;">✕</button>
+    </div>
+    <div style="padding:24px 28px;">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-input" id="staffEditName" placeholder="Full name">
+      
+      <label class="form-label" style="margin-top:16px;">Role/Title</label>
+      <input type="text" class="form-input" id="staffEditRole" placeholder="e.g., Lead Instructor">
+      
+      <label class="form-label" style="margin-top:16px;">Bio</label>
+      <textarea class="form-textarea" id="staffEditBio" placeholder="Staff member biography and credentials" style="min-height:80px;"></textarea>
+      
+      <label class="form-label" style="margin-top:16px;">Photo</label>
+      <input type="file" class="form-input" id="staffEditPhoto" accept="image/*" onchange="previewStaffPhoto(event)">
+      <div id="staffPhotoPreview" style="width:100px;height:100px;background:#0f0d0a;border:1px solid var(--border-sub);margin-top:8px;display:none;background-size:cover;border-radius:4px;background-position:center;"></div>
+
+      <div style="display:flex;gap:12px;margin-top:20px;">
+        <button class="btn-submit" onclick="saveEditedStaff()" style="flex:1;">Save Changes</button>
+        <button class="btn-submit" style="background:var(--red);flex:1;cursor:pointer;" onclick="closeEditStaff()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- EDIT ALUMNI MODAL -->
 <div id="editAlumnusModal" style="display:flex;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;align-items:center;justify-content:center;padding:20px;visibility:hidden;opacity:0;transition:opacity 0.2s;">
   <div style="background:var(--card);border:1px solid var(--border);max-width:600px;width:100%;max-height:88vh;overflow-y:auto;position:relative;">
@@ -1340,7 +1372,7 @@ function renderStaff() {
     div.className = 'staff-row';
     var bioText = m.bio ? '<div class="row-meta" style="margin-top:6px;font-size:0.7rem;line-height:1.4;">' + m.bio + '</div>' : '';
     div.innerHTML = '<div><div class="row-name">' + m.name + '</div><div class="row-meta">' + m.role + '</div>' + bioText + '</div>' +
-      '<div class="row-actions"><button class="btn-sm danger" onclick="deleteStaff(\'' + m.id + '\')">Delete</button></div>';
+      '<div class="row-actions"><button class="btn-sm" onclick="openEditStaff(\'' + m.id + '\')">Edit</button><button class="btn-sm danger" onclick="deleteStaff(\'' + m.id + '\')">Delete</button></div>';
     list.appendChild(div);
   });
 }
@@ -1352,6 +1384,91 @@ function deleteStaff(id) {
   localStorage.setItem('schoolStaff', JSON.stringify(staff));
   syncToFirebase('schoolStaff', staff);
   renderStaff();
+}
+
+function openEditStaff(id) {
+  var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+  var member = staff.find(function(s) { return s.id === id; });
+  if (!member) { alert('Staff member not found'); return; }
+  
+  window.currentEditStaffId = id;
+  document.getElementById('editStaffName').textContent = member.name;
+  document.getElementById('editStaffRole').textContent = member.role;
+  document.getElementById('staffEditName').value = member.name;
+  document.getElementById('staffEditRole').value = member.role;
+  document.getElementById('staffEditBio').value = member.bio || '';
+  
+  var preview = document.getElementById('staffPhotoPreview');
+  if (member.photo) {
+    preview.style.backgroundImage = 'url(' + member.photo + ')';
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+  
+  document.getElementById('staffEditPhoto').value = '';
+  document.getElementById('editStaffModal').style.visibility = 'visible';
+  document.getElementById('editStaffModal').style.opacity = '1';
+}
+
+function closeEditStaff() {
+  document.getElementById('editStaffModal').style.visibility = 'hidden';
+  document.getElementById('editStaffModal').style.opacity = '0';
+  window.currentEditStaffId = null;
+}
+
+function previewStaffPhoto(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var preview = document.getElementById('staffPhotoPreview');
+    preview.style.backgroundImage = 'url(' + e.target.result + ')';
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveEditedStaff() {
+  var id = window.currentEditStaffId;
+  if (!id) { alert('Error: Staff ID not found'); return; }
+  
+  var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+  var member = staff.find(function(s) { return s.id === id; });
+  if (!member) { alert('Staff member not found'); return; }
+  
+  var name = document.getElementById('staffEditName').value.trim();
+  var role = document.getElementById('staffEditRole').value.trim();
+  var bio = document.getElementById('staffEditBio').value.trim();
+  
+  if (!name || !role) { alert('Enter name and role'); return; }
+  
+  var photoFile = document.getElementById('staffEditPhoto').files[0];
+  
+  if (photoFile) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      member.name = name;
+      member.role = role;
+      member.bio = bio;
+      member.photo = e.target.result;
+      localStorage.setItem('schoolStaff', JSON.stringify(staff));
+      syncToFirebase('schoolStaff', staff);
+      renderStaff();
+      closeEditStaff();
+      alert('Staff member updated!');
+    };
+    reader.readAsDataURL(photoFile);
+  } else {
+    member.name = name;
+    member.role = role;
+    member.bio = bio;
+    localStorage.setItem('schoolStaff', JSON.stringify(staff));
+    syncToFirebase('schoolStaff', staff);
+    renderStaff();
+    closeEditStaff();
+    alert('Staff member updated!');
+  }
 }
 
 // ─── ALUMNI & GRADUATION ───────────────────────────────────────
@@ -3237,6 +3354,10 @@ window.handleModuleVideoSelect = handleModuleVideoSelect;
 window.saveModule = saveModule;
 window.deleteModule = deleteModule;
 window.addStaffMember = addStaffMember;
+window.openEditStaff = openEditStaff;
+window.closeEditStaff = closeEditStaff;
+window.previewStaffPhoto = previewStaffPhoto;
+window.saveEditedStaff = saveEditedStaff;
 window.graduateStudent = graduateStudent;
 window.addModuleToTier = addModuleToTier;
 window.closeModuleModal = closeModuleModal;
