@@ -782,12 +782,12 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
       
       <label class="form-label">Profile Photo (Upload)</label>
       <input type="file" class="form-input" id="editProfilePhoto" accept="image/*" onchange="previewProfilePhoto(event)">
-      <div id="photoPreview" style="width:80px;height:80px;background:#0f0d0a;border:1px solid var(--border-sub);margin-bottom:16px;display:none;background-size:cover;border-radius:4px;"></div>
+      <div style="position:relative;width:80px;display:none;" id="photoPreviewContainer"><div id="photoPreview" style="width:80px;height:80px;background:#0f0d0a;border:1px solid var(--border-sub);margin-bottom:16px;background-size:cover;border-radius:4px;"></div><button type="button" style="position:absolute;top:-8px;right:-8px;background:var(--red);border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:0.8rem;padding:0;display:flex;align-items:center;justify-content:center;" onclick="deleteStudentProfilePhoto()">✕</button></div>
 
       <label class="form-label">Haircuts / Portfolio (Upload Images)</label>
       <p style="font-size:0.7rem;color:#555;margin-bottom:12px;">Upload photos of haircuts to showcase on student profile</p>
       <input type="file" class="form-input" id="editHaircutPhotos" accept="image/*" multiple onchange="previewHaircutPhotos(event)">
-      <div id="haircutsPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin:16px 0;"></div>
+      <div id="haircutsPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin:16px 0;position:relative;"></div>
 
       <label class="form-label">Short Bio</label>
       <textarea class="form-textarea" id="editBio" placeholder="Brief description of the student (2-3 lines)" style="min-height:60px;"></textarea>
@@ -825,7 +825,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
       
       <label class="form-label" style="margin-top:16px;">Photo</label>
       <input type="file" class="form-input" id="staffEditPhoto" accept="image/*" onchange="previewStaffPhoto(event)">
-      <div id="staffPhotoPreview" style="width:100px;height:100px;background:#0f0d0a;border:1px solid var(--border-sub);margin-top:8px;display:none;background-size:cover;border-radius:4px;background-position:center;"></div>
+      <div style="position:relative;width:100px;display:none;" id="staffPhotoPreviewContainer"><div id="staffPhotoPreview" style="width:100px;height:100px;background:#0f0d0a;border:1px solid var(--border-sub);background-size:cover;border-radius:4px;background-position:center;"></div><button type="button" style="position:absolute;top:-8px;right:-8px;background:var(--red);border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:0.8rem;padding:0;display:flex;align-items:center;justify-content:center;" onclick="deleteStaffPhoto()">✕</button></div>
 
       <div style="display:flex;gap:12px;margin-top:20px;">
         <button class="btn-submit" onclick="saveEditedStaff()" style="flex:1;">Save Changes</button>
@@ -860,7 +860,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
       
       <label class="form-label" style="margin-top:16px;">Graduation Photo</label>
       <input type="file" class="form-input" id="alumEditPhoto" accept="image/*" onchange="previewAlumnusPhoto(event)">
-      <div id="alumPhotoPreview" style="width:100px;height:100px;background:#0f0d0a;border:1px solid var(--border-sub);margin-top:8px;display:none;background-size:cover;border-radius:4px;"></div>
+      <div style="position:relative;width:100px;display:none;" id="alumPhotoPreviewContainer"><div id="alumPhotoPreview" style="width:100px;height:100px;background:#0f0d0a;border:1px solid var(--border-sub);background-size:cover;border-radius:4px;"></div><button type="button" style="position:absolute;top:-8px;right:-8px;background:var(--red);border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:0.8rem;padding:0;display:flex;align-items:center;justify-content:center;" onclick="deleteAlumniPhoto()">✕</button></div>
 
       <div style="display:flex;gap:12px;margin-top:20px;">
         <button class="btn-submit" onclick="saveEditedAlumnus()" style="flex:1;">Save Changes</button>
@@ -1446,9 +1446,9 @@ function openEditStaff(id) {
   var preview = document.getElementById('staffPhotoPreview');
   if (member.photo) {
     preview.style.backgroundImage = 'url(' + member.photo + ')';
-    preview.style.display = 'block';
+    document.getElementById('staffPhotoPreviewContainer').style.display = 'block';
   } else {
-    preview.style.display = 'none';
+    document.getElementById('staffPhotoPreviewContainer').style.display = 'none';
   }
   
   document.getElementById('staffEditPhoto').value = '';
@@ -1470,7 +1470,7 @@ function previewStaffPhoto(event) {
     openCropModal(e.target.result, function(croppedImageUrl) {
       var preview = document.getElementById('staffPhotoPreview');
       preview.style.backgroundImage = 'url(' + croppedImageUrl + ')';
-      preview.style.display = 'block';
+      document.getElementById('staffPhotoPreviewContainer').style.display = 'block';
     });
   };
   reader.readAsDataURL(file);
@@ -2135,9 +2135,9 @@ function openEditStudent(id) {
   if (student.profilePhoto) {
     var preview = document.getElementById('photoPreview');
     preview.style.backgroundImage = 'url(' + student.profilePhoto + ')';
-    preview.style.display = 'block';
+    document.getElementById('photoPreviewContainer').style.display = 'block';
   } else {
-    document.getElementById('photoPreview').style.display = 'none';
+    document.getElementById('photoPreviewContainer').style.display = 'none';
   }
   
   // Show haircut photos preview
@@ -2145,7 +2145,7 @@ function openEditStudent(id) {
   var haircutPhotos = Array.isArray(student.haircutPhotos) ? student.haircutPhotos : [];
   if (haircutPhotos && haircutPhotos.length > 0) {
     haircutsPreview.innerHTML = haircutPhotos.map(function(photo, idx) {
-      return '<div style="width:80px;height:80px;background-size:cover;border-radius:4px;border:1px solid var(--border-sub);background-image:url(' + photo + ');position:relative;" title="Haircut ' + (idx+1) + '"></div>';
+      return '<div style="width:80px;height:80px;background-size:cover;border-radius:4px;border:1px solid var(--border-sub);background-image:url(' + photo + ');position:relative;" title="Haircut ' + (idx+1) + '"><button type="button" style="position:absolute;top:-8px;right:-8px;background:var(--red);border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:0.8rem;padding:0;display:flex;align-items:center;justify-content:center;" onclick="deleteStudentHaircutPhoto(' + idx + ')">\u2715</button></div>';
     }).join('');
   } else {
     haircutsPreview.innerHTML = '<div style="grid-column:1/-1;color:#555;font-size:0.75rem;padding:12px;text-align:center;">No haircut photos uploaded yet</div>';
@@ -2198,9 +2198,9 @@ function openEditAlumnus(idx) {
   
   if (alumnus.photo) {
     document.getElementById('alumPhotoPreview').style.backgroundImage = 'url(' + alumnus.photo + ')';
-    document.getElementById('alumPhotoPreview').style.display = 'block';
+    document.getElementById('alumPhotoPreviewContainer').style.display = 'block';
   } else {
-    document.getElementById('alumPhotoPreview').style.display = 'none';
+    document.getElementById('alumPhotoPreviewContainer').style.display = 'none';
   }
   
   document.getElementById('editAlumnusModal').style.visibility = 'visible';
@@ -2221,7 +2221,7 @@ function previewAlumnusPhoto(e) {
     openCropModal(ev.target.result, function(croppedImageUrl) {
       var preview = document.getElementById('alumPhotoPreview');
       preview.style.backgroundImage = 'url(' + croppedImageUrl + ')';
-      preview.style.display = 'block';
+      document.getElementById('alumPhotoPreviewContainer').style.display = 'block';
     });
   };
   reader.readAsDataURL(file);
@@ -2322,7 +2322,7 @@ function previewProfilePhoto(e) {
     openCropModal(ev.target.result, function(croppedImageUrl) {
       var preview = document.getElementById('photoPreview');
       preview.style.backgroundImage = 'url(' + croppedImageUrl + ')';
-      preview.style.display = 'block';
+      document.getElementById('photoPreviewContainer').style.display = 'block';
     });
   };
   reader.readAsDataURL(file);
@@ -2343,12 +2343,76 @@ function previewHaircutPhotos(e) {
       loaded++;
       if (loaded === files.length) {
         preview.innerHTML = previews.map(function(photo, i) {
-          return '<div style="width:80px;height:80px;background-size:cover;border-radius:4px;border:1px solid var(--border-sub);background-image:url(' + photo + ');position:relative;" title="Haircut ' + (i+1) + '"></div>';
+          return '<div style="width:80px;height:80px;background-size:cover;border-radius:4px;border:1px solid var(--border-sub);background-image:url(' + photo + ');position:relative;" title="Haircut ' + (i+1) + '"><button type="button" style="position:absolute;top:-8px;right:-8px;background:var(--red);border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:0.8rem;padding:0;display:flex;align-items:center;justify-content:center;" onclick="deleteStudentHaircutPhoto(' + i + ')">\u2715</button></div>';
         }).join('');
       }
     };
     reader.readAsDataURL(file);
   });
+}
+
+// Delete Functions for Pictures
+function deleteStudentProfilePhoto() {
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var studentId = window.currentEditingStudentId;
+  var student = students.find(function(s) { return s.id === studentId; });
+  if (!student) return;
+  
+  student.profilePhoto = null;
+  localStorage.setItem('students', JSON.stringify(students));
+  syncToFirebase('students', students);
+  
+  document.getElementById('photoPreviewContainer').style.display = 'none';
+  alert('Profile photo deleted');
+}
+
+function deleteStudentHaircutPhoto(idx) {
+  var students = JSON.parse(localStorage.getItem('students') || '[]');
+  var studentId = window.currentEditingStudentId;
+  var student = students.find(function(s) { return s.id === studentId; });
+  if (!student || !student.haircutPhotos) return;
+  
+  student.haircutPhotos.splice(idx, 1);
+  localStorage.setItem('students', JSON.stringify(students));
+  syncToFirebase('students', students);
+  
+  // Re-render haircut photos
+  var haircutsPreview = document.getElementById('haircutsPreview');
+  var haircutPhotos = student.haircutPhotos || [];
+  if (haircutPhotos.length > 0) {
+    haircutsPreview.innerHTML = haircutPhotos.map(function(photo, i) {
+      return '<div style="width:80px;height:80px;background-size:cover;border-radius:4px;border:1px solid var(--border-sub);background-image:url(' + photo + ');position:relative;" title="Haircut ' + (i+1) + '"><button type="button" style="position:absolute;top:-8px;right:-8px;background:var(--red);border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:0.8rem;padding:0;display:flex;align-items:center;justify-content:center;" onclick="deleteStudentHaircutPhoto(' + i + ')">\u2715</button></div>';
+    }).join('');
+  } else {
+    haircutsPreview.innerHTML = '<div style="grid-column:1/-1;color:#555;font-size:0.75rem;padding:12px;text-align:center;">No haircut photos uploaded yet</div>';
+  }
+}
+
+function deleteStaffPhoto() {
+  var staff = JSON.parse(localStorage.getItem('schoolStaff') || '[]');
+  var staffId = window.currentEditStaffId;
+  var member = staff.find(function(s) { return s.id === staffId; });
+  if (!member) return;
+  
+  member.photo = null;
+  localStorage.setItem('schoolStaff', JSON.stringify(staff));
+  syncToFirebase('schoolStaff', staff);
+  
+  document.getElementById('staffPhotoPreviewContainer').style.display = 'none';
+  alert('Staff photo deleted');
+}
+
+function deleteAlumniPhoto() {
+  var alumni = JSON.parse(localStorage.getItem('alumni') || '[]');
+  var alumnus = alumni[editingAlumnusIdx];
+  if (!alumnus) return;
+  
+  alumnus.photo = null;
+  localStorage.setItem('alumni', JSON.stringify(alumni));
+  syncToFirebase('alumni', alumni);
+  
+  document.getElementById('alumPhotoPreviewContainer').style.display = 'none';
+  alert('Alumni photo deleted');
 }
 
 function loadStudentSatisfactionReports(studentId, studentIdDisplay) {
