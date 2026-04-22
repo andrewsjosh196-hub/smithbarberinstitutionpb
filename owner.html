@@ -2372,15 +2372,29 @@ function previewHaircutPhotos(e) {
   var previews = [];
   var loaded = 0;
   
+  // Get existing photos from preview
+  var existingPhotos = [];
+  preview.querySelectorAll('[style*="background-image"]').forEach(function(div) {
+    var bgImage = div.style.backgroundImage;
+    var urlMatch = bgImage.match(/url\(['"]?(.+?)['"]?\)/);
+    if (urlMatch && urlMatch[1]) {
+      existingPhotos.push(urlMatch[1]);
+    }
+  });
+  
   Array.from(files).forEach(function(file, idx) {
     var reader = new FileReader();
     reader.onload = function(ev) {
       previews[idx] = ev.target.result;
       loaded++;
       if (loaded === files.length) {
-        preview.innerHTML = previews.map(function(photo, i) {
+        // Combine existing + new photos
+        var allPhotos = existingPhotos.concat(previews);
+        preview.innerHTML = allPhotos.map(function(photo, i) {
           return '<div style="width:80px;height:80px;background-size:cover;border-radius:4px;border:1px solid var(--border-sub);background-image:url(' + photo + ');position:relative;" title="Haircut ' + (i+1) + '"><button type="button" style="position:absolute;top:-8px;right:-8px;background:var(--red);border:none;color:white;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:0.8rem;padding:0;display:flex;align-items:center;justify-content:center;" onclick="deleteStudentHaircutPhoto(' + i + ')">\u2715</button></div>';
         }).join('');
+        // Clear file input so user can upload same file again if needed
+        document.getElementById('editHaircutPhotos').value = '';
       }
     };
     reader.readAsDataURL(file);
