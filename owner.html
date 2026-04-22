@@ -349,7 +349,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
           <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;display:flex;flex-direction:column;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
               <span style="font-size:1.5rem;">🥇</span>
-              <input type="text" class="form-input" id="tier1Name" placeholder="Tier 1 Title" style="font-weight:700;font-size:1rem;padding:8px;border:1px solid var(--border-sub);flex:1;">
+              <div style="font-weight:700;font-size:1rem;color:var(--white);">Tier 1</div>
             </div>
             <button class="btn-submit" onclick="openLessonsModal('tier1')" style="background:linear-gradient(135deg,#c9a84c,#e5c97a);border:none;padding:12px;border-radius:4px;cursor:pointer;color:#000;font-weight:700;margin-bottom:8px;">📚 Manage Lessons</button>
             <button class="btn-submit" onclick="saveTierData('tier1')" style="background:var(--purple);border:none;padding:8px;border-radius:4px;cursor:pointer;color:var(--white);font-size:0.9rem;">Save Tier 1</button>
@@ -358,7 +358,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
           <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;display:flex;flex-direction:column;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
               <span style="font-size:1.5rem;">🏆</span>
-              <input type="text" class="form-input" id="tier2Name" placeholder="Tier 2 Title" style="font-weight:700;font-size:1rem;padding:8px;border:1px solid var(--border-sub);flex:1;">
+              <div style="font-weight:700;font-size:1rem;color:var(--white);">Tier 2</div>
             </div>
             <button class="btn-submit" onclick="openLessonsModal('tier2')" style="background:linear-gradient(135deg,#c9a84c,#e5c97a);border:none;padding:12px;border-radius:4px;cursor:pointer;color:#000;font-weight:700;margin-bottom:8px;">📚 Manage Lessons</button>
             <button class="btn-submit" onclick="saveTierData('tier2')" style="background:var(--purple);border:none;padding:8px;border-radius:4px;cursor:pointer;color:var(--white);font-size:0.9rem;">Save Tier 2</button>
@@ -367,7 +367,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
           <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;display:flex;flex-direction:column;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
               <span style="font-size:1.5rem;">💼</span>
-              <input type="text" class="form-input" id="tier3Name" placeholder="Tier 3 Title" style="font-weight:700;font-size:1rem;padding:8px;border:1px solid var(--border-sub);flex:1;">
+              <div style="font-weight:700;font-size:1rem;color:var(--white);">Tier 3</div>
             </div>
             <button class="btn-submit" onclick="openLessonsModal('tier3')" style="background:linear-gradient(135deg,#c9a84c,#e5c97a);border:none;padding:12px;border-radius:4px;cursor:pointer;color:#000;font-weight:700;margin-bottom:8px;">📚 Manage Lessons</button>
             <button class="btn-submit" onclick="saveTierData('tier3')" style="background:var(--purple);border:none;padding:8px;border-radius:4px;cursor:pointer;color:var(--white);font-size:0.9rem;">Save Tier 3</button>
@@ -376,7 +376,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
           <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;display:flex;flex-direction:column;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
               <span style="font-size:1.5rem;">🎓</span>
-              <input type="text" class="form-input" id="tier4Name" placeholder="Tier 4 Title" style="font-weight:700;font-size:1rem;padding:8px;border:1px solid var(--border-sub);flex:1;">
+              <div style="font-weight:700;font-size:1rem;color:var(--white);">Tier 4</div>
             </div>
             <button class="btn-submit" onclick="openLessonsModal('tier4')" style="background:linear-gradient(135deg,#c9a84c,#e5c97a);border:none;padding:12px;border-radius:4px;cursor:pointer;color:#000;font-weight:700;margin-bottom:8px;">📚 Manage Lessons</button>
             <button class="btn-submit" onclick="saveTierData('tier4')" style="background:var(--purple);border:none;padding:8px;border-radius:4px;cursor:pointer;color:var(--white);font-size:0.9rem;">Save Tier 4</button>
@@ -2579,8 +2579,8 @@ function openLessonsModal(tierName) {
   currentEditingTier = tierName;
   currentEditingLessonIdx = null;
   
-  var tierData = getTierData()[tierName] || {};
-  document.getElementById('lessonsListTitle').textContent = (tierData.name || tierName) + ' - Lessons';
+  var tierLabels = { tier1: 'Tier 1', tier2: 'Tier 2', tier3: 'Tier 3', tier4: 'Tier 4' };
+  document.getElementById('lessonsListTitle').textContent = tierLabels[tierName] + ' - Lessons';
   document.getElementById('lessonsModal').style.display = 'block';
   
   renderLessonsList();
@@ -2746,15 +2746,10 @@ function deleteLessonPicture(picIdx) {
 }
 
 function saveTierData(tierName) {
-  var nameInput = document.getElementById(tierName + 'Name');
-  if (!nameInput) return;
-  
   var currentData = getTierData();
   if (!currentData[tierName]) {
     currentData[tierName] = {};
   }
-  
-  currentData[tierName].name = nameInput.value || currentData[tierName].name || '';
   
   tierData = currentData;
   localStorage.setItem('tierData', JSON.stringify(currentData));
