@@ -2157,6 +2157,7 @@ function openEditStudent(id) {
     }
     
     editingStudentId = id;
+    window.currentEditingStudentId = id;
     document.getElementById('editStudentName').textContent = student.name;
     document.getElementById('editStudentId').textContent = student.studentId;
     document.getElementById('editName').value = student.name;
@@ -2216,6 +2217,7 @@ function closeEditStudent() {
   document.getElementById('editStudentModal').style.visibility = 'hidden';
   document.getElementById('editStudentModal').style.opacity = '0';
   editingStudentId = null;
+  window.currentEditingStudentId = null;
 }
 
 function openEditAlumnus(idx) {
