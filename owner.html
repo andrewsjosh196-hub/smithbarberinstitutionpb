@@ -739,7 +739,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
       <div class="grid-2">
         <div>
           <label class="form-label">Name</label>
-          <input type="text" class="form-input" id="editName" placeholder="Full name">
+          <input type="text" class="form-input" id="editName" placeholder="Full name" readonly style="background:#0a0806;color:#999;cursor:not-allowed;">
         </div>
         <div>
           <label class="form-label">Email</label>
@@ -815,7 +815,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
     </div>
     <div style="padding:24px 28px;">
       <label class="form-label">Name</label>
-      <input type="text" class="form-input" id="staffEditName" placeholder="Full name">
+      <input type="text" class="form-input" id="staffEditName" placeholder="Full name" readonly style="background:#0a0806;color:#999;cursor:not-allowed;">
       
       <label class="form-label" style="margin-top:16px;">Role/Title</label>
       <input type="text" class="form-input" id="staffEditRole" placeholder="e.g., Lead Instructor">
@@ -847,7 +847,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
     </div>
     <div style="padding:24px 28px;">
       <label class="form-label">Name</label>
-      <input type="text" class="form-input" id="alumEditName" placeholder="Full name">
+      <input type="text" class="form-input" id="alumEditName" placeholder="Full name" readonly style="background:#0a0806;color:#999;cursor:not-allowed;">
       
       <label class="form-label" style="margin-top:16px;">Graduation Date</label>
       <input type="date" class="form-input" id="alumEditGradDate">
@@ -1474,13 +1474,11 @@ function saveEditedStaff() {
   var member = staff.find(function(s) { return s.id === id; });
   if (!member) { alert('Staff member not found'); return; }
   
-  var name = document.getElementById('staffEditName').value.trim();
   var role = document.getElementById('staffEditRole').value.trim();
   var bio = document.getElementById('staffEditBio').value.trim();
   
-  if (!name || !role) { alert('Enter name and role'); return; }
+  if (!role) { alert('Enter role'); return; }
   
-  member.name = name;
   member.role = role;
   member.bio = bio;
   
@@ -2222,7 +2220,6 @@ function saveEditedAlumnus() {
   var alumnus = alumni[editingAlumnusIdx];
   if (!alumnus) return;
   
-  alumnus.name = document.getElementById('alumEditName').value;
   alumnus.graduationDate = document.getElementById('alumEditGradDate').value;
   alumnus.currentStatus = document.getElementById('alumEditStatus').value;
   alumnus.bio = document.getElementById('alumEditBio').value;
@@ -2383,7 +2380,6 @@ function saveEditedStudent() {
   var student = students.find(function(s){ return s.id === editingStudentId; });
   if (!student) return;
   
-  student.name = document.getElementById('editName').value;
   student.email = document.getElementById('editEmail').value;
   student.totalHours = parseFloat(document.getElementById('editHours').value) || 0;
   student.daysAttended = parseInt(document.getElementById('editDays').value) || 0;
