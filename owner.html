@@ -326,11 +326,19 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
         <h3 class="panel-title">Online Program <em>Tiers</em></h3>
         <p style="font-size:0.8rem;color:#555;margin-bottom:16px;">Edit tier names, pricing, and modules. Changes save automatically.</p>
         
-        <!-- HIERARCHY VIEW -->
-        <div style="background:#0a0806;border:1px solid rgba(201,168,76,0.3);border-radius:8px;padding:20px;margin-bottom:24px;">
-          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--gold);margin-bottom:16px;font-weight:700;">📊 Quick Edit View - Click to Expand</div>
-          <div id="coursesHierarchyView" style="display:flex;flex-direction:column;gap:12px;"></div>
-          <button class="btn-submit" onclick="window.renderCoursesHierarchy()" style="margin-top:12px;background:rgba(201,168,76,0.2);border:1px solid rgba(201,168,76,0.4);">🔄 Refresh View</button>
+        <!-- LAUNCH BUTTON -->
+        <div style="background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(107,33,168,0.1));border:1px solid rgba(201,168,76,0.3);padding:16px;margin-bottom:20px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+          <div>
+            <div style="font-weight:700;margin-bottom:4px;color:var(--white);">🚀 Course Platform Status</div>
+            <div style="font-size:0.75rem;color:#888;"><span id="courseLaunchStatus">Coming Soon</span></div>
+          </div>
+          <button id="courseLaunchBtn" class="btn-submit" style="background:var(--gold);color:#000;border:none;font-weight:700;padding:10px 24px;white-space:nowrap;" onclick="toggleCoursesLaunch()">Launch Courses</button>
+        </div>
+        
+        <!-- HIERARCHY VIEW - SIMPLIFIED FLOW VIEW (Hidden for simplified editing) -->
+        <div style="background:#0a0806;border:1px solid rgba(201,168,76,0.3);border-radius:8px;padding:20px;margin-bottom:24px;display:none;">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--gold);margin-bottom:16px;font-weight:700;">📊 Course Structure</div>
+          <div style="font-size:0.85rem;color:#999;">Course content is now simplified. Edit above: Title, Description, Passage, Images, and Videos for each tier.</div>
         </div>
         
         <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
@@ -343,120 +351,96 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
         <!-- TIER 1 EDIT -->
         <div id="tier1Content" style="display:block;">
           <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
-            <div class="grid-2">
-              <div>
-                <label class="form-label">Tier 1 Name</label>
-                <input type="text" class="form-input" id="tier1Name" placeholder="Beginner Barber Mastery" onchange="saveTierData('tier1')">
-              </div>
-              <div>
-                <label class="form-label">Price (Locked - $150)</label>
-                <input type="text" class="form-input" id="tier1Price" value="$150" readonly style="background:#0a0806;color:#888;cursor:not-allowed;">
-              </div>
-            </div>
-            <label class="form-label">Modules</label>
-            <div id="tier1ModulesList" class="module-list"></div>
-            <button class="btn-submit" onclick="window.addModuleToTier('tier1')" style="margin-bottom:12px;">+ Add Module</button>
+            <label class="form-label">Tier 1 Title</label>
+            <input type="text" class="form-input" id="tier1Name" placeholder="Beginner Barber Mastery" onchange="saveTierData('tier1')">
             
-            <hr style="border:none;border-top:1px solid var(--border-sub);margin:20px 0;">
-            <label class="form-label">Milestones & Tests</label>
-            <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">Set up milestone tests for this course</p>
-            <div id="tier1MilestonesList"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-              <input type="number" class="form-input" id="tier1MilestoneHours" placeholder="Hours (e.g. 300)" style="font-size:0.85rem;">
-              <input type="text" class="form-input" id="tier1MilestoneTest" placeholder="Test name" style="font-size:0.85rem;">
-            </div>
-            <button class="btn-submit" onclick="window.addMilestoneToTier('tier1')" style="margin-bottom:12px;">+ Add Milestone</button>
-            <button class="btn-submit" onclick="saveTierData('tier1')">Save Tier 1</button>
+            <label class="form-label" style="margin-top:12px;">Description</label>
+            <textarea class="form-textarea" id="tier1Desc" placeholder="Short description of this tier" style="min-height:60px;" onchange="saveTierData('tier1')"></textarea>
+            
+            <label class="form-label" style="margin-top:12px;">Main Content / Passage</label>
+            <textarea class="form-textarea" id="tier1Passage" placeholder="Main learning content for this tier" style="min-height:100px;" onchange="saveTierData('tier1')"></textarea>
+            
+            <label class="form-label" style="margin-top:12px;">Course Images</label>
+            <input type="file" class="form-input" id="tier1Images" accept="image/*" multiple>
+            <div id="tier1ImagesPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin-top:12px;"></div>
+            
+            <label class="form-label" style="margin-top:12px;">Course Videos (URLs)</label>
+            <p style="font-size:0.75rem;color:#555;margin-bottom:8px;">Paste YouTube/Vimeo URLs, one per line</p>
+            <textarea class="form-textarea" id="tier1Videos" placeholder="https://youtube.com/watch?v=...\nhttps://youtube.com/watch?v=..." style="min-height:80px;" onchange="saveTierData('tier1')"></textarea>
+            
+            <button class="btn-submit" onclick="saveTierData('tier1')" style="margin-top:16px;">Save Tier 1</button>
           </div>
         </div>
 
         <!-- TIER 2 EDIT -->
         <div id="tier2Content" style="display:none;">
           <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
-            <div class="grid-2">
-              <div>
-                <label class="form-label">Tier 2 Name</label>
-                <input type="text" class="form-input" id="tier2Name" placeholder="Advanced Barber Mastery" onchange="saveTierData('tier2')">
-              </div>
-              <div>
-                <label class="form-label">Price (Locked - $213)</label>
-                <input type="text" class="form-input" id="tier2Price" value="$213" readonly style="background:#0a0806;color:#888;cursor:not-allowed;">
-              </div>
-            </div>
-            <label class="form-label">Modules</label>
-            <div id="tier2ModulesList" class="module-list"></div>
-            <button class="btn-submit" onclick="window.addModuleToTier('tier2')" style="margin-bottom:12px;">+ Add Module</button>
+            <label class="form-label">Tier 2 Title</label>
+            <input type="text" class="form-input" id="tier2Name" placeholder="Advanced Barber Mastery" onchange="saveTierData('tier2')">
             
-            <hr style="border:none;border-top:1px solid var(--border-sub);margin:20px 0;">
-            <label class="form-label">Milestones & Tests</label>
-            <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">Set up milestone tests for this course</p>
-            <div id="tier2MilestonesList"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-              <input type="number" class="form-input" id="tier2MilestoneHours" placeholder="Hours (e.g. 300)" style="font-size:0.85rem;">
-              <input type="text" class="form-input" id="tier2MilestoneTest" placeholder="Test name" style="font-size:0.85rem;">
-            </div>
-            <button class="btn-submit" onclick="window.addMilestoneToTier('tier2')" style="margin-bottom:12px;">+ Add Milestone</button>
-            <button class="btn-submit" onclick="saveTierData('tier2')">Save Tier 2</button>
+            <label class="form-label" style="margin-top:12px;">Description</label>
+            <textarea class="form-textarea" id="tier2Desc" placeholder="Short description of this tier" style="min-height:60px;" onchange="saveTierData('tier2')"></textarea>
+            
+            <label class="form-label" style="margin-top:12px;">Main Content / Passage</label>
+            <textarea class="form-textarea" id="tier2Passage" placeholder="Main learning content for this tier" style="min-height:100px;" onchange="saveTierData('tier2')"></textarea>
+            
+            <label class="form-label" style="margin-top:12px;">Course Images</label>
+            <input type="file" class="form-input" id="tier2Images" accept="image/*" multiple>
+            <div id="tier2ImagesPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin-top:12px;"></div>
+            
+            <label class="form-label" style="margin-top:12px;">Course Videos (URLs)</label>
+            <p style="font-size:0.75rem;color:#555;margin-bottom:8px;">Paste YouTube/Vimeo URLs, one per line</p>
+            <textarea class="form-textarea" id="tier2Videos" placeholder="https://youtube.com/watch?v=...\nhttps://youtube.com/watch?v=..." style="min-height:80px;" onchange="saveTierData('tier2')"></textarea>
+            
+            <button class="btn-submit" onclick="saveTierData('tier2')" style="margin-top:16px;">Save Tier 2</button>
           </div>
         </div>
 
         <!-- TIER 3 EDIT -->
         <div id="tier3Content" style="display:none;">
           <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
-            <div class="grid-2">
-              <div>
-                <label class="form-label">Tier 3 Name</label>
-                <input type="text" class="form-input" id="tier3Name" placeholder="Barber Business & Shop Ownership" onchange="saveTierData('tier3')">
-              </div>
-              <div>
-                <label class="form-label">Price (Locked - $263)</label>
-                <input type="text" class="form-input" id="tier3Price" value="$263" readonly style="background:#0a0806;color:#888;cursor:not-allowed;">
-              </div>
-            </div>
-            <label class="form-label">Modules</label>
-            <div id="tier3ModulesList" class="module-list"></div>
-            <button class="btn-submit" onclick="window.addModuleToTier('tier3')" style="margin-bottom:12px;">+ Add Module</button>
+            <label class="form-label">Tier 3 Title</label>
+            <input type="text" class="form-input" id="tier3Name" placeholder="Barber Business & Shop Ownership" onchange="saveTierData('tier3')">
             
-            <hr style="border:none;border-top:1px solid var(--border-sub);margin:20px 0;">
-            <label class="form-label">Milestones & Tests</label>
-            <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">Set up milestone tests for this course</p>
-            <div id="tier3MilestonesList"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-              <input type="number" class="form-input" id="tier3MilestoneHours" placeholder="Hours (e.g. 300)" style="font-size:0.85rem;">
-              <input type="text" class="form-input" id="tier3MilestoneTest" placeholder="Test name" style="font-size:0.85rem;">
-            </div>
-            <button class="btn-submit" onclick="window.addMilestoneToTier('tier3')" style="margin-bottom:12px;">+ Add Milestone</button>
-            <button class="btn-submit" onclick="saveTierData('tier3')">Save Tier 3</button>
+            <label class="form-label" style="margin-top:12px;">Description</label>
+            <textarea class="form-textarea" id="tier3Desc" placeholder="Short description of this tier" style="min-height:60px;" onchange="saveTierData('tier3')"></textarea>
+            
+            <label class="form-label" style="margin-top:12px;">Main Content / Passage</label>
+            <textarea class="form-textarea" id="tier3Passage" placeholder="Main learning content for this tier" style="min-height:100px;" onchange="saveTierData('tier3')"></textarea>
+            
+            <label class="form-label" style="margin-top:12px;">Course Images</label>
+            <input type="file" class="form-input" id="tier3Images" accept="image/*" multiple>
+            <div id="tier3ImagesPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin-top:12px;"></div>
+            
+            <label class="form-label" style="margin-top:12px;">Course Videos (URLs)</label>
+            <p style="font-size:0.75rem;color:#555;margin-bottom:8px;">Paste YouTube/Vimeo URLs, one per line</p>
+            <textarea class="form-textarea" id="tier3Videos" placeholder="https://youtube.com/watch?v=...\nhttps://youtube.com/watch?v=..." style="min-height:80px;" onchange="saveTierData('tier3')"></textarea>
+            
+            <button class="btn-submit" onclick="saveTierData('tier3')" style="margin-top:16px;">Save Tier 3</button>
           </div>
         </div>
 
         <!-- TIER 4 EDIT -->
         <div id="tier4Content" style="display:none;">
           <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;margin-bottom:16px;border-radius:4px;">
-            <div class="grid-2">
-              <div>
-                <label class="form-label">Tier 4 Name</label>
-                <input type="text" class="form-input" id="tier4Name" placeholder="Arkansas State Board Prep" onchange="saveTierData('tier4')">
-              </div>
-              <div>
-                <label class="form-label">Price (Locked - $117)</label>
-                <input type="text" class="form-input" id="tier4Price" value="$117" readonly style="background:#0a0806;color:#888;cursor:not-allowed;">
-              </div>
-            </div>
-            <label class="form-label">Modules</label>
-            <div id="tier4ModulesList" class="module-list"></div>
-            <button class="btn-submit" onclick="window.addModuleToTier('tier4')" style="margin-bottom:12px;">+ Add Module</button>
+            <label class="form-label">Tier 4 Title</label>
+            <input type="text" class="form-input" id="tier4Name" placeholder="Arkansas State Board Prep" onchange="saveTierData('tier4')">
             
-            <hr style="border:none;border-top:1px solid var(--border-sub);margin:20px 0;">
-            <label class="form-label">Milestones & Tests</label>
-            <p style="font-size:0.8rem;color:#555;margin-bottom:12px;">Set up milestone tests for this course</p>
-            <div id="tier4MilestonesList"></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-              <input type="number" class="form-input" id="tier4MilestoneHours" placeholder="Hours (e.g. 300)" style="font-size:0.85rem;">
-              <input type="text" class="form-input" id="tier4MilestoneTest" placeholder="Test name" style="font-size:0.85rem;">
-            </div>
-            <button class="btn-submit" onclick="window.addMilestoneToTier('tier4')" style="margin-bottom:12px;">+ Add Milestone</button>
-            <button class="btn-submit" onclick="saveTierData('tier4')">Save Tier 4</button>
+            <label class="form-label" style="margin-top:12px;">Description</label>
+            <textarea class="form-textarea" id="tier4Desc" placeholder="Short description of this tier" style="min-height:60px;" onchange="saveTierData('tier4')"></textarea>
+            
+            <label class="form-label" style="margin-top:12px;">Main Content / Passage</label>
+            <textarea class="form-textarea" id="tier4Passage" placeholder="Main learning content for this tier" style="min-height:100px;" onchange="saveTierData('tier4')"></textarea>
+            
+            <label class="form-label" style="margin-top:12px;">Course Images</label>
+            <input type="file" class="form-input" id="tier4Images" accept="image/*" multiple>
+            <div id="tier4ImagesPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:12px;margin-top:12px;"></div>
+            
+            <label class="form-label" style="margin-top:12px;">Course Videos (URLs)</label>
+            <p style="font-size:0.75rem;color:#555;margin-bottom:8px;">Paste YouTube/Vimeo URLs, one per line</p>
+            <textarea class="form-textarea" id="tier4Videos" placeholder="https://youtube.com/watch?v=...\nhttps://youtube.com/watch?v=..." style="min-height:80px;" onchange="saveTierData('tier4')"></textarea>
+            
+            <button class="btn-submit" onclick="saveTierData('tier4')" style="margin-top:16px;">Save Tier 4</button>
           </div>
         </div>
       </div>
@@ -2013,6 +1997,7 @@ function initDash() {
       // Wait a bit for Firebase to load, then render
       setTimeout(function() {
         renderDashboardContent();
+        initCourseLaunchStatus();
       }, 1000);
     } else {
       console.log('Firebase not available, rendering from localStorage');
@@ -2423,6 +2408,33 @@ if (!tierData || typeof tierData !== 'object') {
   tierData = DEFAULT_TIER_DATA;
 }
 
+// ─── COURSES LAUNCH CONTROL ───────────────────────────────────
+function toggleCoursesLaunch() {
+  var isLaunched = localStorage.getItem('coursesLaunched') === 'true';
+  localStorage.setItem('coursesLaunched', isLaunched ? 'false' : 'true');
+  updateCourseLaunchStatus();
+  syncToFirebase('coursesLaunched', !isLaunched);
+  alert(isLaunched ? 'Courses hidden' : 'Courses launched! Live on the homepage.');
+}
+
+function updateCourseLaunchStatus() {
+  var isLaunched = localStorage.getItem('coursesLaunched') === 'true';
+  document.getElementById('courseLaunchStatus').textContent = isLaunched ? '✓ LIVE' : 'Coming Soon';
+  var btn = document.getElementById('courseLaunchBtn');
+  if (isLaunched) {
+    btn.textContent = 'Hide Courses';
+    btn.style.background = 'var(--red)';
+  } else {
+    btn.textContent = 'Launch Courses';
+    btn.style.background = 'var(--gold)';
+  }
+}
+
+function initCourseLaunchStatus() {
+  updateCourseLaunchStatus();
+}
+
+// ─── TIER DATA MANAGEMENT ─────────────────────────────────────
 function saveTierData(tierName) {
   var nameInput = document.getElementById(tierName + 'Name');
   var priceInput = document.getElementById(tierName + 'Price');
@@ -3358,6 +3370,7 @@ window.openEditStaff = openEditStaff;
 window.closeEditStaff = closeEditStaff;
 window.previewStaffPhoto = previewStaffPhoto;
 window.saveEditedStaff = saveEditedStaff;
+window.toggleCoursesLaunch = toggleCoursesLaunch;
 window.graduateStudent = graduateStudent;
 window.addModuleToTier = addModuleToTier;
 window.closeModuleModal = closeModuleModal;

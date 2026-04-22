@@ -530,6 +530,22 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px 32px 28px
       <strong>📚 For Everyone:</strong> These courses are for anyone interested in barbering—students, professionals, or curious learners. No student account required. Just pick a tier to get instant lifetime access to all materials. <a href="courses-public.html" style="color:var(--gold);">Browse all courses →</a> | <a href="#login" style="color:var(--gold);">Already enrolled?</a> Log in to your materials.
     </div>
 
+    <!-- COURSES PLACEHOLDER: COMING SOON OR LAUNCHED -->
+    <div id="coursesPlaceholder" style="text-align:center;padding:80px 40px;background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(107,33,168,0.08));border:2px dashed var(--border);border-radius:8px;margin:40px 0;">
+      <div style="font-size:3rem;margin-bottom:20px;">🚀</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;margin-bottom:12px;color:var(--gold);">Coming Soon</h3>
+      <p style="font-size:0.95rem;color:var(--muted);margin-bottom:24px;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.8;">Our comprehensive online course platform with 4 tiered programs is being carefully crafted to provide you with world-class barbering education. Stay tuned for the launch!</p>
+      <div style="font-size:0.85rem;color:#888;">
+        <div>✓ Tier 1: Beginner Barber Mastery</div>
+        <div>✓ Tier 2: Advanced Barber Mastery</div>
+        <div>✓ Tier 3: Barber Business & Ownership</div>
+        <div>✓ Tier 4: State Board Licensing Prep</div>
+      </div>
+    </div>
+
+    <!-- TIERS SECTION (HIDDEN BY DEFAULT) -->
+    <div id="tiersSection" style="display:none;">
+
     <!-- TIER 1: BEGINNER -->
     <div style="margin-bottom:60px;position:relative;">
       <!-- Accent Lines -->
@@ -833,6 +849,8 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px 32px 28px
         <!-- Modules populated by JS -->
       </div>
     </div>
+
+    </div><!-- END tiersSection -->
   </div>
 </section>
 
@@ -1131,7 +1149,23 @@ function showPaymentRequired(tier, tierName, price) {
 // Start listening when page loads
 document.addEventListener('DOMContentLoaded', function() {
   setupPublicListeners();
+  checkCoursesLaunched();
 });
+
+// Check if courses are launched and display accordingly
+function checkCoursesLaunched() {
+  var isLaunched = localStorage.getItem('coursesLaunched') === 'true';
+  var tiersSection = document.getElementById('tiersSection');
+  var coursesPlaceholder = document.getElementById('coursesPlaceholder');
+  
+  if (isLaunched) {
+    tiersSection.style.display = 'block';
+    coursesPlaceholder.style.display = 'none';
+  } else {
+    tiersSection.style.display = 'none';
+    coursesPlaceholder.style.display = 'block';
+  }
+}
 
 // ─── TIERED PROGRAM DATA ───────────────────────────────────────
 var tierData = {
@@ -1830,6 +1864,7 @@ window.proceedToUnlock = proceedToUnlock;
 window.toggleTierModels = toggleTierModels;
 window.openStaffBio = openStaffBio;
 window.closeStaffBio = closeStaffBio;
+window.checkCoursesLaunched = checkCoursesLaunched;
 window.toggleNav = toggleNav;
 window.closeNav = closeNav;
 window.showStudentProfile = showStudentProfile;
