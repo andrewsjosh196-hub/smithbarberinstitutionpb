@@ -309,11 +309,12 @@ function selectBarber(btn) {
 
 function showAvailability(student) {
   var info = document.getElementById('availabilityInfo');
-  if (student.barberAvailability) {
-    info.innerHTML = '⏰ ' + student.barberAvailability;
+  if (student.barberAvailability && student.barberAvailability.trim()) {
+    info.innerHTML = '⏰ Available: ' + student.barberAvailability;
     info.style.display = 'block';
   } else {
-    info.style.display = 'none';
+    info.innerHTML = '⏰ Availability not yet set - check back soon!';
+    info.style.display = 'block';
   }
 }
 
@@ -328,7 +329,15 @@ function updateTimeSlots() {
   
   // Get selected barber's availability
   var student = students.find(s => s.id === selectedBarber);
-  var barberAvailability = student && student.barberAvailability ? student.barberAvailability : 'Not specified';
+  var barberAvailability = student && student.barberAvailability ? student.barberAvailability.trim() : '';
+  
+  var grid = document.getElementById('timeGrid');
+  
+  // If no availability set, show message
+  if (!barberAvailability || barberAvailability === 'Not specified') {
+    grid.innerHTML = '<div style="grid-column:1/-1;color:#999;text-align:center;padding:24px;font-style:italic;">⏰ This barber hasn\'t set their availability yet. Check back soon!</div>';
+    return;
+  }
   
   // Generate time slots (9 AM - 5 PM, 30-min intervals)
   var slots = [];
@@ -340,21 +349,33 @@ function updateTimeSlots() {
   }
   
   grid.innerHTML = '';
+  var availableSlots = [];
+  
+  // Filter only slots that are within availability
   slots.forEach(time => {
-    var isBooked = bookings.some(b => b.date === dateInput && b.time === time && b.studentId === selectedBarber);
     var isAvailable = isAvailableForBooking(dateInput, time, barberAvailability);
-    var isUnavailable = isBooked || !isAvailable;
+    var isBooked = bookings.some(b => b.date === dateInput && b.time === time && b.studentId === selectedBarber);
     
+    if (isAvailable && !isBooked) {
+      availableSlots.push(time);
+    }
+  });
+  
+  // If no available slots on this date, show message
+  if (availableSlots.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;color:#999;text-align:center;padding:24px;font-style:italic;">No available times on this date</div>';
+    return;
+  }
+  
+  // Show only available slots
+  availableSlots.forEach(time => {
     var slot = document.createElement('button');
     slot.type = 'button';
     slot.textContent = time;
-    slot.className = 'time-slot' + (isUnavailable ? ' unavailable' : '');
-    slot.disabled = isUnavailable;
-    if (!isAvailable && !isBooked) {
-      slot.title = 'Outside barber availability';
-    }
+    slot.className = 'time-slot';
+    slot.disabled = false;
     slot.onclick = function() {
-      if (!isUnavailable) selectTime(this, time);
+      selectTime(this, time);
     };
     grid.appendChild(slot);
   });
