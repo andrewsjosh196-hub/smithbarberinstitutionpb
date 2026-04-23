@@ -181,14 +181,18 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px 32px 28px
 
 /* STUDENT PROFILES */
 .profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
-.profile-card{background:var(--card);border:1px solid var(--border);overflow:hidden;position:relative;cursor:pointer;transition:all 0.3s;text-decoration:none;color:inherit;}
+.profile-card{background:var(--card);border:1px solid var(--border);overflow:hidden;position:relative;cursor:pointer;transition:all 0.3s;text-decoration:none;color:inherit;display:flex;flex-direction:column;}
 .profile-card:hover{border-color:var(--gold);transform:translateY(-4px);}
 .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));}
 .profile-image{width:100%;height:140px;background:linear-gradient(135deg,rgba(107,33,168,0.2),rgba(201,168,76,0.1));display:flex;align-items:center;justify-content:center;font-size:2.5rem;overflow:hidden;background-size:cover;background-position:center;}
-.profile-body{padding:12px;}
+.profile-body{padding:12px;display:flex;flex-direction:column;flex:1;}
 .profile-name{font-family:'Playfair Display',serif;font-size:0.9rem;font-weight:700;margin-bottom:4px;color:var(--gold);}
 .profile-haircuts{font-size:0.65rem;color:var(--muted);margin-bottom:8px;line-height:1.4;}
-.profile-bio{font-size:0.7rem;color:#aaa;line-height:1.5;}
+.profile-bio{font-size:0.7rem;color:#aaa;line-height:1.5;flex:1;}
+.profile-btn-book{background:var(--gold);color:#000;border:none;padding:6px 12px;font-family:'Raleway',sans-serif;font-weight:700;font-size:0.65rem;cursor:pointer;border-radius:2px;transition:all 0.2s;text-transform:uppercase;letter-spacing:1px;flex:1;}
+.profile-btn-book:hover{background:var(--gold-light);}
+.profile-btn-view{background:#1c1a16;color:var(--muted);border:1px solid var(--border-sub);padding:6px 12px;font-family:'Raleway',sans-serif;font-weight:600;font-size:0.65rem;cursor:pointer;border-radius:2px;transition:all 0.2s;text-transform:uppercase;letter-spacing:1px;flex:1;}
+.profile-btn-view:hover{border-color:var(--gold);color:var(--gold);}
 @media(min-width:768px){.profile-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}.profile-image{height:160px;}.profile-body{padding:16px;}.profile-name{font-size:1rem;}.profile-bio{font-size:0.75rem;}}
 @media(min-width:1024px){.profile-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;}.profile-image{height:200px;}.profile-body{padding:20px;}.profile-name{font-size:1.1rem;}.profile-bio{font-size:0.78rem;}}
 .toggle-models{background:var(--gold);color:#000;border:none;padding:14px 40px;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.65rem;cursor:pointer;border-radius:4px;margin:20px auto;display:block;transition:all 0.3s;}
@@ -234,6 +238,7 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px 32px 28px
     <span class="nav-brand-sub">Next Generation Education</span>
   </div>
   <div class="nav-links">
+    <a href="#students">Book an Appointment</a>
     <a href="#courses">NEW Online Courses</a>
     <a href="#about">Why Us</a>
     <a href="teacher.html">Teacher Login</a>
@@ -250,6 +255,7 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px 32px 28px
 
 <div class="nav-overlay" id="navOverlay" onclick="window.closeNav()"></div>
 <nav class="side-nav" id="sideNav">
+  <a href="#students" onclick="window.closeNav()">Book an Appointment</a>
   <a href="#courses" onclick="window.closeNav()">NEW Online Courses</a>
   <a href="#about" onclick="window.closeNav()">Why Us</a>
   <a href="teacher.html" onclick="window.closeNav()">Teacher Login</a>
@@ -853,6 +859,19 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px 32px 28px
     </div>
 
     </div><!-- END tiersSection -->
+  </div>
+</section>
+
+<!-- BOOKING ANNOUNCEMENT -->
+<section style="background:linear-gradient(135deg,rgba(107,33,168,0.15),rgba(201,168,76,0.1));padding:60px 32px;">
+  <div class="section-inner" style="text-align:center;">
+    <p class="section-eyebrow">Professional Haircut Services</p>
+    <h2 class="section-title">Book with Our <em>Students</em></h2>
+    <div class="gold-rule" style="justify-content:center;margin-bottom:32px;"><div class="gold-diamond"></div></div>
+    <p style="font-size:1rem;color:var(--muted);line-height:1.8;max-width:600px;margin:0 auto 32px;">
+      Our student barbers are offering haircuts, fades, lineups, and shaves at competitive rates. Each appointment is supervised to ensure quality results. Book directly with your preferred barber below.
+    </p>
+    <a href="#students" class="btn-gold">Browse & Book Now</a>
   </div>
 </section>
 
@@ -1496,6 +1515,14 @@ function closeStudentProfile() {
   document.getElementById('studentProfileModal').style.display = 'none';
 }
 
+function goToBooking(studentId, studentName) {
+  // Store selected student in sessionStorage for booking.html
+  sessionStorage.setItem('preselectedStudentId', studentId);
+  sessionStorage.setItem('preselectedStudentName', studentName);
+  // Redirect to booking page
+  window.location.href = 'booking.html';
+}
+
 document.getElementById('courseModal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
 
 // ─── STUDENT LOGIN ─────────────────────────────────────────────
@@ -1759,11 +1786,8 @@ function loadStudentProfiles() {
   
   grid.innerHTML = '';
   activeStudents.forEach(function(student) {
-    var card = document.createElement('a');
-    card.href = '#';
+    var card = document.createElement('div');
     card.className = 'profile-card';
-    card.style.textDecoration = 'none';
-    card.style.color = 'inherit';
     
     var photoStyle = student.profilePhoto ? 'background-image:url(' + student.profilePhoto + ');' : '';
     var haircutPhotos = student.haircutPhotos ? (typeof student.haircutPhotos === 'string' ? JSON.parse(student.haircutPhotos) : student.haircutPhotos) : [];
@@ -1786,16 +1810,16 @@ function loadStudentProfiles() {
       '<div class="profile-name">' + student.name + '</div>' +
       haircutsHTML +
       '<div class="profile-bio">' + (student.bio || 'Emerging barber professional') + '</div>' +
+      '<div style="margin-top:12px;display:flex;gap:8px;">' +
+      '<button class="profile-btn-book" onclick="window.goToBooking(\'' + student.id + '\',\'' + student.name + '\')">📅 Book</button>' +
+      '<button class="profile-btn-view" onclick="window.showStudentProfile(' + JSON.stringify(student).replace(/"/g, '&quot;') + ')">View</button>' +
+      '</div>' +
       '</div>';
-    
-    card.onclick = function(e){ 
-      e.preventDefault();
-      window.showStudentProfile(student);
-    };
     
     grid.appendChild(card);
   });
 }
+
 
 // ─── STAFF & ALUMNI ────────────────────────────────────────────
 function loadStaffProfiles() {
@@ -1884,6 +1908,7 @@ window.toggleNav = toggleNav;
 window.closeNav = closeNav;
 window.showStudentProfile = showStudentProfile;
 window.closeStudentProfile = closeStudentProfile;
+window.goToBooking = goToBooking;
 
 // Close payment modals when clicking outside
 document.getElementById('emailModal').addEventListener('click', function(e){ if(e.target===this) closeEmailModal(); });

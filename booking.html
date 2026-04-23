@@ -260,6 +260,17 @@ document.addEventListener('DOMContentLoaded', function() {
   database.ref('students').once('value', snap => {
     students = snap.val() || [];
     loadBarberSelection();
+    
+    // Auto-select barber if coming from student profile
+    var preselectedId = sessionStorage.getItem('preselectedStudentId');
+    if (preselectedId) {
+      var btn = document.querySelector('[data-student-id="' + preselectedId + '"]');
+      if (btn) {
+        setTimeout(() => selectBarber(btn), 100);
+      }
+      sessionStorage.removeItem('preselectedStudentId');
+      sessionStorage.removeItem('preselectedStudentName');
+    }
   });
   
   database.ref('bookings').once('value', snap => {
