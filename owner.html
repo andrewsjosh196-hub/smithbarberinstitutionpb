@@ -762,6 +762,17 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
         </div>
       </div>
 
+      <div style="background:rgba(207,95,31,0.1);border:1px solid #cf5f1f;padding:16px;border-radius:4px;margin:16px 0;">
+        <label class="form-label" style="margin-top:0;margin-bottom:8px;">Deduct Hours (Remove Fraudulent Time)</label>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <div style="flex:1;">
+            <input type="number" class="form-input" id="deductHoursInput" min="0" step="0.5" placeholder="Hours to remove" style="margin:0;">
+          </div>
+          <button class="btn-submit" style="background:#cf5f1f;padding:10px 16px;white-space:nowrap;" onclick="deductStudentHours()">Deduct</button>
+        </div>
+        <div style="font-size:0.7rem;color:#999;margin-top:8px;">⚠️ This will reduce the student's total hours and remove entries from the bottom of their clock log.</div>
+      </div>
+
       <label class="form-label">Progress to 1500 Hours</label>
       <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:16px;border-radius:4px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
@@ -1606,9 +1617,9 @@ function graduateStudent(id) {
     clockLogHTML += '<div style="margin-top:40px;padding:20px;background:rgba(107,33,168,0.1);border:1px solid #c9a84c;border-radius:6px;">';
     clockLogHTML += '<h3 style="color:#c9a84c;margin-bottom:15px;text-transform:uppercase;font-size:14px;letter-spacing:1px;">Clock In/Out Log</h3>';
     clockLogHTML += '<table style="width:100%;border-collapse:collapse;font-size:13px;">';
-    clockLogHTML += '<tr style="background:rgba(201,168,76,0.2);"><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Date</td><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Clock In</td><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Clock Out</td><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Hours</td></tr>';
+    clockLogHTML += '<tr style="background:rgba(201,168,76,0.2);"><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Date</td><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Clock In</td><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Clock Out</td><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Hours</td><td style="padding:8px;border-bottom:1px solid #c9a84c;color:#e5c97a;font-weight:bold;">Action</td></tr>';
     
-    student.clockLog.forEach(function(log) {
+    student.clockLog.forEach(function(log, idx) {
       var inTime = new Date(log.in);
       var outTime = log.out ? new Date(log.out) : null;
       var hours = log.hours || 0;
@@ -1619,7 +1630,8 @@ function graduateStudent(id) {
       clockLogHTML += '<tr><td style="padding:8px;border-bottom:1px solid rgba(201,168,76,0.2);color:#faf8f5;">' + dateStr + '</td>';
       clockLogHTML += '<td style="padding:8px;border-bottom:1px solid rgba(201,168,76,0.2);color:#faf8f5;">' + inStr + '</td>';
       clockLogHTML += '<td style="padding:8px;border-bottom:1px solid rgba(201,168,76,0.2);color:#faf8f5;">' + outStr + '</td>';
-      clockLogHTML += '<td style="padding:8px;border-bottom:1px solid rgba(201,168,76,0.2);color:#e5c97a;font-weight:bold;">' + hours.toFixed(2) + '</td></tr>';
+      clockLogHTML += '<td style="padding:8px;border-bottom:1px solid rgba(201,168,76,0.2);color:#e5c97a;font-weight:bold;">' + hours.toFixed(2) + '</td>';
+      clockLogHTML += '<td style="padding:8px;border-bottom:1px solid rgba(201,168,76,0.2);"><button type="button" onclick="deleteClockLogEntry(\'' + student.id + '\',' + idx + ')" style="background:#cf5f1f;border:none;color:white;padding:4px 8px;border-radius:3px;font-size:0.7rem;cursor:pointer;">Delete</button></td></tr>';
     });
     
     clockLogHTML += '</table></div>';
@@ -2305,6 +2317,89 @@ function closeEditStudent() {
   document.getElementById('editHaircutPhotos').value = '';
   // Clear password input
   document.getElementById('editPassword').value = '';
+  // Clear deduct input
+  document.getElementById('deductHoursInput').value = '';
+}
+
+function deductStudentHours() {
+  var deductAmount = parseFloat(document.getElementById('deductHoursInput').value);
+  
+  if (isNaN(deductAmount) || deductAmount <= 0) {
+    showNotification('⚠️ Enter a valid number of hours to deduct');
+    return;
+  }
+  
+  var students = getStudents();
+  var student = students.find(function(s){ return s.id === window.currentEditingStudentId; });
+  
+  if (!student) {
+    showNotification('❌ Student not found');
+    return;
+  }
+  
+  var currentHours = parseFloat(document.getElementById('editHours').value) || 0;
+  var newHours = Math.max(0, currentHours - deductAmount);
+  
+  // Remove entries from clockLog to reach the target hours
+  if (student.clockLog && student.clockLog.length > 0) {
+    var hoursToRemove = deductAmount;
+    var logsToRemove = 0;
+    
+    // Count from the end how many logs to remove
+    for (var i = student.clockLog.length - 1; i >= 0 && hoursToRemove > 0; i--) {
+      var logHours = student.clockLog[i].hours || 0;
+      hoursToRemove -= logHours;
+      logsToRemove++;
+    }
+    
+    // Remove those logs
+    student.clockLog = student.clockLog.slice(0, student.clockLog.length - logsToRemove);
+  }
+  
+  // Update the hours
+  student.totalHours = newHours;
+  document.getElementById('editHours').value = newHours;
+  
+  // Update progress bar
+  var pct = Math.min((newHours / 1500) * 100, 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressPercentDisplay').textContent = Math.round(pct) + '%';
+  document.getElementById('progressHoursDisplay').textContent = Math.round(newHours) + ' / 1500 hours';
+  
+  document.getElementById('deductHoursInput').value = '';
+  showNotification('✓ Deducted ' + deductAmount + ' hours. Save changes to confirm.');
+}
+
+function deleteClockLogEntry(studentId, logIdx) {
+  var students = getStudents();
+  var student = students.find(function(s){ return s.id === studentId; });
+  
+  if (!student || !student.clockLog || !student.clockLog[logIdx]) {
+    showNotification('❌ Entry not found');
+    return;
+  }
+  
+  var entry = student.clockLog[logIdx];
+  var hours = entry.hours || 0;
+  
+  // Remove the entry
+  student.clockLog.splice(logIdx, 1);
+  
+  // Deduct from total hours
+  student.totalHours = Math.max(0, (student.totalHours || 0) - hours);
+  
+  // Save to Firebase
+  syncToFirebase('students', students);
+  showNotification('✓ Deleted ' + hours.toFixed(2) + ' hour entry. Total updated.');
+  
+  // Refresh the modal if it's open
+  if (window.currentEditingStudentId === studentId) {
+    document.getElementById('editHours').value = student.totalHours;
+    var pct = Math.min((student.totalHours / 1500) * 100, 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressPercentDisplay').textContent = Math.round(pct) + '%';
+    document.getElementById('progressHoursDisplay').textContent = Math.round(student.totalHours) + ' / 1500 hours';
+  }
 }
 
 function openEditAlumnus(idx) {
