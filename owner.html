@@ -762,15 +762,44 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
         </div>
       </div>
 
-      <div style="background:rgba(207,95,31,0.1);border:1px solid #cf5f1f;padding:16px;border-radius:4px;margin:16px 0;">
-        <label class="form-label" style="margin-top:0;margin-bottom:8px;">Deduct Hours (Remove Fraudulent Time)</label>
-        <div style="display:flex;gap:8px;align-items:flex-end;">
-          <div style="flex:1;">
-            <input type="number" class="form-input" id="deductHoursInput" min="0" step="0.5" placeholder="Hours to remove" style="margin:0;">
+      <div style="background:rgba(127,224,163,0.1);border:1px solid #7fe0a3;padding:16px;border-radius:4px;margin:16px 0;">
+        <label class="form-label" style="margin-top:0;margin-bottom:12px;">Add Time (Hours Before Website Launch)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.75rem;color:#888;">Hours</label>
+            <input type="number" class="form-input" id="addHoursHours" min="0" max="999" placeholder="0" style="margin:4px 0 0 0;padding:8px;">
           </div>
-          <button class="btn-submit" style="background:#cf5f1f;padding:10px 16px;white-space:nowrap;" onclick="deductStudentHours()">Deduct</button>
+          <div>
+            <label style="font-size:0.75rem;color:#888;">Minutes</label>
+            <input type="number" class="form-input" id="addHoursMinutes" min="0" max="59" placeholder="0" style="margin:4px 0 0 0;padding:8px;">
+          </div>
+          <div>
+            <label style="font-size:0.75rem;color:#888;">Seconds</label>
+            <input type="number" class="form-input" id="addHoursSeconds" min="0" max="59" placeholder="0" style="margin:4px 0 0 0;padding:8px;">
+          </div>
         </div>
-        <div style="font-size:0.7rem;color:#999;margin-top:8px;">⚠️ This will reduce the student's total hours and remove entries from the bottom of their clock log.</div>
+        <button class="btn-submit" style="background:#7fe0a3;color:#000;padding:10px 16px;width:100%;font-weight:600;" onclick="addStudentHours()">➕ Add Time</button>
+        <div style="font-size:0.7rem;color:#7fe0a3;margin-top:8px;">✓ Adds time to student's total hours (for pre-website hours)</div>
+      </div>
+
+      <div style="background:rgba(207,95,31,0.1);border:1px solid #cf5f1f;padding:16px;border-radius:4px;margin:16px 0;">
+        <label class="form-label" style="margin-top:0;margin-bottom:12px;">Deduct Time (Remove Fraudulent Hours)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:0.75rem;color:#888;">Hours</label>
+            <input type="number" class="form-input" id="deductHoursInput" min="0" max="999" placeholder="0" style="margin:4px 0 0 0;padding:8px;">
+          </div>
+          <div>
+            <label style="font-size:0.75rem;color:#888;">Minutes</label>
+            <input type="number" class="form-input" id="deductMinutesInput" min="0" max="59" placeholder="0" style="margin:4px 0 0 0;padding:8px;">
+          </div>
+          <div>
+            <label style="font-size:0.75rem;color:#888;">Seconds</label>
+            <input type="number" class="form-input" id="deductSecondsInput" min="0" max="59" placeholder="0" style="margin:4px 0 0 0;padding:8px;">
+          </div>
+        </div>
+        <button class="btn-submit" style="background:#cf5f1f;padding:10px 16px;width:100%;font-weight:600;" onclick="deductStudentHours()">➖ Deduct Time</button>
+        <div style="font-size:0.7rem;color:#cf5f1f;margin-top:8px;">⚠️ Removes entries from bottom of clock log to reach target time</div>
       </div>
 
       <label class="form-label">Progress to 1500 Hours</label>
@@ -2317,15 +2346,69 @@ function closeEditStudent() {
   document.getElementById('editHaircutPhotos').value = '';
   // Clear password input
   document.getElementById('editPassword').value = '';
-  // Clear deduct input
+  // Clear time adjustment inputs
   document.getElementById('deductHoursInput').value = '';
+  document.getElementById('deductMinutesInput').value = '';
+  document.getElementById('deductSecondsInput').value = '';
+  document.getElementById('addHoursHours').value = '';
+  document.getElementById('addHoursMinutes').value = '';
+  document.getElementById('addHoursSeconds').value = '';
+}
+
+function addStudentHours() {
+  var hours = parseInt(document.getElementById('addHoursHours').value) || 0;
+  var minutes = parseInt(document.getElementById('addHoursMinutes').value) || 0;
+  var seconds = parseInt(document.getElementById('addHoursSeconds').value) || 0;
+  
+  // Convert to decimal hours
+  var totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+  var addAmount = totalSeconds / 3600;
+  
+  if (addAmount <= 0) {
+    showNotification('⚠️ Enter a valid time to add');
+    return;
+  }
+  
+  var students = getStudents();
+  var student = students.find(function(s){ return s.id === window.currentEditingStudentId; });
+  
+  if (!student) {
+    showNotification('❌ Student not found');
+    return;
+  }
+  
+  var currentHours = parseFloat(document.getElementById('editHours').value) || 0;
+  var newHours = currentHours + addAmount;
+  
+  // Update the hours
+  student.totalHours = newHours;
+  document.getElementById('editHours').value = newHours;
+  
+  // Update progress bar
+  var pct = Math.min((newHours / 1500) * 100, 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressPercentDisplay').textContent = Math.round(pct) + '%';
+  document.getElementById('progressHoursDisplay').textContent = Math.round(newHours) + ' / 1500 hours';
+  
+  // Clear inputs
+  document.getElementById('addHoursHours').value = '';
+  document.getElementById('addHoursMinutes').value = '';
+  document.getElementById('addHoursSeconds').value = '';
+  
+  showNotification('✓ Added ' + hours + 'h ' + minutes + 'm ' + seconds + 's (' + addAmount.toFixed(2) + ' hours). Save changes to confirm.');
 }
 
 function deductStudentHours() {
-  var deductAmount = parseFloat(document.getElementById('deductHoursInput').value);
+  var hours = parseInt(document.getElementById('deductHoursInput').value) || 0;
+  var minutes = parseInt(document.getElementById('deductMinutesInput').value) || 0;
+  var seconds = parseInt(document.getElementById('deductSecondsInput').value) || 0;
   
-  if (isNaN(deductAmount) || deductAmount <= 0) {
-    showNotification('⚠️ Enter a valid number of hours to deduct');
+  // Convert to decimal hours
+  var totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+  var deductAmount = totalSeconds / 3600;
+  
+  if (deductAmount <= 0) {
+    showNotification('⚠️ Enter a valid time to deduct');
     return;
   }
   
@@ -2366,8 +2449,12 @@ function deductStudentHours() {
   document.getElementById('progressPercentDisplay').textContent = Math.round(pct) + '%';
   document.getElementById('progressHoursDisplay').textContent = Math.round(newHours) + ' / 1500 hours';
   
+  // Clear inputs
   document.getElementById('deductHoursInput').value = '';
-  showNotification('✓ Deducted ' + deductAmount + ' hours. Save changes to confirm.');
+  document.getElementById('deductMinutesInput').value = '';
+  document.getElementById('deductSecondsInput').value = '';
+  
+  showNotification('✓ Deducted ' + hours + 'h ' + minutes + 'm ' + seconds + 's (' + deductAmount.toFixed(2) + ' hours). Save changes to confirm.');
 }
 
 function deleteClockLogEntry(studentId, logIdx) {
