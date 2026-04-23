@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book an Appointment — SBI School</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#6b21a8;--purple-mid:#7c3aed;--gold:#c9a84c;
+  --black:#0a0806;--card:#110f0c;--border:rgba(201,168,76,0.2);
+  --white:#faf8f5;--muted:#9a8f7e;--green:#7fe0a3;
+}
+body{font-family:'Raleway',sans-serif;background:var(--black);color:var(--white);overflow-x:hidden;}
+nav{display:flex;align-items:center;padding:14px 32px;background:rgba(10,8,6,0.97);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.nav-logo{height:40px;width:40px;object-fit:contain;}
+.nav-brand{margin-left:12px;flex:1;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:0.9rem;font-weight:700;display:block;}
+.nav-brand-sub{font-size:0.52rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;display:block;}
+.nav-links{margin-left:auto;display:flex;gap:20px;}
+.nav-links a{color:#bbb;text-decoration:none;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;transition:color 0.2s;font-weight:600;}
+.nav-links a:hover{color:var(--gold);}
+
+section{max-width:900px;margin:0 auto;padding:60px 32px;}
+h1{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;margin-bottom:12px;color:var(--gold);}
+.subtitle{font-size:0.9rem;color:var(--muted);margin-bottom:40px;}
+
+.form-card{background:var(--card);border:1px solid var(--border);padding:32px;border-radius:8px;}
+.form-group{margin-bottom:24px;}
+.form-label{display:block;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:600;}
+input,select,textarea{width:100%;padding:12px;background:#1c1a16;border:1px solid var(--border);border-radius:4px;color:var(--white);font-family:'Raleway',sans-serif;font-size:0.9rem;transition:border-color 0.2s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);}
+
+.barber-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:16px;}
+.barber-btn{padding:16px;background:#1c1a16;border:1px solid var(--border);border-radius:4px;cursor:pointer;font-family:'Raleway',sans-serif;color:var(--white);font-weight:600;transition:all 0.2s;text-align:center;}
+.barber-btn.selected{border-color:var(--gold);background:rgba(201,168,76,0.1);color:var(--gold);}
+.barber-btn:hover{border-color:var(--gold);}
+
+.availability-info{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:16px;border-radius:4px;margin:16px 0;font-size:0.85rem;color:var(--muted);}
+
+.time-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:12px;}
+.time-slot{padding:12px;background:#1c1a16;border:1px solid var(--border);border-radius:4px;cursor:pointer;text-align:center;font-size:0.85rem;font-weight:600;transition:all 0.2s;}
+.time-slot.selected{border-color:var(--gold);background:rgba(201,168,76,0.1);color:var(--gold);}
+.time-slot.unavailable{background:#1c1a16;border-color:#333;color:#333;cursor:not-allowed;text-decoration:line-through;}
+.time-slot:not(.unavailable):hover{border-color:var(--gold);}
+
+.totals-box{background:#1c1a16;border:1px solid var(--border);padding:16px;border-radius:4px;margin:20px 0;}
+.totals-row{display:flex;justify-content:space-between;padding:8px 0;font-size:0.9rem;color:var(--muted);}
+.totals-row.total{border-top:1px solid var(--border);margin-top:12px;padding-top:12px;color:var(--gold);font-weight:700;font-size:1.1rem;}
+
+.submit-btn{width:100%;background:var(--gold);color:#000;border:none;padding:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:4px;font-size:0.85rem;transition:background 0.2s;margin-top:24px;}
+.submit-btn:hover{background:#e5c97a;}
+.submit-btn:disabled{background:#666;cursor:not-allowed;opacity:0.5;}
+
+.success-screen{display:none;text-align:center;padding:40px;}
+.success-screen h2{color:var(--green);margin-bottom:12px;}
+.success-screen p{color:var(--muted);margin-bottom:20px;}
+
+@media(max-width:700px){
+  section{padding:40px 20px;}
+  h1{font-size:1.8rem;}
+  .form-card{padding:20px;}
+  .barber-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <img src="school_logo.png" alt="SBI" class="nav-logo" onerror="this.style.display='none'">
+  <div class="nav-brand">
+    <span class="nav-brand-name">SBI School</span>
+    <span class="nav-brand-sub">Barber Booking</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">← Back</a>
+  </div>
+</nav>
+
+<section>
+  <h1>Book Your Appointment</h1>
+  <p class="subtitle">Schedule a session with one of our talented student barbers</p>
+  
+  <div class="form-card" id="bookingForm">
+    <!-- CLIENT INFO -->
+    <div class="form-group">
+      <label class="form-label">Your Name</label>
+      <input type="text" id="clientName" placeholder="Full name" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <input type="tel" id="clientPhone" placeholder="(555) 000-0000" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email (optional)</label>
+      <input type="email" id="clientEmail" placeholder="your@email.com">
+    </div>
+
+    <!-- BARBER SELECTION -->
+    <div class="form-group">
+      <label class="form-label">Choose Your Barber</label>
+      <div class="barber-grid" id="barberGrid"></div>
+      <div class="availability-info" id="availabilityInfo" style="display:none;"></div>
+    </div>
+
+    <!-- DATE & TIME -->
+    <div class="form-group">
+      <label class="form-label">Appointment Date</label>
+      <input type="date" id="appointmentDate" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Appointment Time</label>
+      <div class="time-grid" id="timeGrid"></div>
+    </div>
+
+    <!-- SERVICE TYPE -->
+    <div class="form-group">
+      <label class="form-label">Service Type</label>
+      <select id="serviceType">
+        <option value="haircut">Haircut</option>
+        <option value="fade">Fade</option>
+        <option value="lineup">Lineup</option>
+        <option value="shave">Shave</option>
+        <option value="combo">Combo (Haircut + Shave)</option>
+      </select>
+    </div>
+
+    <!-- NOTES -->
+    <div class="form-group">
+      <label class="form-label">Special Requests (optional)</label>
+      <textarea id="notes" placeholder="Any style preferences or notes..." style="min-height:80px;"></textarea>
+    </div>
+
+    <!-- PRICING -->
+    <div class="totals-box">
+      <div class="totals-row"><span>Service</span><span>$<span id="servicePrice">0</span></span></div>
+      <div class="totals-row total"><span>Total</span><span>$<span id="totalPrice">0</span></span></div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitBooking()" disabled>Confirm Booking</button>
+  </div>
+
+  <div class="success-screen" id="successScreen">
+    <h2>✅ Booking Confirmed!</h2>
+    <p id="confirmationMsg"></p>
+    <button class="submit-btn" onclick="location.reload()" style="background:#666;">Book Another</button>
+  </div>
+</section>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBn3N8MJ05dDIfVyeJqVh5KCrYZoljcvx0",
+  authDomain: "smithbarberinstitutionpb.firebaseapp.com",
+  databaseURL: "https://smithbarberinstitutionpb-default-rtdb.firebaseio.com",
+  projectId: "smithbarberinstitutionpb",
+  storageBucket: "smithbarberinstitutionpb.firebasestorage.app",
+  messagingSenderId: "251247559272",
+  appId: "1:251247559272:web:822a0761885c63faa9f1dd"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+var selectedBarber = '';
+var selectedTime = '';
+var students = [];
+var bookings = [];
+
+const servicePrice = { haircut: 25, fade: 25, lineup: 15, shave: 20, combo: 40 };
+
+// Day name mappings
+const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const dayShorts = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
+
+// Parse and check barber availability for a given date/time
+function isAvailableForBooking(dateStr, timeStr, availabilityStr) {
+  if (!availabilityStr || availabilityStr === 'Not specified') return true; // If no availability set, allow all times
+  
+  // Get day of week (0=Sunday, 6=Saturday)
+  var date = new Date(dateStr + 'T00:00:00');
+  var dayOfWeek = date.getDay();
+  var dayName = dayNames[dayOfWeek];
+  
+  // Parse time string (HH:MM format)
+  var timeParts = timeStr.split(':');
+  var bookingHour = parseInt(timeParts[0]);
+  var bookingMin = parseInt(timeParts[1]);
+  var bookingTime = bookingHour + (bookingMin / 60);
+  
+  // Split availability string by comma to get segments
+  var segments = availabilityStr.split(',').map(s => s.trim());
+  
+  for (var i = 0; i < segments.length; i++) {
+    var segment = segments[i];
+    
+    // Match format: "DayRange TimeRange" e.g., "Tuesday-Thursday 9:00 AM - 6:00 PM"
+    var match = segment.match(/(.+?)\s+(\d{1,2}):(\d{2})\s*(AM|PM)\s*-\s*(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if (!match) continue;
+    
+    var dayPart = match[1].trim();
+    var startHour = parseInt(match[2]);
+    var startMin = parseInt(match[3]);
+    var startAmPm = match[4].toUpperCase();
+    var endHour = parseInt(match[5]);
+    var endMin = parseInt(match[6]);
+    var endAmPm = match[7].toUpperCase();
+    
+    // Convert to 24-hour format
+    if (startAmPm === 'PM' && startHour !== 12) startHour += 12;
+    if (startAmPm === 'AM' && startHour === 12) startHour = 0;
+    if (endAmPm === 'PM' && endHour !== 12) endHour += 12;
+    if (endAmPm === 'AM' && endHour === 12) endHour = 0;
+    
+    var startTime = startHour + (startMin / 60);
+    var endTime = endHour + (endMin / 60);
+    
+    // Parse day range
+    var dayRange = dayPart.split('-').map(d => d.trim());
+    var daysInRange = [];
+    
+    if (dayRange.length === 1) {
+      // Single day (e.g., "Tuesday")
+      daysInRange = [dayRange[0]];
+    } else {
+      // Range (e.g., "Tuesday-Thursday" or "Monday-Friday")
+      var startDay = dayRange[0];
+      var endDay = dayRange[1];
+      var startDayIndex = dayNames.indexOf(startDay);
+      var endDayIndex = dayNames.indexOf(endDay);
+      
+      if (startDayIndex !== -1 && endDayIndex !== -1) {
+        if (startDayIndex <= endDayIndex) {
+          for (var d = startDayIndex; d <= endDayIndex; d++) {
+            daysInRange.push(dayNames[d]);
+          }
+        }
+      }
+    }
+    
+    // Check if today's day is in range AND time is in range
+    if (daysInRange.includes(dayName) && bookingTime >= startTime && bookingTime < endTime) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Set min date to today
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('appointmentDate').min = today;
+  
+  // Load students and bookings
+  database.ref('students').once('value', snap => {
+    students = snap.val() || [];
+    loadBarberSelection();
+  });
+  
+  database.ref('bookings').once('value', snap => {
+    bookings = snap.val() || [];
+  });
+  
+  document.getElementById('serviceType').addEventListener('change', updatePrice);
+});
+
+function loadBarberSelection() {
+  var grid = document.getElementById('barberGrid');
+  grid.innerHTML = '';
+  
+  students.filter(s => !s.graduated).forEach(student => {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = student.name;
+    btn.className = 'barber-btn';
+    btn.dataset.studentId = student.id;
+    btn.onclick = function() {
+      selectBarber(this);
+    };
+    grid.appendChild(btn);
+  });
+}
+
+function selectBarber(btn) {
+  document.querySelectorAll('.barber-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedBarber = btn.dataset.studentId;
+  
+  var student = students.find(s => s.id === selectedBarber);
+  showAvailability(student);
+  updateTimeSlots();
+}
+
+function showAvailability(student) {
+  var info = document.getElementById('availabilityInfo');
+  if (student.barberAvailability) {
+    info.innerHTML = '⏰ ' + student.barberAvailability;
+    info.style.display = 'block';
+  } else {
+    info.style.display = 'none';
+  }
+}
+
+function updateTimeSlots() {
+  var dateInput = document.getElementById('appointmentDate').value;
+  var grid = document.getElementById('timeGrid');
+  
+  if (!dateInput || !selectedBarber) {
+    grid.innerHTML = '<div style="grid-column:1/-1;color:#555;text-align:center;padding:16px;">Select a barber and date first</div>';
+    return;
+  }
+  
+  // Get selected barber's availability
+  var student = students.find(s => s.id === selectedBarber);
+  var barberAvailability = student && student.barberAvailability ? student.barberAvailability : 'Not specified';
+  
+  // Generate time slots (9 AM - 5 PM, 30-min intervals)
+  var slots = [];
+  for (var h = 9; h < 17; h++) {
+    for (var m = 0; m < 60; m += 30) {
+      var timeStr = (h < 10 ? '0' : '') + h + ':' + (m === 0 ? '00' : m);
+      slots.push(timeStr);
+    }
+  }
+  
+  grid.innerHTML = '';
+  slots.forEach(time => {
+    var isBooked = bookings.some(b => b.date === dateInput && b.time === time && b.studentId === selectedBarber);
+    var isAvailable = isAvailableForBooking(dateInput, time, barberAvailability);
+    var isUnavailable = isBooked || !isAvailable;
+    
+    var slot = document.createElement('button');
+    slot.type = 'button';
+    slot.textContent = time;
+    slot.className = 'time-slot' + (isUnavailable ? ' unavailable' : '');
+    slot.disabled = isUnavailable;
+    if (!isAvailable && !isBooked) {
+      slot.title = 'Outside barber availability';
+    }
+    slot.onclick = function() {
+      if (!isUnavailable) selectTime(this, time);
+    };
+    grid.appendChild(slot);
+  });
+}
+
+function selectTime(btn, time) {
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedTime = time;
+  updateSubmitBtn();
+}
+
+function updatePrice() {
+  var serviceType = document.getElementById('serviceType').value;
+  var price = servicePrice[serviceType] || 0;
+  document.getElementById('servicePrice').textContent = price;
+  document.getElementById('totalPrice').textContent = price;
+}
+
+function updateSubmitBtn() {
+  var valid = document.getElementById('clientName').value && 
+              document.getElementById('clientPhone').value && 
+              selectedBarber && 
+              document.getElementById('appointmentDate').value && 
+              selectedTime;
+  document.getElementById('submitBtn').disabled = !valid;
+}
+
+document.getElementById('clientName').addEventListener('input', updateSubmitBtn);
+document.getElementById('clientPhone').addEventListener('input', updateSubmitBtn);
+document.getElementById('appointmentDate').addEventListener('change', function() {
+  updateTimeSlots();
+  updateSubmitBtn();
+});
+
+function submitBooking() {
+  var booking = {
+    id: 'booking_' + Date.now(),
+    clientName: document.getElementById('clientName').value,
+    clientPhone: document.getElementById('clientPhone').value,
+    clientEmail: document.getElementById('clientEmail').value,
+    studentId: selectedBarber,
+    studentName: students.find(s => s.id === selectedBarber)?.name || '',
+    date: document.getElementById('appointmentDate').value,
+    time: selectedTime,
+    serviceType: document.getElementById('serviceType').value,
+    notes: document.getElementById('notes').value,
+    price: parseInt(document.getElementById('totalPrice').textContent),
+    status: 'confirmed',
+    createdAt: new Date().toISOString()
+  };
+  
+  database.ref('bookings').push(booking, function(err) {
+    if (err) {
+      alert('Error booking appointment. Please try again.');
+      return;
+    }
+    
+    // Send SMS to student
+    sendSMS(booking);
+    
+    // Show success
+    document.getElementById('bookingForm').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    document.getElementById('confirmationMsg').innerHTML = 
+      'Your appointment with <strong>' + booking.studentName + '</strong><br>' +
+      booking.date + ' at ' + booking.time + '<br>' +
+      'A confirmation has been sent to ' + booking.clientPhone;
+  });
+}
+
+function sendSMS(booking) {
+  // Send SMS to the student barber
+  var student = students.find(s => s.id === booking.studentId);
+  if (!student || !student.phone) {
+    console.log('⚠️ SMS not sent: Student phone number not available');
+    return;
+  }
+  
+  // Format message
+  var message = 'SBI Booking Alert: ' + booking.clientName + ' booked a ' + booking.serviceType + ' appointment on ' + booking.date + ' at ' + booking.time + '. Service: $' + booking.price + '.';
+  
+  // Log for debugging
+  console.log('📱 SMS to ' + student.phone + ': ' + message);
+  
+  // Option 1: Call Firebase Cloud Function (if configured)
+  // Uncomment and configure with your Firebase project credentials
+  // firebase.functions().httpsCallable('sendSMS')({
+  //   to: student.phone,
+  //   message: message,
+  //   studentName: student.name,
+  //   bookingId: booking.id
+  // }).then(function(result) {
+  //   console.log('✓ SMS sent successfully');
+  // }).catch(function(err) {
+  //   console.error('❌ SMS failed:', err);
+  // });
+  
+  // Option 2: Call a webhook endpoint (e.g., n8n, Zapier, AWS Lambda)
+  // var webhookUrl = 'YOUR_WEBHOOK_URL'; // Set this to your webhook
+  // if (webhookUrl && webhookUrl.includes('http')) {
+  //   fetch(webhookUrl, {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({
+  //       phone: student.phone,
+  //       message: message,
+  //       studentName: student.name,
+  //       bookingId: booking.id
+  //     })
+  //   }).catch(err => console.error('Webhook error:', err));
+  // }
+  
+  // Store SMS record in Firebase for tracking
+  database.ref('smsRecords').push({
+    bookingId: booking.id,
+    studentId: booking.studentId,
+    studentName: student.name,
+    studentPhone: student.phone,
+    clientName: booking.clientName,
+    clientPhone: booking.clientPhone,
+    message: message,
+    date: booking.date,
+    time: booking.time,
+    serviceType: booking.serviceType,
+    sentAt: new Date().toISOString(),
+    status: 'pending_delivery' // Update to 'delivered' when webhook confirms
+  });
+}
+</script>
+
+</body>
+</html>

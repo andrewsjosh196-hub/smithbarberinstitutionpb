@@ -159,6 +159,7 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
     <button class="tab" onclick="switchTab('events', this)">Events</button>
     <button class="tab" onclick="switchTab('catalog', this)">Store</button>
     <button class="tab" onclick="switchTab('applications', this)">Applications</button>
+    <button class="tab" onclick="switchTab('payments', this)">Payments</button>
     <button class="tab" onclick="switchTab('reports', this)">Reports</button>
     <button class="tab" onclick="switchTab('settings', this)">Settings</button>
   </div>
@@ -634,6 +635,38 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
       <div class="panel-card">
         <h3 class="panel-title">Student <em>Applications</em></h3>
         <div id="applicationsList"></div>
+      </div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div id="tab-payments" class="tab-panel">
+      <div class="panel-card">
+        <h3 class="panel-title">Monthly <em>Tuition Payments</em></h3>
+        <label class="form-label">Select Month</label>
+        <input type="month" class="form-input" id="paymentMonth" onchange="loadPaymentList()">
+        <div id="paymentsList" style="margin-top:20px;"></div>
+      </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Payment <em>Summary</em></h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;text-align:center;">
+            <div style="font-size:0.7rem;color:#555;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Total Due</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold);" id="paymentTotalDue">$0</div>
+          </div>
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;text-align:center;">
+            <div style="font-size:0.7rem;color:#555;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Total Paid</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--green);" id="paymentTotalPaid">$0</div>
+          </div>
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;text-align:center;">
+            <div style="font-size:0.7rem;color:#555;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Outstanding</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--red);" id="paymentOutstanding">$0</div>
+          </div>
+          <div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:20px;text-align:center;">
+            <div style="font-size:0.7rem;color:#555;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Collection Rate</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold);" id="paymentRate">0%</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1213,6 +1246,11 @@ function switchTab(id, btn) {
     populateExemptionStudents();
   } else if (id === 'hybrid') {
     renderHybridCurriculum();
+  } else if (id === 'payments') {
+    // Set default month to current month
+    var currentMonth = new Date().toISOString().split('T')[0].substring(0, 7);
+    document.getElementById('paymentMonth').value = currentMonth;
+    loadPaymentList();
   }
 }
 
@@ -2811,6 +2849,87 @@ function saveEditedStudent() {
   showNotification('✓ Student saved!' + (newPassword ? ' Password updated.' : ''));
 }
 
+// ─── MONTHLY PAYMENTS ──────────────────────────────────────────
+function loadPaymentList() {
+  var monthInput = document.getElementById('paymentMonth').value;
+  if (!monthInput) {
+    monthInput = new Date().toISOString().split('T')[0].substring(0, 7); // YYYY-MM
+  }
+  
+  var paymentsList = document.getElementById('paymentsList');
+  paymentsList.innerHTML = '';
+  
+  var totalDue = 0;
+  var totalPaid = 0;
+  var paidCount = 0;
+  var unpaidCount = 0;
+  
+  // Sort students by name
+  var sortedStudents = students.filter(s => !s.graduated && s.courseType).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  
+  sortedStudents.forEach(function(student) {
+    totalDue += 150; // Base tuition amount
+    
+    if (!student.monthlyPayments) student.monthlyPayments = {};
+    var hasPaid = student.monthlyPayments[monthInput];
+    
+    if (hasPaid) {
+      totalPaid += 150;
+      paidCount++;
+    } else {
+      unpaidCount++;
+    }
+    
+    var paymentRow = document.createElement('div');
+    paymentRow.className = 'student-row';
+    paymentRow.style.background = hasPaid ? 'rgba(111,207,151,0.08)' : 'rgba(232,123,123,0.08)';
+    paymentRow.style.borderColor = hasPaid ? 'rgba(111,207,151,0.2)' : 'rgba(232,123,123,0.2)';
+    paymentRow.innerHTML = `
+      <div class="row-col-1">
+        <div class="row-name">${student.name || 'N/A'}</div>
+        <div class="row-meta">ID: ${student.studentId || 'N/A'} | Email: ${student.email || 'N/A'}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:700;margin-bottom:4px;${hasPaid ? 'color:var(--green)' : 'color:var(--red)'}">
+          ${hasPaid ? '✓ PAID' : '✗ NOT PAID'}
+        </div>
+        <div style="font-size:0.8rem;color:var(--gold);font-weight:600;">$150</div>
+      </div>
+      <div class="row-actions">
+        ${hasPaid ? `<button class="btn-sm danger" onclick="markPaymentUnpaid('${student.id}', '${monthInput}')">Undo</button>` : `<button class="btn-sm success" onclick="markPaymentPaid('${student.id}', '${monthInput}')">Mark Paid</button>`}
+      </div>
+    `;
+    paymentsList.appendChild(paymentRow);
+  });
+  
+  // Update summary
+  document.getElementById('paymentTotalDue').textContent = '$' + totalDue;
+  document.getElementById('paymentTotalPaid').textContent = '$' + totalPaid;
+  document.getElementById('paymentOutstanding').textContent = '$' + (totalDue - totalPaid);
+  var collectionRate = totalDue > 0 ? Math.round((totalPaid / totalDue) * 100) : 0;
+  document.getElementById('paymentRate').textContent = collectionRate + '%';
+}
+
+function markPaymentPaid(studentId, month) {
+  var student = students.find(s => s.id === studentId);
+  if (!student) return;
+  if (!student.monthlyPayments) student.monthlyPayments = {};
+  student.monthlyPayments[month] = new Date().toISOString();
+  saveStudents(students);
+  loadPaymentList();
+  showNotification('✓ Payment marked as received from ' + student.name);
+}
+
+function markPaymentUnpaid(studentId, month) {
+  var student = students.find(s => s.id === studentId);
+  if (!student) return;
+  if (student.monthlyPayments) {
+    delete student.monthlyPayments[month];
+  }
+  saveStudents(students);
+  loadPaymentList();
+  showNotification('✓ Payment unmarked for ' + student.name);
+}
 
 // ─── MONTHLY REPORT ────────────────────────────────────────────
 function loadMonthlyReport() {

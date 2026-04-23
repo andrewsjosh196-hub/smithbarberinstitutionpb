@@ -141,6 +141,16 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
     <button class="clock-btn btn-in" id="clockBtn" onclick="window.toggleClock()">Clock In</button>
   </div>
 
+  <!-- MONTHLY TUITION PAYMENT -->
+  <div class="panel-card" style="background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(201,168,76,0.08));border-color:var(--gold);">
+    <h3 class="panel-title">Monthly <em>Tuition</em></h3>
+    <div id="tuitionStatus" style="text-align:center;padding:20px;">
+      <div id="tuitionPaymentStatus" style="font-size:1.2rem;font-weight:700;margin-bottom:12px;"></div>
+      <div id="tuitionMessage" style="color:var(--muted);margin-bottom:16px;"></div>
+      <button id="tuitionPayBtn" class="btn-primary" style="padding:12px 24px;background:var(--gold);color:#000;border:none;font-weight:700;cursor:pointer;border-radius:4px;transition:all 0.2s;text-transform:uppercase;font-size:0.75rem;letter-spacing:1px;display:none;" onclick="payTuition()">Pay Monthly Tuition</button>
+    </div>
+  </div>
+
   <!-- STATS -->
   <div class="stats-row">
     <div class="stat-box">
@@ -196,6 +206,14 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
           <button type="button" style="width:100%;padding:10px 12px;background:#0a0806;border:1px solid var(--border-sub);color:var(--gold);font-family:'Raleway',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border-sub)'" onclick="document.getElementById('haircutPhotosInput').click()">➕ Add Haircut Photos</button>
           <input id="profileHaircuts" type="hidden">
         </div>
+
+        <!-- BARBER AVAILABILITY (if student is allowed to book) -->
+        <div style="margin-bottom:12px;padding:16px;background:rgba(127,224,163,0.1);border:1px solid rgba(127,224,163,0.2);border-radius:4px;">
+          <label style="display:block;font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:#7fe0a3;font-weight:700;margin-bottom:8px;">📅 Barber Availability (for bookings)</label>
+          <p style="font-size:0.75rem;color:#888;margin-bottom:12px;">Tell clients when you're available for bookings</p>
+          <textarea id="barberAvailability" placeholder="e.g., Tuesday-Thursday 9:00 AM - 6:00 PM, Saturday 10:00 AM - 4:00 PM" style="width:100%;padding:10px 12px;background:#0a0806;border:1px solid var(--border-sub);color:var(--white);font-family:'Raleway',sans-serif;font-size:0.9rem;min-height:50px;resize:vertical;transition:border-color 0.2s;" onfocus="this.style.borderColor='#7fe0a3'" onblur="this.style.borderColor='var(--border-sub)'"></textarea>
+        </div>
+
         <button style="width:100%;padding:10px;background:var(--gold);color:#000;border:none;font-weight:700;font-size:0.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold)'" onclick="window.saveProfile()">Save Profile</button>
       </div>
     </div>
@@ -1000,6 +1018,7 @@ function initPortal() {
     renderSchedule();
     renderAnnouncements();
     renderAssignments();
+    updateTuitionStatus();
     renderLog();
     renderHybridCurriculum();
     
@@ -1193,6 +1212,7 @@ function saveProfile() {
   var name = document.getElementById('profileName').value.trim();
   var bio = document.getElementById('profileBio').value.trim();
   var haircutPhotos = JSON.parse(document.getElementById('profileHaircuts').value || '[]');
+  var barberAvailability = document.getElementById('barberAvailability').value.trim();
   
   if (!name || !bio) {
     alert('Please fill in Name and Bio');
@@ -1203,6 +1223,7 @@ function saveProfile() {
   student.name = name;
   student.bio = bio;
   student.haircutPhotos = JSON.stringify(haircutPhotos);
+  student.barberAvailability = barberAvailability || 'Not specified';
   student.graduated = false;
   
   saveStudent(student);
@@ -1215,6 +1236,7 @@ function loadProfile() {
   
   document.getElementById('profileName').value = student.name || '';
   document.getElementById('profileBio').value = student.bio || '';
+  document.getElementById('barberAvailability').value = student.barberAvailability || '';
   
   var haircutPhotos = student.haircutPhotos ? (typeof student.haircutPhotos === 'string' ? JSON.parse(student.haircutPhotos) : student.haircutPhotos) : [];
   if (haircutPhotos.length > 0) {
@@ -1382,6 +1404,46 @@ function submitHybridAnswers() {
   renderHybridCurriculum();
 }
 
+// ─── MONTHLY TUITION PAYMENT ──────────────────────────────────
+function updateTuitionStatus() {
+  student = getStudent();
+  if (!student) return;
+  
+  var currentMonth = new Date().toISOString().split('T')[0].substring(0, 7); // YYYY-MM
+  var statusDiv = document.getElementById('tuitionPaymentStatus');
+  var msgDiv = document.getElementById('tuitionMessage');
+  var payBtn = document.getElementById('tuitionPayBtn');
+  
+  if (!student.monthlyPayments) student.monthlyPayments = {};
+  var hasPaid = student.monthlyPayments[currentMonth];
+  
+  if (hasPaid) {
+    statusDiv.innerHTML = '✅ Payment Received';
+    statusDiv.style.color = 'var(--green)';
+    msgDiv.innerHTML = 'Thank you! Your tuition for ' + currentMonth + ' has been received.';
+    payBtn.style.display = 'none';
+  } else {
+    statusDiv.innerHTML = '⚠️ Payment Due';
+    statusDiv.style.color = 'var(--gold)';
+    msgDiv.innerHTML = 'Monthly tuition payment is due. Click below to pay.';
+    payBtn.style.display = 'inline-block';
+  }
+}
+
+function payTuition() {
+  var currentMonth = new Date().toISOString().split('T')[0].substring(0, 7);
+  var studentEmail = student.email || 'student@sbi.com';
+  var amount = '150'; // Base tuition amount
+  
+  // Open Clover payment link with variable amount
+  // This should use a Clover payment link with the student's email and custom amount
+  var cloverLink = 'https://link.clover.com/urlshortener/monthly-tuition?email=' + encodeURIComponent(studentEmail) + '&amount=' + amount;
+  
+  // In production, this would be a custom endpoint that generates a variable-amount Clover link
+  alert('You will be redirected to pay your monthly tuition. After payment, refresh this page to see the confirmation.');
+  window.open(cloverLink, '_blank');
+}
+
 // Expose to window
 window.handlePhotoUpload = handlePhotoUpload;
 window.deleteStudentProfilePhoto = deleteStudentProfilePhoto;
@@ -1391,6 +1453,8 @@ window.handleHaircutUpload = handleHaircutUpload;
 window.removeHaircutPhoto = removeHaircutPhoto;
 window.saveProfile = saveProfile;
 window.loadProfile = loadProfile;
+window.updateTuitionStatus = updateTuitionStatus;
+window.payTuition = payTuition;
 window.toggleClock = toggleClock;
 window.logout = logout;
 window.submitAnswer = submitAnswer;
