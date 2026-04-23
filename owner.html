@@ -189,6 +189,11 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
           <button class="btn-primary" onclick="switchTab('schedule', document.querySelectorAll('.tab')[2])">📅 Edit Schedule</button>
         </div>
       </div>
+
+      <div class="panel-card">
+        <h3 class="panel-title">Currently <em>Clocked In</em></h3>
+        <div id="clockedInList" style="display:grid;gap:8px;"></div>
+      </div>
     </div>
 
     <!-- STUDENTS -->
@@ -988,6 +993,7 @@ function setupFirebaseListeners() {
     const data = snapshot.val() || [];
     localStorage.setItem('students', JSON.stringify(data));
     console.log('📥 Students updated from Firebase:', data.length, 'students');
+    updateStats();
   }, err => {
     console.warn('Firebase students listener error:', err);
   });
@@ -2142,7 +2148,28 @@ function renderDashboardContent() {
 function updateStats() {
   var students = getStudents();
   document.getElementById('statStudents').textContent = students.length;
-  document.getElementById('statClocked').textContent = students.filter(function(s){ return s.clockedIn; }).length;
+  var clockedInStudents = students.filter(function(s){ return s.clockedIn; });
+  document.getElementById('statClocked').textContent = clockedInStudents.length;
+  
+  // Update clocked in list
+  var clockedInList = document.getElementById('clockedInList');
+  if (!clockedInList) return;
+  
+  if (clockedInStudents.length === 0) {
+    clockedInList.innerHTML = '<div style="color:#555;text-align:center;padding:16px;font-size:0.9rem;font-style:italic;">No students clocked in</div>';
+  } else {
+    clockedInList.innerHTML = clockedInStudents.map(function(s) {
+      var clockInTime = s.lastClockIn ? new Date(s.lastClockIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown';
+      return '<div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:12px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;">' +
+        '<div>' +
+          '<div style="font-weight:600;color:var(--white);">' + s.name + '</div>' +
+          '<div style="font-size:0.75rem;color:#888;">' + s.studentId + ' • Clocked in at ' + clockInTime + '</div>' +
+        '</div>' +
+        '<div style="background:#7fe0a3;color:#000;padding:6px 12px;border-radius:3px;font-weight:600;font-size:0.75rem;">ACTIVE</div>' +
+        '</div>';
+    }).join('');
+  }
+}
 }
 
 // Refresh stats
