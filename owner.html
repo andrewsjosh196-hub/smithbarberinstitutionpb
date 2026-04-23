@@ -2159,16 +2159,67 @@ function updateStats() {
     clockedInList.innerHTML = '<div style="color:#555;text-align:center;padding:16px;font-size:0.9rem;font-style:italic;">No students clocked in</div>';
   } else {
     clockedInList.innerHTML = clockedInStudents.map(function(s) {
-      var clockInTime = s.lastClockIn ? new Date(s.lastClockIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown';
-      return '<div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:12px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;">' +
-        '<div>' +
+      var clockInTime = s.clockInTime ? new Date(s.clockInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Unknown';
+      return '<div style="background:#0f0d0a;border:1px solid var(--border-sub);padding:12px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;gap:12px;">' +
+        '<div style="flex:1;">' +
           '<div style="font-weight:600;color:var(--white);">' + s.name + '</div>' +
           '<div style="font-size:0.75rem;color:#888;">' + s.studentId + ' • Clocked in at ' + clockInTime + '</div>' +
         '</div>' +
-        '<div style="background:#7fe0a3;color:#000;padding:6px 12px;border-radius:3px;font-weight:600;font-size:0.75rem;">ACTIVE</div>' +
+        '<button onclick="ownerClockOutStudent(\'' + s.id + '\')" style="background:#cf5f1f;color:#fff;border:none;padding:6px 12px;border-radius:3px;font-weight:600;font-size:0.75rem;cursor:pointer;white-space:nowrap;transition:all 0.3s;">Clock Out</button>' +
         '</div>';
     }).join('');
   }
+}
+
+// Clock out a student from the owner dashboard
+function ownerClockOutStudent(studentId) {
+  var students = getStudents();
+  var student = students.find(function(s){ return s.id === studentId; });
+  
+  if (!student) {
+    showNotification('❌ Student not found');
+    return;
+  }
+  
+  if (!student.clockedIn) {
+    showNotification('⚠️ Student is not clocked in');
+    return;
+  }
+  
+  var now = new Date();
+  var inTime = new Date(student.clockInTime);
+  var durationMs = now - inTime;
+  var durationHrs = durationMs / 3600000;
+  
+  // Update student record
+  if (!student.clockLog) student.clockLog = [];
+  student.clockLog.push({
+    date: now.toLocaleDateString(),
+    inTime: inTime.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+    outTime: now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+    hours: durationHrs
+  });
+  student.totalHours = (student.totalHours || 0) + durationHrs;
+  student.daysAttended = (student.daysAttended || 0) + 1;
+  
+  // Track practical hours for hybrid students (type 535)
+  if (student.courseType === '535') {
+    student.practicalHours = (student.practicalHours || 0) + durationHrs;
+    if (!student.clockSessions) student.clockSessions = [];
+    student.clockSessions.push({
+      date: now.toLocaleDateString(),
+      inTime: inTime.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+      outTime: now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+      hours: durationHrs
+    });
+  }
+  
+  student.clockedIn = false;
+  
+  // Save to Firebase
+  syncToFirebase('students', students);
+  showNotification('✓ ' + student.name + ' clocked out (' + durationHrs.toFixed(2) + ' hours)');
+  updateStats();
 }
 
 // Refresh stats
