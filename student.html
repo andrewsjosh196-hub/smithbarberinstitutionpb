@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student Dashboard — SBI School</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Cropper.js -->
+<link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.css">
+<script src="https://unpkg.com/cropperjs@1.5.13"></script>
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
@@ -172,9 +175,10 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
     <h3 class="panel-title">Student <em>Profile</em></h3>
     <div style="display:grid;grid-template-columns:120px 1fr;gap:20px;">
       <div>
-        <div style="width:120px;height:120px;background:#1c1a16;border:1px solid var(--border-sub);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:10px;overflow:hidden;" id="profilePhotoDisplay">✂️</div>
+        <div style="width:120px;height:120px;background:#1c1a16;border:1px solid var(--border-sub);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:10px;overflow:hidden;position:relative;" id="profilePhotoDisplay">✂️</div>
         <input type="file" id="profilePhotoInput" style="display:none;cursor:pointer;" onchange="window.handlePhotoUpload(this)" accept="image/*">
-        <button style="width:100%;padding:8px;background:#1c1a16;border:1px solid var(--border-sub);color:var(--gold);font-size:0.7rem;font-weight:700;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border-sub)'" onclick="document.getElementById('profilePhotoInput').click()">📸 Change Photo</button>
+        <button style="width:100%;padding:8px;background:#1c1a16;border:1px solid var(--border-sub);color:var(--gold);font-size:0.7rem;font-weight:700;cursor:pointer;transition:border-color 0.2s;margin-bottom:6px;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border-sub)'" onclick="document.getElementById('profilePhotoInput').click()">📸 Change Photo</button>
+        <button id="deleteProfilePhotoBtn" style="width:100%;padding:8px;background:#e87b7b;border:1px solid #e87b7b;color:#fff;font-size:0.7rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:none;" onmouseover="this.style.background='#d96b6b'" onmouseout="this.style.background='#e87b7b'" onclick="deleteStudentProfilePhoto()">✕ Delete Photo</button>
       </div>
       <div>
         <div style="margin-bottom:12px;">
@@ -359,6 +363,23 @@ nav{display:flex;align-items:center;padding:14px 24px;background:rgba(10,8,6,0.9
 
   </div>
 
+</div>
+
+<!-- CROP PHOTO MODAL -->
+<div id="cropPhotoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:2000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--card);border:1px solid var(--border);max-width:500px;width:100%;max-height:90vh;overflow-y:auto;position:relative;display:flex;flex-direction:column;">
+    <div style="padding:20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="color:var(--gold);font-family:'Playfair Display',serif;font-size:1.2rem;">Crop Your <em style="font-style:italic;">Photo</em></h3>
+      <button onclick="closeCropModal()" style="background:transparent;border:1px solid #333;color:#666;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;">✕</button>
+    </div>
+    <div style="padding:20px;flex:1;overflow:auto;min-height:300px;">
+      <img id="cropImage" src="" style="max-width:100%;max-height:400px;">
+    </div>
+    <div style="padding:20px;border-top:1px solid var(--border);display:flex;gap:12px;">
+      <button onclick="saveCroppedPhoto()" style="flex:1;background:var(--gold);color:#000;border:none;padding:12px;font-weight:700;cursor:pointer;border-radius:4px;">Save Crop</button>
+      <button onclick="closeCropModal()" style="flex:1;background:#333;color:#fff;border:none;padding:12px;font-weight:700;cursor:pointer;border-radius:4px;">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1004,12 +1025,73 @@ function initPortal() {
 
 function handlePhotoUpload(input) {
   if (!input.files || !input.files[0]) return;
-  compressImage(input.files[0], function(compressedData) {
-    document.getElementById('profilePhotoDisplay').style.backgroundImage = 'url(' + compressedData + ')';
-    document.getElementById('profilePhotoDisplay').textContent = '';
-    student.profilePhoto = compressedData;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('cropImage').src = e.target.result;
+    window.currentPhotoFile = input.files[0];
+    window.currentPhotoData = e.target.result;
+    document.getElementById('cropPhotoModal').style.display = 'flex';
+    
+    // Initialize cropper
+    setTimeout(function() {
+      if (window.cropper) window.cropper.destroy();
+      var img = document.getElementById('cropImage');
+      window.cropper = new Cropper(img, {
+        aspectRatio: 1,
+        viewMode: 1,
+        autoCropArea: 1,
+        responsive: true,
+        guides: false,
+        highlight: true,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        toggleDragModeOnDblclick: true,
+      });
+    }, 100);
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function closeCropModal() {
+  document.getElementById('cropPhotoModal').style.display = 'none';
+  if (window.cropper) {
+    window.cropper.destroy();
+    window.cropper = null;
+  }
+  document.getElementById('profilePhotoInput').value = '';
+}
+
+function saveCroppedPhoto() {
+  if (!window.cropper) {
+    alert('Error: No image to crop');
+    return;
+  }
+  
+  var canvas = window.cropper.getCroppedCanvas({ maxWidth: 400, maxHeight: 400, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
+  canvas.toBlob(function(blob) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('profilePhotoDisplay').style.backgroundImage = 'url(' + e.target.result + ')';
+      document.getElementById('profilePhotoDisplay').textContent = '';
+      document.getElementById('deleteProfilePhotoBtn').style.display = 'block';
+      
+      student.profilePhoto = e.target.result;
+      saveStudent(student);
+      closeCropModal();
+    };
+    reader.readAsDataURL(blob);
+  }, 'image/jpeg', 0.9);
+}
+
+function deleteStudentProfilePhoto() {
+  if (confirm('Remove your profile photo?')) {
+    document.getElementById('profilePhotoDisplay').style.backgroundImage = '';
+    document.getElementById('profilePhotoDisplay').textContent = '✂️';
+    document.getElementById('deleteProfilePhotoBtn').style.display = 'none';
+    
+    student.profilePhoto = null;
     saveStudent(student);
-  });
+  }
 }
 
 function compressImage(file, callback) {
@@ -1143,6 +1225,9 @@ function loadProfile() {
   if (student.profilePhoto) {
     document.getElementById('profilePhotoDisplay').style.backgroundImage = 'url(' + student.profilePhoto + ')';
     document.getElementById('profilePhotoDisplay').textContent = '';
+    document.getElementById('deleteProfilePhotoBtn').style.display = 'block';
+  } else {
+    document.getElementById('deleteProfilePhotoBtn').style.display = 'none';
   }
 }
 
@@ -1299,6 +1384,9 @@ function submitHybridAnswers() {
 
 // Expose to window
 window.handlePhotoUpload = handlePhotoUpload;
+window.deleteStudentProfilePhoto = deleteStudentProfilePhoto;
+window.saveCroppedPhoto = saveCroppedPhoto;
+window.closeCropModal = closeCropModal;
 window.handleHaircutUpload = handleHaircutUpload;
 window.removeHaircutPhoto = removeHaircutPhoto;
 window.saveProfile = saveProfile;

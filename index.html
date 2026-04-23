@@ -180,15 +180,17 @@ footer{background:#000;border-top:1px solid var(--border);padding:48px 32px 28px
 .event-ad-time{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);margin-bottom:24px;font-weight:700;}
 
 /* STUDENT PROFILES */
-.profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;}
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
 .profile-card{background:var(--card);border:1px solid var(--border);overflow:hidden;position:relative;cursor:pointer;transition:all 0.3s;text-decoration:none;color:inherit;}
-.profile-card:hover{border-color:var(--gold);transform:translateY(-6px);}
+.profile-card:hover{border-color:var(--gold);transform:translateY(-4px);}
 .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--purple-mid));}
-.profile-image{width:100%;height:200px;background:linear-gradient(135deg,rgba(107,33,168,0.2),rgba(201,168,76,0.1));display:flex;align-items:center;justify-content:center;font-size:3rem;overflow:hidden;background-size:cover;background-position:center;}
-.profile-body{padding:20px;}
-.profile-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:6px;color:var(--gold);}
-.profile-haircuts{font-size:0.7rem;color:var(--muted);margin-bottom:12px;line-height:1.5;}
-.profile-bio{font-size:0.78rem;color:#aaa;line-height:1.6;}
+.profile-image{width:100%;height:140px;background:linear-gradient(135deg,rgba(107,33,168,0.2),rgba(201,168,76,0.1));display:flex;align-items:center;justify-content:center;font-size:2.5rem;overflow:hidden;background-size:cover;background-position:center;}
+.profile-body{padding:12px;}
+.profile-name{font-family:'Playfair Display',serif;font-size:0.9rem;font-weight:700;margin-bottom:4px;color:var(--gold);}
+.profile-haircuts{font-size:0.65rem;color:var(--muted);margin-bottom:8px;line-height:1.4;}
+.profile-bio{font-size:0.7rem;color:#aaa;line-height:1.5;}
+@media(min-width:768px){.profile-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}.profile-image{height:160px;}.profile-body{padding:16px;}.profile-name{font-size:1rem;}.profile-bio{font-size:0.75rem;}}
+@media(min-width:1024px){.profile-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;}.profile-image{height:200px;}.profile-body{padding:20px;}.profile-name{font-size:1.1rem;}.profile-bio{font-size:0.78rem;}}
 .toggle-models{background:var(--gold);color:#000;border:none;padding:14px 40px;font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:0.65rem;cursor:pointer;border-radius:4px;margin:20px auto;display:block;transition:all 0.3s;}
 .toggle-models:hover{background:var(--gold-light);}
 
@@ -1747,7 +1749,7 @@ function checkActiveEvent() {
 // ─── STUDENT PROFILES ──────────────────────────────────────────
 function loadStudentProfiles() {
   var students = JSON.parse(localStorage.getItem('students') || '[]');
-  var activeStudents = students.filter(function(s){ return !s.graduated; }).slice(0, 6);
+  var activeStudents = students.filter(function(s){ return !s.graduated; });
   var grid = document.getElementById('studentProfilesGrid');
   
   if (!activeStudents.length) {
